@@ -1,0 +1,21 @@
+name: covid_dqn
+channels:
+  - default
+  - conda-forge
+  - rdkit
+dependencies:
+  - python==3.6.8
+  - pandas==0.25.1
+  - matplotlib==3.0.3
+  - rdkit==2019.03.2.0
+  - xlrd==1.2.0
+  - requests==2.22.0
+  - tensorflow==1.14.0
+  - jupyterlab
+  - pytest
+  - tqdm
+  - h5py
+  - pip
+  - pip:
+    - git+https://github.com/keras-team/keras.git
+    - -e .
