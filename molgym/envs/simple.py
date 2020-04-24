@@ -1,30 +1,16 @@
 from gym import Space
 from rdkit import Chem
-from rdkit.Chem import Draw, AllChem, Crippen
-from rdkit import DataStructs
+from rdkit.Chem import Draw
 from functools import partial
-import numpy as np
 import logging
-import copy
 import gym
 
-from molgym.envs.utils import get_valid_actions
-from .utils import rdkit
+from .actions import MoleculeActions
+from .spaces import AllMolecules
+from .rewards import LogP, RewardFunction
+from .utils import compute_morgan_fingerprints
 
 logger = logging.getLogger(__name__)
-
-
-def _compute_canonical_smiles(smiles: str) -> str:
-    """Make a SMILES string canonical
-
-    Args:
-        smiles (str): Smiles string
-    Return:
-        (str) Canonical smiles
-    """
-
-    mol = Chem.MolFromSmiles(smiles)
-    return Chem.MolToSmiles(mol)
 
 
 def compile_smiles(mol) -> str:
@@ -38,144 +24,13 @@ def compile_smiles(mol) -> str:
     return Chem.MolToSmiles(mol)
 
 
-class AllMolecules(Space):
-    """An observation space that consists of molecules in the QM9 dataset"""
-
-    def sample(self):
-        raise NotImplementedError('This design space does not support sampling')
-
-    def contains(self, x):
-        return True  # All molecules are valid
-
-
-class MoleculeActions(Space):
-    """Action space for molecule design
-
-    Generates which molecules are possible next steps and stores
-    them as potential actions, following the approach of
-     `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_."""
-
-    def __init__(self, atom_types, allow_removal=True, allow_no_modification=False,
-                 allow_bonds_between_rings=True, allowed_ring_sizes=None,
-                 fingerprint_size=2048, fingerprint_radius=3):
-        """
-        Args:
-            atom_types: The set of elements the molecule may contain.
-            state. If None, an empty molecule will be created.
-            allow_removal: Boolean. Whether to allow removal of a bond.
-            allow_no_modification: Boolean. If true, the valid action set will
-                include doing nothing to the current molecule, i.e., the current
-                molecule itself will be added to the action set.
-            allow_bonds_between_rings: Boolean. If False, new bonds connecting two
-                atoms which are both in rings are not allowed.
-                DANGER Set this to False will disable some of the transformations eg.
-                c2ccc(Cc1ccccc1)cc2 -> c1ccc3c(c1)Cc2ccccc23
-                But it will make the molecules generated make more sense chemically.
-            allowed_ring_sizes: Set of integers or None. The size of the ring which
-                is allowed to form. If None, all sizes will be allowed. If a set is
-                provided, only sizes in the set is allowed.
-             fingerprint_size (int): Length of the fingerprint used to represent each molecule
-             fingerprint_radius (int): Size of the radius to include for the
-        """
-
-        super().__init__((None, fingerprint_size), np.int)
-
-        # Store the rules for defining actions
-        self.atom_types = atom_types
-        self.allow_removal = allow_removal
-        self.allow_no_modification = allow_no_modification
-        self.allow_bonds_between_rings = allow_bonds_between_rings
-        self.allowed_ring_sizes = allowed_ring_sizes
-        self._state = None
-        self._valid_actions = []
-        self._max_bonds = 4
-        atom_types = list(self.atom_types)
-        self._max_new_bonds = dict(
-            list(zip(atom_types, rdkit.atom_valences(atom_types)))
-        )
-
-        # Store the function for computing features
-        self.fingerprint_function = partial(compute_morgan_fingerprints,
-                                            fingerprint_length=fingerprint_size,
-                                            fingerprint_radius=fingerprint_radius)
-
-        # Placeholders for action space
-        self._valid_actions = []
-        self._valid_actions_featurized = []
-
-    def sample(self):
-        return self.np_random.randint(0, len(self._valid_actions))
-
-    def contains(self, x):
-        return x in self._valid_actions_featurized
-
-    @property
-    def n(self):
-        return len(self._valid_actions)
-
-    def get_possible_actions(self, smiles=False):
-        """Get the possible actions given the current state
-
-        Args:
-            smiles (bool): Whether to return the smiles strings, or the featurized molecules
-        Returns:
-            (ndarray) List of the possible actions
-        """
-        output = self._valid_actions if smiles else self._valid_actions_featurized
-        return copy.deepcopy(output)
-
-    def update_actions(self, new_state, allowed_space: Space):
-        """Generate the available actions for a new state
-
-        Uses the actions to redefine the action space for
-
-        Args:
-            new_state (str): Molecule used to define action space
-            allowed_space (Space): Space of possible observations
-        """
-
-        # Store the new state
-        self._state = new_state
-
-        # Compute the possible actions, which we describe by the new molecule they would form
-        self._valid_actions = get_valid_actions(
-            new_state,
-            atom_types=self.atom_types,
-            allow_removal=self.allow_removal,
-            allow_no_modification=self.allow_no_modification,
-            allowed_ring_sizes=self.allowed_ring_sizes,
-            allow_bonds_between_rings=self.allow_bonds_between_rings)
-
-        # Get only those actions which are in the desired space
-        self._valid_actions = np.array([x for x in self._valid_actions
-                                        if _compute_canonical_smiles(x) in allowed_space])
-
-        # Compute the features for the next states
-        self._valid_actions_featurized = np.array([self.fingerprint_function(m)
-                                                   for m in self._valid_actions])
-
-    def get_smiles_from_fingerprint(self, action):
-        """Lookup the smiles string for an action given its fingerprint
-
-        Args:
-            action (ndarray): Fingerprint of a certain action
-        Returns:
-            (str) SMILES string associated with that action
-        """
-
-        for fingerprint, smiles in zip(self._valid_actions_featurized, self._valid_actions):
-            if np.array_equal(fingerprint, action):
-                return smiles
-        raise ValueError('Action not found in current action space')
-
-
 class Molecule(gym.Env):
     """Defines the Markov decision process of generating a molecule.
 
     Adapted from: https://github.com/google-research/google-research/blob/master/mol_dqn/chemgraph/dqn/molecules.py"""
 
-    def __init__(self, action_space: MoleculeActions = None, observation_space=None,
-                 init_mol=None, max_steps=10,
+    def __init__(self, action_space: MoleculeActions = None, observation_space: Space = None,
+                 reward: RewardFunction = None, init_mol=None, max_steps=10,
                  target_fn=None, record_path=False, fingerprint_size=2048, fingerprint_radius=3):
         """Initializes the parameters for the MDP.
 
@@ -199,6 +54,9 @@ class Molecule(gym.Env):
             action_space = MoleculeActions(['C', 'O', 'N', 'F'])
         if observation_space is None:
             observation_space = AllMolecules()
+        if reward is None:
+            reward = LogP()
+        self._reward = reward
         self.action_space = action_space
         self.init_mol = init_mol
         self.max_steps = max_steps
@@ -250,8 +108,7 @@ class Molecule(gym.Env):
         Returns:
           Float. The reward for the current state.
         """
-        mol = Chem.MolFromSmiles(self._state)
-        return Crippen.MolLogP(mol)
+        return self._reward(self._state)
 
     def step(self, action):
         """Takes a step forward according to the action.
@@ -299,31 +156,3 @@ class Molecule(gym.Env):
         return Draw.MolToImage(self._state, **kwargs)
 
 
-def compute_morgan_fingerprints(smiles, fingerprint_length, fingerprint_radius):
-    """Get Morgan Fingerprint of a specific SMILES string.
-
-    Adapted from: <https://github.com/google-research/google-research/blob/
-    dfac4178ccf521e8d6eae45f7b0a33a6a5b691ee/mol_dqn/chemgraph/dqn/deep_q_networks.py#L750>
-
-    Args:
-      smiles: String. The SMILES string of the molecule.
-      fingerprint_length (int): Bit-length of fingerprint
-      fingerprint_radius (int): Radius used to compute fingerprint
-    Returns:
-      np.array. shape = [hparams.fingerprint_length]. The Morgan fingerprint.
-    """
-    if smiles is None:  # No smiles string
-        return np.zeros((fingerprint_length,))
-    molecule = Chem.MolFromSmiles(smiles)
-    if molecule is None:  # Invalid smiles string
-        return np.zeros((fingerprint_length,))
-
-    # Compute the fingerprint
-    fingerprint = AllChem.GetMorganFingerprintAsBitVect(
-        molecule, fingerprint_radius, fingerprint_length)
-    arr = np.zeros((1,))
-
-    # ConvertToNumpyArray takes ~ 0.19 ms, while
-    # np.asarray takes ~ 4.69 ms
-    DataStructs.ConvertToNumpyArray(fingerprint, arr)
-    return arr

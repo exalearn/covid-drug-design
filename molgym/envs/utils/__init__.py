@@ -30,7 +30,9 @@ import collections
 import copy
 import itertools
 
-from rdkit import Chem
+import numpy as np
+from rdkit import Chem, DataStructs
+from rdkit.Chem import AllChem
 from six.moves import range
 
 from . import rdkit
@@ -298,3 +300,46 @@ def _bond_removal(state):
                 if len(parts) == 1 or len(parts[0]) == 1:
                     bond_removal.add(parts[-1])
     return bond_removal
+
+
+def _compute_canonical_smiles(smiles: str) -> str:
+    """Make a SMILES string canonical
+
+    Args:
+        smiles (str): Smiles string
+    Return:
+        (str) Canonical smiles
+    """
+
+    mol = Chem.MolFromSmiles(smiles)
+    return Chem.MolToSmiles(mol)
+
+
+def compute_morgan_fingerprints(smiles, fingerprint_length, fingerprint_radius):
+    """Get Morgan Fingerprint of a specific SMILES string.
+
+    Adapted from: <https://github.com/google-research/google-research/blob/
+    dfac4178ccf521e8d6eae45f7b0a33a6a5b691ee/mol_dqn/chemgraph/dqn/deep_q_networks.py#L750>
+
+    Args:
+      smiles: String. The SMILES string of the molecule.
+      fingerprint_length (int): Bit-length of fingerprint
+      fingerprint_radius (int): Radius used to compute fingerprint
+    Returns:
+      np.array. shape = [hparams.fingerprint_length]. The Morgan fingerprint.
+    """
+    if smiles is None:  # No smiles string
+        return np.zeros((fingerprint_length,))
+    molecule = Chem.MolFromSmiles(smiles)
+    if molecule is None:  # Invalid smiles string
+        return np.zeros((fingerprint_length,))
+
+    # Compute the fingerprint
+    fingerprint = AllChem.GetMorganFingerprintAsBitVect(
+        molecule, fingerprint_radius, fingerprint_length)
+    arr = np.zeros((1,))
+
+    # ConvertToNumpyArray takes ~ 0.19 ms, while
+    # np.asarray takes ~ 4.69 ms
+    DataStructs.ConvertToNumpyArray(fingerprint, arr)
+    return arr
