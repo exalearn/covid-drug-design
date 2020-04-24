@@ -7,7 +7,7 @@ from keras.engine.network import Network
 from keras.layers import Dense, Input, Lambda, Subtract, Concatenate
 from keras import backend as K
 
-from gym_exalearn.envs.exalearn_electrolyte_design import Molecule
+from molgym.envs.simple import Molecule
 
 logger = logging.getLogger(__name__)
 

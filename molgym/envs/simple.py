@@ -1,26 +1,17 @@
-from multiprocessing import Pool
 from gym import Space
 from rdkit import Chem
-from rdkit.Chem import Draw, AllChem
+from rdkit.Chem import Draw, AllChem, Crippen
 from rdkit import DataStructs
-from typing import List
 from functools import partial
-import pandas as pd
 import numpy as np
-import requests
 import logging
 import copy
 import gym
-import os
 
-from .utils.molecules import get_valid_actions, utils
-
+from molgym.envs.utils import get_valid_actions
+from .utils import rdkit
 
 logger = logging.getLogger(__name__)
-
-
-_qm9_url = "https://github.com/globus-labs/g4mp2-atomization-energy/raw/master/data/output/g4mp2_data.json.gz"
-_qm9_path = os.path.join(os.path.dirname(__file__), 'data', 'qm9.json.gz')
 
 
 def _compute_canonical_smiles(smiles: str) -> str:
@@ -47,85 +38,14 @@ def compile_smiles(mol) -> str:
     return Chem.MolToSmiles(mol)
 
 
-class QM9Space(Space):
+class AllMolecules(Space):
     """An observation space that consists of molecules in the QM9 dataset"""
 
-    def __init__(self, use_cached_data=True):
-        """
-        Args:
-            use_cached_data (bool): Whether to use cached version of
-                the QM9 dataset, or download a fresh copy
-        """
-        super().__init__()
-
-        # Download the data if needed
-        if not os.path.exists(_qm9_path) or not use_cached_data:
-            self._download_data()
-
-        # Prepare the property lookup table
-        self._data = None
-        self._mols = None
-        self._make_lookup_table()
-
-    def molecules(self):
-        """List of all molecules in the design space"""
-        return list(self._mols)
-
     def sample(self):
-        smiles = self.np_random.choice(self._mols)
-        return Chem.MolFromSmiles(smiles)
+        raise NotImplementedError('This design space does not support sampling')
 
     def contains(self, x):
-        """
-        Args:
-             x (str): InChI string of a molecule
-        """
-        return x in self._data
-
-    def _make_lookup_table(self):
-        """Read in the data from disk"""
-        # Read it from disk
-        data = pd.read_json(_qm9_path, lines=True)
-
-        # Get the inchi key of the original structure (defined by smiles_0)
-        with Pool(processes=None) as p:
-            data['canon_smiles'] = p.map(_compute_canonical_smiles, data['smiles_0'])
-        data.drop_duplicates('canon_smiles', inplace=True, keep='first')
-        data.set_index('canon_smiles', inplace=True)
-
-        # Save as a dictionary
-        self._data = data.to_dict('index')
-        self._mols = sorted(self._data.keys())
-
-    def get_molecule_properties(self, smiles: str, properties: List[str]) -> List[float]:
-        """
-        Args:
-             smiles (str): Canonical SMILES string of a certain molecule
-             properties (list): List of properties to retrieve
-        Returns:
-            ([float]) List of properties for that molecule
-        """
-        mol_props = self._data[smiles]
-        return [mol_props[p] for p in properties]
-
-    def to_dataframe(self):
-        """Get the design space as a dataframe"""
-        return pd.DataFrame.from_dict(self._data, orient='index')
-
-    def _download_data(self):
-        """Download the QM9 data"""
-
-        logger.info(f'Downloading data from {_qm9_url} to {_qm9_path}')
-        # Make sure the data path is available for saving
-        data_dir = os.path.dirname(_qm9_path)
-        if not os.path.exists(data_dir):
-            os.makedirs(data_dir)
-
-        # Download and save the file
-        req = requests.get(_qm9_url, stream=True)
-        with open(_qm9_path, 'wb') as fp:
-            for chunk in req.iter_content(1024 ** 2):
-                fp.write(chunk)
+        return True  # All molecules are valid
 
 
 class MoleculeActions(Space):
@@ -171,7 +91,7 @@ class MoleculeActions(Space):
         self._max_bonds = 4
         atom_types = list(self.atom_types)
         self._max_new_bonds = dict(
-            list(zip(atom_types, utils.atom_valences(atom_types)))
+            list(zip(atom_types, rdkit.atom_valences(atom_types)))
         )
 
         # Store the function for computing features
@@ -278,7 +198,7 @@ class Molecule(gym.Env):
         if action_space is None:
             action_space = MoleculeActions(['C', 'O', 'N', 'F'])
         if observation_space is None:
-            observation_space = QM9Space()
+            observation_space = AllMolecules()
         self.action_space = action_space
         self.init_mol = init_mol
         self.max_steps = max_steps
@@ -321,7 +241,7 @@ class Molecule(gym.Env):
             self._path = [self._state]
         self._counter = 0
 
-    def _reward(self):
+    def reward(self):
         """Gets the reward for the state.
 
         A child class can redefine the reward function if reward other than
@@ -330,8 +250,8 @@ class Molecule(gym.Env):
         Returns:
           Float. The reward for the current state.
         """
-        smiles = _compute_canonical_smiles(self._state)
-        return -1 * self.observation_space.get_molecule_properties(smiles, ['g4mp2_atom'])[0]
+        mol = Chem.MolFromSmiles(self._state)
+        return Crippen.MolLogP(mol)
 
     def step(self, action):
         """Takes a step forward according to the action.
@@ -365,7 +285,7 @@ class Molecule(gym.Env):
                 len(self.action_space.get_possible_actions(smiles=True)) == 0)
 
         # Compute the fingerprints for the state
-        return self._state_fingerprint, self._reward(), done, {}
+        return self._state_fingerprint, self.reward(), done, {}
 
     def render(self, mode='human', **kwargs):
         """Draws the molecule of the state.

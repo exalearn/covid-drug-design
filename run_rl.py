@@ -11,7 +11,7 @@ from csv import DictWriter
 from rdkit import RDLogger
 from argparse import ArgumentParser
 from molgym.agents.dqn_variable_actions import DQNFinalState
-from molgym.envs.exalearn_electrolyte_design import Molecule
+from molgym.envs.simple import Molecule
 
 # Set up the logger
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
