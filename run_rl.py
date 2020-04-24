@@ -75,7 +75,7 @@ def run_experiment(episodes, n_steps, update_q_every, log_file):
             # Update state
             current_state = new_state
 
-            if best_reward > reward:
+            if reward > best_reward:
                 best_reward = reward
                 logger.info("Best reward: %s" % best_reward)
 
@@ -90,7 +90,6 @@ def run_experiment(episodes, n_steps, update_q_every, log_file):
 
 if __name__ == "__main__":
     # Define the command line arguments
-    # TODO (wardlt): Explore whether "sacred" is a good tool for recording test results
     arg_parser = ArgumentParser()
     arg_parser.add_argument('--epsilon', help='Controls degree of exploration',
                             default=1.0, type=float)
@@ -126,7 +125,7 @@ if __name__ == "__main__":
         json.dump(run_params, fp)
 
     # Run experiment
-    with open(os.path.join(test_dir, 'electrolyte_log.csv'), 'w', newline='') as log_fp:
+    with open(os.path.join(test_dir, 'molecules.csv'), 'w', newline='') as log_fp:
         log_file = DictWriter(log_fp, fieldnames=['episode', 'step', 'epsilon',
                                                   'smiles', 'reward', 'loss'])
         log_file.writeheader()
@@ -137,6 +136,6 @@ if __name__ == "__main__":
 
         # Save the performance information
         platform_info = get_platform_info()
-        platform_info['runtime'] = start - end
+        platform_info['runtime'] = end - start
         with open(os.path.join(test_dir, 'performance.json'), 'w') as fp:
             json.dump(platform_info, fp)
