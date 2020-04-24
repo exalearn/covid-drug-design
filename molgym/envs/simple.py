@@ -1,14 +1,12 @@
 from gym import Space
 from rdkit import Chem
 from rdkit.Chem import Draw
-from functools import partial
 import logging
 import gym
 
 from .actions import MoleculeActions
 from .spaces import AllMolecules
 from .rewards import LogP, RewardFunction
-from .utils import compute_morgan_fingerprints
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +29,7 @@ class Molecule(gym.Env):
 
     def __init__(self, action_space: MoleculeActions = None, observation_space: Space = None,
                  reward: RewardFunction = None, init_mol=None, max_steps=10,
-                 target_fn=None, record_path=False, fingerprint_size=2048, fingerprint_radius=3):
+                 target_fn=None, record_path=False):
         """Initializes the parameters for the MDP.
 
         Internal state will be stored as SMILES strings, but but the environment will
@@ -64,14 +62,8 @@ class Molecule(gym.Env):
         self.record_path = record_path
         self.observation_space = observation_space
 
-        # Store the function used to compute inputs
-        self.fingerprint_function = partial(compute_morgan_fingerprints,
-                                            fingerprint_length=fingerprint_size,
-                                            fingerprint_radius=fingerprint_radius)
-
         # Define the state variables
         self._state = None
-        self._state_fingerprint = None
         self._path = None
         self._counter = None
 
@@ -93,7 +85,6 @@ class Molecule(gym.Env):
     def reset(self):
         """Resets the MDP to its initial state."""
         self._state = self.init_mol
-        self._state_fingerprint = self.fingerprint_function(self._state)
         self.action_space.update_actions(self._state, self.observation_space)
         if self.record_path:
             self._path = [self._state]
@@ -108,29 +99,27 @@ class Molecule(gym.Env):
         Returns:
           Float. The reward for the current state.
         """
+        if self._state is None:
+            return 0
         return self._reward(self._state)
 
-    def step(self, action):
+    def step(self, action: str):
         """Takes a step forward according to the action.
 
         Args:
-          action (ndarray): Fingerprint of action
+            action (str): Next state of the network
 
         Raises:
           ValueError: If the number of steps taken exceeds the preset max_steps, or
             the action is not in the set of valid_actions.
-
         """
         if self._counter >= self.max_steps:
             raise ValueError('This episode is terminated.')
 
         # Get the SMILES string associated with this action
-        self._state = self.action_space.get_smiles_from_fingerprint(action)
+        self._state = action
         if self.record_path:
             self._path.append(self._state)
-
-        # Store the fingerprint of the state
-        self._state_fingerprint = self.fingerprint_function(self._state)
 
         # Update the action space
         self.action_space.update_actions(self._state, self.observation_space)
@@ -138,13 +127,12 @@ class Molecule(gym.Env):
 
         # Check if we have finished
         #  Out of steps or no more moves
-        done = ((self._counter >= self.max_steps) or
-                len(self.action_space.get_possible_actions(smiles=True)) == 0)
+        done = ((self._counter >= self.max_steps) or len(self.action_space.get_possible_actions()) == 0)
 
         # Compute the fingerprints for the state
-        return self._state_fingerprint, self.reward(), done, {}
+        return self._state, self.reward(), done, {}
 
-    def render(self, mode='human', **kwargs):
+    def render(self, **kwargs):
         """Draws the molecule of the state.
 
         Args:
@@ -154,5 +142,3 @@ class Molecule(gym.Env):
           A PIL image containing a drawing of the molecule.
         """
         return Draw.MolToImage(self._state, **kwargs)
-
-

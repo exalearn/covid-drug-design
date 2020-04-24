@@ -7,6 +7,7 @@ from keras.engine.network import Network
 from keras.layers import Dense, Input, Lambda, Subtract, Concatenate
 from keras import backend as K
 
+from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.simple import Molecule
 
 logger = logging.getLogger(__name__)
@@ -39,12 +40,14 @@ class DQNFinalState:
     Follows the implementation described by `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_.
     """
 
-    def __init__(self, env: Molecule, epsilon=1.0):
+    def __init__(self, env: Molecule, preprocessor: MorganFingerprints, epsilon=1.0):
         """
         Args:
             epsilon (float): Exploration factor
+            preprocessor (MorganFingerprints): Tool to compute Morgan fingerprints for each molecule
         """
         self.env = env
+        self.preprocessor = preprocessor
         self.memory = deque(maxlen=2000)
 
         # Hyper-parameters
@@ -59,13 +62,12 @@ class DQNFinalState:
         self._build_model()
 
     def _huber_loss(self, target, prediction):
-        # sqrt(1+error^2)-1
         error = prediction - target
-        return K.mean(K.sqrt(1+K.square(error))-1,axis=-1)
+        return K.mean(K.sqrt(1+K.square(error))-1, axis=-1)
 
     def _build_model(self):
         # Get the shape of the environment
-        _, fingerprint_size = self.env.action_space.shape
+        fingerprint_size = self.preprocessor.length
 
         predict_actions_input = Input(batch_shape=(None, fingerprint_size), name='single_action')
         train_action_input = Input(batch_shape=(self.batch_size, fingerprint_size),
@@ -130,17 +132,25 @@ class DQNFinalState:
         self.train_network.compile(optimizer='adam', loss='mean_squared_error')
 
     def remember(self, state, action, reward, next_state, next_actions, done):
-        self.memory.append((action, reward, next_actions, done))
+        # Save the actions as features, we no longer need to know they are molecules
+        action_features = self.preprocessor.get_features([action])[0]
+        if len(next_actions) > 0:
+            next_actions_features = self.preprocessor.get_features(next_actions)
+        else:
+            next_actions_features = []
+        self.memory.append((action_features, reward, next_actions_features, done))
 
     def action(self):
         """Choose the next action"""
-        # TODO (wardlt): State is defined in `env`. Do we need it as an input?
+        # Get the actions as SMILES
         actions = self.env.action_space.get_possible_actions()
+
         if np.random.rand() <= self.epsilon:
             action_ix = random.randrange(self.env.action_space.n)
         else:
             # Invoke the action network, which gives the action with the highest reward
-            action_scores = self.action_network.predict(actions)
+            actions_features = self.preprocessor.get_features(actions)
+            action_scores = self.action_network.predict(actions_features)
             action_ix = np.argmax(action_scores)
         return actions[action_ix]
 

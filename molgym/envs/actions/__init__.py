@@ -1,12 +1,9 @@
 """Different choices for actions to use in molecular design"""
 
-import copy
-from functools import partial
-
 import numpy as np
 from gym import Space
 
-from molgym.envs.utils import rdkit, get_valid_actions, _compute_canonical_smiles, compute_morgan_fingerprints
+from molgym.envs.utils import rdkit, get_valid_actions
 
 
 class MoleculeActions(Space):
@@ -17,8 +14,7 @@ class MoleculeActions(Space):
      `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_."""
 
     def __init__(self, atom_types, allow_removal=True, allow_no_modification=False,
-                 allow_bonds_between_rings=True, allowed_ring_sizes=None,
-                 fingerprint_size=2048, fingerprint_radius=3):
+                 allow_bonds_between_rings=True, allowed_ring_sizes=None):
         """
         Args:
             atom_types: The set of elements the molecule may contain.
@@ -35,11 +31,9 @@ class MoleculeActions(Space):
             allowed_ring_sizes: Set of integers or None. The size of the ring which
                 is allowed to form. If None, all sizes will be allowed. If a set is
                 provided, only sizes in the set is allowed.
-             fingerprint_size (int): Length of the fingerprint used to represent each molecule
-             fingerprint_radius (int): Size of the radius to include for the
         """
 
-        super().__init__((None, fingerprint_size), np.int)
+        super().__init__((None, None), np.str)
 
         # Store the rules for defining actions
         self.atom_types = atom_types
@@ -55,35 +49,26 @@ class MoleculeActions(Space):
             list(zip(atom_types, rdkit.atom_valences(atom_types)))
         )
 
-        # Store the function for computing features
-        self.fingerprint_function = partial(compute_morgan_fingerprints,
-                                            fingerprint_length=fingerprint_size,
-                                            fingerprint_radius=fingerprint_radius)
-
         # Placeholders for action space
         self._valid_actions = []
-        self._valid_actions_featurized = []
 
     def sample(self):
         return self.np_random.randint(0, len(self._valid_actions))
 
     def contains(self, x):
-        return x in self._valid_actions_featurized
+        return x in self._valid_actions
 
     @property
     def n(self):
         return len(self._valid_actions)
 
-    def get_possible_actions(self, smiles=False):
+    def get_possible_actions(self):
         """Get the possible actions given the current state
 
-        Args:
-            smiles (bool): Whether to return the smiles strings, or the featurized molecules
         Returns:
             (ndarray) List of the possible actions
         """
-        output = self._valid_actions if smiles else self._valid_actions_featurized
-        return copy.deepcopy(output)
+        return np.array(self._valid_actions)
 
     def update_actions(self, new_state, allowed_space: Space):
         """Generate the available actions for a new state
@@ -108,23 +93,4 @@ class MoleculeActions(Space):
             allow_bonds_between_rings=self.allow_bonds_between_rings)
 
         # Get only those actions which are in the desired space
-        self._valid_actions = np.array([x for x in self._valid_actions
-                                        if _compute_canonical_smiles(x) in allowed_space])
-
-        # Compute the features for the next states
-        self._valid_actions_featurized = np.array([self.fingerprint_function(m)
-                                                   for m in self._valid_actions])
-
-    def get_smiles_from_fingerprint(self, action):
-        """Lookup the smiles string for an action given its fingerprint
-
-        Args:
-            action (ndarray): Fingerprint of a certain action
-        Returns:
-            (str) SMILES string associated with that action
-        """
-
-        for fingerprint, smiles in zip(self._valid_actions_featurized, self._valid_actions):
-            if np.array_equal(fingerprint, action):
-                return smiles
-        raise ValueError('Action not found in current action space')
+        self._valid_actions = np.array([x for x in self._valid_actions if x in allowed_space])

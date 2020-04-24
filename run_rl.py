@@ -10,7 +10,8 @@ from datetime import datetime
 from csv import DictWriter
 from rdkit import RDLogger
 from argparse import ArgumentParser
-from molgym.agents.dqn_variable_actions import DQNFinalState
+from molgym.agents.moldqn import DQNFinalState
+from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.simple import Molecule
 
 # Set up the logger
@@ -56,7 +57,7 @@ def run_experiment(episodes, n_steps, update_q_every, log_file):
             new_state, reward, done, _ = env.step(action)
 
             # Check if it's the last step and flag as done
-            if s == (n_steps):
+            if s == n_steps:
                 logger.debug('Last step  ... done')
                 done = True
 
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     logger.debug('using environment: %s' % env)
 
     # Setup agent
-    agent = DQNFinalState(env, epsilon=args.epsilon)
+    agent = DQNFinalState(env, preprocessor=MorganFingerprints(), epsilon=args.epsilon)
 
     # Make a test directory
     test_dir = os.path.join('rl_tests', str(int(datetime.now().timestamp())))
