@@ -1,9 +1,15 @@
 """Different choices for actions to use in molecular design"""
+from typing import List
 
+import networkx as nx
 import numpy as np
 from gym import Space
 
-from molgym.envs.utils import rdkit, get_valid_actions
+from molgym.envs.actions.utils import rdkit, get_valid_actions
+
+
+# TODO (wardlt): Extract a base class that defines the interface for `update_actions`
+from molgym.utils.conversions import convert_nx_to_smiles, convert_smiles_to_nx
 
 
 class MoleculeActions(Space):
@@ -18,7 +24,6 @@ class MoleculeActions(Space):
         """
         Args:
             atom_types: The set of elements the molecule may contain.
-            state. If None, an empty molecule will be created.
             allow_removal: Boolean. Whether to allow removal of a bond.
             allow_no_modification: Boolean. If true, the valid action set will
                 include doing nothing to the current molecule, i.e., the current
@@ -53,7 +58,7 @@ class MoleculeActions(Space):
         self._valid_actions = []
 
     def sample(self):
-        return self.np_random.randint(0, len(self._valid_actions))
+        return np.random.choice(self._valid_actions)
 
     def contains(self, x):
         return x in self._valid_actions
@@ -62,15 +67,15 @@ class MoleculeActions(Space):
     def n(self):
         return len(self._valid_actions)
 
-    def get_possible_actions(self):
+    def get_possible_actions(self) -> List[nx.Graph]:
         """Get the possible actions given the current state
 
         Returns:
-            (ndarray) List of the possible actions
+            (list) List of the possible actions
         """
-        return np.array(self._valid_actions)
+        return list(self._valid_actions)
 
-    def update_actions(self, new_state, allowed_space: Space):
+    def update_actions(self, new_state: nx.Graph, allowed_space: Space):
         """Generate the available actions for a new state
 
         Uses the actions to redefine the action space for
@@ -84,8 +89,8 @@ class MoleculeActions(Space):
         self._state = new_state
 
         # Compute the possible actions, which we describe by the new molecule they would form
-        self._valid_actions = get_valid_actions(
-            new_state,
+        valid_actions = get_valid_actions(
+            convert_nx_to_smiles(new_state),
             atom_types=self.atom_types,
             allow_removal=self.allow_removal,
             allow_no_modification=self.allow_no_modification,
@@ -93,4 +98,4 @@ class MoleculeActions(Space):
             allow_bonds_between_rings=self.allow_bonds_between_rings)
 
         # Get only those actions which are in the desired space
-        self._valid_actions = np.array([x for x in self._valid_actions if x in allowed_space])
+        self._valid_actions = [convert_smiles_to_nx(x) for x in valid_actions if x in allowed_space]

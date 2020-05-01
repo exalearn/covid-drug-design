@@ -1,6 +1,6 @@
 from gym import Space
-from rdkit import Chem
 from rdkit.Chem import Draw
+import networkx as nx
 import logging
 import gym
 
@@ -11,24 +11,13 @@ from .rewards import LogP, RewardFunction
 logger = logging.getLogger(__name__)
 
 
-def compile_smiles(mol) -> str:
-    """Compute the InCHi string of a RDKit molecule object
-
-    Args:
-        mol (Mol): RDKit molecule
-    Returns:
-        (str) InChI string
-    """
-    return Chem.MolToSmiles(mol)
-
-
 class Molecule(gym.Env):
     """Defines the Markov decision process of generating a molecule.
 
     Adapted from: https://github.com/google-research/google-research/blob/master/mol_dqn/chemgraph/dqn/molecules.py"""
 
     def __init__(self, action_space: MoleculeActions = None, observation_space: Space = None,
-                 reward: RewardFunction = None, init_mol=None, max_steps=10,
+                 reward: RewardFunction = None, init_mol: nx.Graph = None, max_steps=10,
                  target_fn=None, record_path=False):
         """Initializes the parameters for the MDP.
 
@@ -36,9 +25,7 @@ class Molecule(gym.Env):
         return the new state as an ML-ready fingerprint
 
         Args:
-          init_mol: String, Chem.Mol, or Chem.RWMol. If string is provided, it is
-            considered as the SMILES string. The molecule to be set as the initial
-            state. If None, an empty molecule will be created.
+          init_mol: Initial molecule as a networkx grpah. If None, an empty molecule will be created.
           max_steps: Integer. The maximum number of steps to run.
           target_fn: A function or None. The function should have Args of a
             String, which is a SMILES string (the state), and Returns as
@@ -75,8 +62,8 @@ class Molecule(gym.Env):
         return self._counter
 
     @property
-    def state(self):
-        """State as a SMILES string"""
+    def state(self) -> nx.Graph:
+        """State as a networkx graph"""
         return self._state
 
     def get_path(self):
@@ -103,11 +90,11 @@ class Molecule(gym.Env):
             return 0
         return self._reward(self._state)
 
-    def step(self, action: str):
+    def step(self, action: nx.Graph):
         """Takes a step forward according to the action.
 
         Args:
-            action (str): Next state of the network
+            action (nx.Graph): Next state of the network
 
         Raises:
           ValueError: If the number of steps taken exceeds the preset max_steps, or

@@ -15,6 +15,8 @@ from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.simple import Molecule
 
 # Set up the logger
+from molgym.utils.conversions import convert_nx_to_smiles
+
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('RL-Logger')
 logger.setLevel(logging.DEBUG)
@@ -69,8 +71,10 @@ def run_experiment(episodes, n_steps, update_q_every, log_file):
             loss = agent.train()
 
             # Write to output log
-            log_file.writerow({'episode': e, 'step': s, 'smiles': env.state, 'loss': loss,
-                               'reward': reward, 'epsilon': agent.epsilon})
+            log_file.writerow({
+                'episode': e, 'step': s, 'smiles': convert_nx_to_smiles(env.state),
+                'loss': loss, 'reward': reward, 'epsilon': agent.epsilon
+            })
 
             # Update state
             current_state = new_state
