@@ -1,27 +1,18 @@
 import random
 import logging
+from typing import Optional
+
 import numpy as np
 from collections import deque
-from keras.models import Model
-from keras.engine.network import Network
-from keras.layers import Dense, Input, Lambda, Subtract, Concatenate
-from keras import backend as K
+import tensorflow as tf
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Input, Lambda, Subtract, Concatenate
+from tensorflow.keras import backend as K
 
 from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.simple import Molecule
 
 logger = logging.getLogger(__name__)
-
-
-class GraphModel(Model):
-    """ This is a simple modification of the Keras `Model` class to avoid
-    checking each input for a consistent batch_size dimension. Should work as
-    of keras-team/keras#11548.
-    """
-
-    def _standardize_user_data(self, *args, **kwargs):
-        kwargs['check_array_lengths'] = False
-        return super(GraphModel, self)._standardize_user_data(*args, **kwargs)
 
 
 def _q_target_value(inputs, gamma=0.99):
@@ -89,12 +80,12 @@ class DQNFinalState:
         # TODO (wardlt): Allow users to specify a different architecture
 
         def make_q_network(input_shape, name=None):
-            inputs = Input(shape=input_shape)
+            inputs = Input(batch_shape=input_shape, name=f'{name}_input')
             h1 = Dense(24, activation='relu')(inputs)
             h2 = Dense(48, activation='relu')(h1)
             h3 = Dense(24, activation='relu')(h2)
             output = Dense(1, activation='linear')(h3)
-            return Network(inputs=inputs, outputs=output, name=name)
+            return Model(inputs=inputs, outputs=output, name=name)
 
         q_t = make_q_network((None, fingerprint_size), name='q_t')
         q = q_t(predict_actions_input)
@@ -116,7 +107,7 @@ class DQNFinalState:
         target = Lambda(_q_target_value, name='target', arguments={'gamma': self.gamma})\
             ([reward, v_tp1, done])
 
-        # Part 3: Define the error single
+        # Part 3: Define the error signal
         q_t_train = q_t(train_action_input)
         q_t_train = Lambda(K.reshape, arguments={'shape': (self.batch_size,)},
                            name='squeeze_q')(q_t_train)
@@ -124,12 +115,12 @@ class DQNFinalState:
         error = Lambda(K.reshape, arguments={'shape': (self.batch_size, 1)},
                        name='wrap_error')(error)
 
-        self.train_network = GraphModel(
+        self.train_network = Model(
             inputs=[train_action_input, done_input, reward_input] + new_actions,
             outputs=error)
 
         # Add the optimizer
-        self.train_network.compile(optimizer='adam', loss='mean_squared_error')
+        self.optimzer = tf.keras.optimizers.Adam()
 
     def remember(self, state, action, reward, next_state, next_actions, done):
         # Save the actions as features, we no longer need to know they are molecules
@@ -160,11 +151,11 @@ class DQNFinalState:
         q_weights = self.action_network.get_layer('q_t').get_weights()
         self.train_network.get_layer('q_tp1').set_weights(q_weights)
 
-    def train(self):
+    def train(self) -> Optional[float]:
         """Train model on a batch of data from the memory
 
         Returns:
-            loss (str): Current loss
+            loss (float): Current loss
         """
 
         # Check if we have enough data
@@ -188,11 +179,13 @@ class DQNFinalState:
                     raise RuntimeError('Found a move that is not terminal, yet has no next actions')
                 next_actions[i] = np.zeros((1, self.action_network.input_shape[1]))
 
-        # Define the target output for the network, zero
-        target = np.zeros((self.batch_size, 1))
-
-        # Train on this minibatch
-        return self.train_network.train_on_batch([actions, done, rewards] + list(next_actions), target)
+        # Compute the error signal between the data
+        with tf.GradientTape() as tape:
+            error = self.train_network.predict_on_batch([actions, done, rewards] + list(next_actions))
+            loss = tf.reduce_sum(tf.pow(error, 2, name='loss_pow'), name='loss_sum')
+        gradients = tape.gradient(loss, self.train_network.trainable_variables)
+        self.optimzer.apply_gradients(zip(gradients, self.train_network.trainable_variables))
+        return float(loss.numpy())
 
     def epsilon_adj(self):
         if self.epsilon > self.epsilon_min:

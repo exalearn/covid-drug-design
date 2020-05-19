@@ -4,19 +4,19 @@ channels:
   - conda-forge
   - rdkit
 dependencies:
-  - python==3.6.8
-  - pandas==0.25.1
-  - matplotlib==3.0.3
+  - python==3.6.*
+  - pandas==1.*
+  - matplotlib>3
   - rdkit==2019.03.2.0
   - xlrd==1.2.0
   - requests==2.22.0
-  - tensorflow==1.14.0
+  - tensorflow-gpu==2.1.*
   - networkx==2.4
   - jupyterlab
   - pytest
   - tqdm
   - h5py
+  - nomkl  # Issues with TF2.1?
   - pip
   - pip:
-    - git+https://github.com/keras-team/keras.git
     - -e .

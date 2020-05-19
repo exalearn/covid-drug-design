@@ -3,8 +3,6 @@ import json
 import timeit
 import logging
 import platform
-import tensorflow as tf
-import keras.backend as K
 from tqdm import tqdm
 from datetime import datetime
 from csv import DictWriter
@@ -13,10 +11,12 @@ from argparse import ArgumentParser
 from molgym.agents.moldqn import DQNFinalState
 from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.simple import Molecule
+from molgym.envs.rewards.mpnn import MPNNReward
+from molgym.utils.conversions import convert_nx_to_smiles
+from molgym.mpnn.layers import custom_objects
+from tensorflow.keras.models import load_model
 
 # Set up the logger
-from molgym.utils.conversions import convert_nx_to_smiles
-
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('RL-Logger')
 logger.setLevel(logging.DEBUG)
@@ -108,12 +108,17 @@ if __name__ == "__main__":
     args = arg_parser.parse_args()
     run_params = args.__dict__
 
-    # Setup Keras/Tensorflow
-    sess = tf.Session()
-    K.set_session(sess)
+    # Make the reward function
+    mpnn_dir = os.path.join('notebooks', 'mpnn-training')
+    model = load_model(os.path.join(mpnn_dir, 'model.h5'), custom_objects=custom_objects)
+    with open(os.path.join(mpnn_dir, 'atom_types.json')) as fp:
+        atom_types = json.load(fp)
+    with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
+        bond_types = json.load(fp)
+    reward = MPNNReward(model, atom_types, bond_types)
 
     # Set up environment
-    env = Molecule(max_steps=args.max_steps)
+    env = Molecule(max_steps=args.max_steps, reward=reward)
     logger.debug('using environment: %s' % env)
 
     # Setup agent
