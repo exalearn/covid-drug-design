@@ -132,7 +132,7 @@ def prepare_for_batching(dataset):
     Allows them to be merged together in batches"""
     for c in ['atom', 'bond', 'connectivity']:
         expanded = tf.expand_dims(dataset[c].values, axis=0, name=f'expand_{c}')
-        dataset[c] = tf.RaggedTensor.from_tensor(expanded)
+        dataset[c] = tf.RaggedTensor.from_tensor(expanded).flat_values
     return dataset
 
 
@@ -145,17 +145,8 @@ def combine_graphs(batch):
     batch['node_graph_indices'] = tf.repeat(mol_id, batch['n_atom'], axis=0)
     batch['bond_graph_indices'] = tf.repeat(mol_id, batch['n_bond'], axis=0)
 
-    # Reshape the bond, connectivity, and node lists
-    for c in ['atom', 'bond', 'connectivity']:
-        batch[c] = batch[c].flat_values
-
     # Reshape the connectivity matrix to (None, 2)
     batch['connectivity'] = tf.reshape(batch['connectivity'], (-1, 2))
-
-    # Denote the shapes for the atom and bond matrices
-    #  Only an issue for 1.14, which cannot infer them it seems
-    for c in ['atom', 'bond']:
-        batch[c].set_shape((None,))
 
     # Compute offsets for the connectivity matrix
     offset_values = tf.cumsum(batch['n_atom'], exclusive=True)
