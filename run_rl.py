@@ -3,6 +3,7 @@ import json
 import timeit
 import logging
 import platform
+from math import inf
 from tqdm import tqdm
 from datetime import datetime
 from csv import DictWriter
@@ -10,6 +11,7 @@ from rdkit import RDLogger
 from argparse import ArgumentParser
 from molgym.agents.moldqn import DQNFinalState
 from molgym.agents.preprocessing import MorganFingerprints
+from molgym.envs.rewards import LogP
 from molgym.envs.simple import Molecule
 from molgym.envs.rewards.mpnn import MPNNReward
 from molgym.utils.conversions import convert_nx_to_smiles
@@ -47,7 +49,7 @@ def run_experiment(episodes, n_steps, update_q_every, log_file):
         update_q_every (int): After how many updates to update the Q function
         log_file (DictWriter): Tool to write the output function
     """
-    best_reward = 0
+    best_reward = -1 * inf
 
     for e in tqdm(range(episodes), desc='RL Episodes', leave=True, disable=False):
         current_state = env.reset()
@@ -103,19 +105,26 @@ if __name__ == "__main__":
                             default=200, type=int)
     arg_parser.add_argument('--q-update-freq', help='After how many episodes to update Q network',
                             default=10, type=int)
+    arg_parser.add_argument('--reward', help='Which reward function to use.',
+                            choices=['ic50', 'logP'], default='ic50')
 
     # Parse the arguments
     args = arg_parser.parse_args()
     run_params = args.__dict__
 
     # Make the reward function
-    mpnn_dir = os.path.join('notebooks', 'mpnn-training')
-    model = load_model(os.path.join(mpnn_dir, 'model.h5'), custom_objects=custom_objects)
-    with open(os.path.join(mpnn_dir, 'atom_types.json')) as fp:
-        atom_types = json.load(fp)
-    with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
-        bond_types = json.load(fp)
-    reward = MPNNReward(model, atom_types, bond_types)
+    if args.reward == 'ic50':
+        mpnn_dir = os.path.join('notebooks', 'mpnn-training')
+        model = load_model(os.path.join(mpnn_dir, 'model.h5'), custom_objects=custom_objects)
+        with open(os.path.join(mpnn_dir, 'atom_types.json')) as fp:
+            atom_types = json.load(fp)
+        with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
+            bond_types = json.load(fp)
+        reward = MPNNReward(model, atom_types, bond_types, maximize=False)
+    elif args.reward == 'logP':
+        reward = LogP(maximize=False)
+    else:
+        raise ValueError(f'Reward function not defined: {args.reward}')
 
     # Set up environment
     env = Molecule(max_steps=args.max_steps, reward=reward)
