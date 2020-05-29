@@ -8,9 +8,11 @@ from tqdm import tqdm
 from datetime import datetime
 from csv import DictWriter
 from rdkit import RDLogger
+from rdkit.Chem import GetPeriodicTable, MolFromSmiles
 from argparse import ArgumentParser
 from molgym.agents.moldqn import DQNFinalState
 from molgym.agents.preprocessing import MorganFingerprints
+from molgym.envs.actions import MoleculeActions
 from molgym.envs.rewards import LogP
 from molgym.envs.simple import Molecule
 from molgym.envs.rewards.mpnn import MPNNReward
@@ -99,7 +101,7 @@ if __name__ == "__main__":
     arg_parser = ArgumentParser()
     arg_parser.add_argument('--epsilon', help='Controls degree of exploration',
                             default=1.0, type=float)
-    arg_parser.add_argument('--max_steps', help='Maximum number of steps per episode',
+    arg_parser.add_argument('--max-steps', help='Maximum number of steps per episode',
                             default=32, type=int)
     arg_parser.add_argument('--episodes', help='Number of episodes to run',
                             default=200, type=int)
@@ -112,12 +114,19 @@ if __name__ == "__main__":
     args = arg_parser.parse_args()
     run_params = args.__dict__
 
+    # Get the list of elements
+    #  We want those where SMILES supports implicit valences
+    mpnn_dir = os.path.join('notebooks', 'mpnn-training')
+    with open(os.path.join(mpnn_dir, 'atom_types.json')) as fp:
+        atom_types = json.load(fp)
+    pt = GetPeriodicTable()
+    elements = [pt.GetElementSymbol(i) for i in atom_types]
+    elements = [e for e in elements if MolFromSmiles(e) is not None]
+    logger.info(f'Using {len(elements)} elements: {elements}')
+
     # Make the reward function
     if args.reward == 'ic50':
-        mpnn_dir = os.path.join('notebooks', 'mpnn-training')
         model = load_model(os.path.join(mpnn_dir, 'model.h5'), custom_objects=custom_objects)
-        with open(os.path.join(mpnn_dir, 'atom_types.json')) as fp:
-            atom_types = json.load(fp)
         with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
             bond_types = json.load(fp)
         reward = MPNNReward(model, atom_types, bond_types, maximize=False)
@@ -127,7 +136,8 @@ if __name__ == "__main__":
         raise ValueError(f'Reward function not defined: {args.reward}')
 
     # Set up environment
-    env = Molecule(max_steps=args.max_steps, reward=reward)
+    action_space = MoleculeActions(elements)
+    env = Molecule(action_space, max_steps=args.max_steps, reward=reward)
     logger.debug('using environment: %s' % env)
 
     # Setup agent
