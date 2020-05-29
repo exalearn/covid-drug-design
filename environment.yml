@@ -10,13 +10,15 @@ dependencies:
   - rdkit==2019.03.2.0
   - xlrd==1.2.0
   - requests==2.22.0
-  - tensorflow-gpu==2.1.*
   - networkx==2.4
+  - scipy==1.4.1
   - jupyterlab
   - pytest
   - tqdm
   - h5py
-  - nomkl  # Issues with TF2.1?
   - pip
   - pip:
+    - tensorflow-gpu==2.1.*
+    - gym
     - -e .
+

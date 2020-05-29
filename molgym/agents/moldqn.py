@@ -34,7 +34,7 @@ class DQNFinalState:
     def __init__(self, env: Molecule, preprocessor: MorganFingerprints, epsilon=1.0):
         """
         Args:
-            epsilon (float): Exploration factor
+            epsilon (float): Exploration rate, beginning
             preprocessor (MorganFingerprints): Tool to compute Morgan fingerprints for each molecule
         """
         self.env = env
@@ -104,8 +104,8 @@ class DQNFinalState:
 
         # Part 2: Define the target function, the measured reward of a state
         #   plus the estimated value of the next state (or zero if this state is terminal)
-        target = Lambda(_q_target_value, name='target', arguments={'gamma': self.gamma})\
-            ([reward, v_tp1, done])
+        target = Lambda(_q_target_value, name='target',
+                        arguments={'gamma': self.gamma})([reward, v_tp1, done])
 
         # Part 3: Define the error signal
         q_t_train = q_t(train_action_input)
@@ -166,10 +166,10 @@ class DQNFinalState:
         actions, rewards, next_actions, done = zip(*random.sample(self.memory, self.batch_size))
 
         # Convert inputs to numpy arrays
-        actions = np.array(actions, dtype=K.floatx())
-        rewards = np.array(rewards, dtype=K.floatx())
-        next_actions = [np.array(a, dtype=K.floatx()) for a in next_actions]
-        done = np.array(done, dtype=K.floatx())
+        actions = tf.convert_to_tensor(actions, dtype=K.floatx())
+        rewards = tf.convert_to_tensor(rewards, dtype=K.floatx())
+        next_actions = [tf.convert_to_tensor(a, dtype=K.floatx()) for a in next_actions]
+        done = tf.convert_to_tensor(done, dtype=K.floatx())
 
         # Give bogus moves to those that are done and lack next moves
         #  Needed to give the proper input shape to the model

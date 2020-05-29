@@ -3,6 +3,7 @@ from typing import List
 
 import numpy as np
 import networkx as nx
+import tensorflow as tf
 from tensorflow.keras.models import Model
 
 from molgym.envs.rewards import RewardFunction
@@ -34,8 +35,8 @@ class MPNNReward(RewardFunction):
         entry = convert_nx_to_dict(graph, self.atom_types, self.bond_types)
         if entry['n_bond'] == 0:
             return self.big_value
-        entry = dict((k, np.array(v)) for k, v in entry.items())
-        entry['node_graph_indices'] = np.zeros((entry['n_atom'],))
+        entry = dict((k, tf.convert_to_tensor(v)) for k, v in entry.items())
+        entry['node_graph_indices'] = tf.zeros((entry['n_atom'],))
 
         # Run the molecule as a batch
         output = self.model.predict_on_batch(entry)
