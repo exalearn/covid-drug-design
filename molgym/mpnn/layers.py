@@ -71,8 +71,14 @@ class MessageBlock(layers.Layer):
 class GraphNetwork(layers.Layer):
     """Layer that implements an entire MPNN neural network
 
-    Create shte message passing layers and also implements reducing the features of all nodes in
-    a graph to a single feature vector for a molecule.
+    Creates the message passing layers and also implements reducing the features of all nodes in
+    a graph to a single output vector for a molecule.
+
+    The "reduce" portion (also known as readout by Gilmer) can be configured a few different ways.
+    One setting is whether the reduction occurs by combining the feature vectors for each atom
+    and then using an MLP to determine the molecular properly or to first reduce the atomic feature
+    vectors to a scalar with an MLP and then combining the result.
+    You can also change how the reduction is performed, such as via a sum, average, or maximum.
 
     The reduction to a single feature for an entire molecule is produced by summing a single scalar value
     used to represent each atom. We chose this reduction approach under the assumption the energy of a molecule
@@ -106,7 +112,10 @@ class GraphNetwork(layers.Layer):
 
         # Get the proper reduce function
         self.reduce_function = reduce_function.lower()
-        self.reduce_func = getattr(tf.math, f'segment_{reduce_function.lower()}')
+        if reduce_function != "softmax":
+            self.reduce_func = getattr(tf.math, f'segment_{reduce_function.lower()}')
+        else:
+            self.reduce_func = tf.math.segment_sum
 
     def call(self, inputs):
         atom_types, bond_types, node_graph_indices, connectivity = inputs
@@ -123,9 +132,8 @@ class GraphNetwork(layers.Layer):
             # Represent the atom state as the state of the molecule
             mol_state = atom_state
         else:
-            # Sum over all atoms in a mol to form a single fingerprint
-            mol_state = self.reduce_func(atom_state, node_graph_indices)
-        
+            mol_state = self._readout(atom_state, node_graph_indices)
+
         # Apply the MLP layers
         for layer in self.output_layers:
             mol_state = layer(mol_state)
@@ -135,10 +143,40 @@ class GraphNetwork(layers.Layer):
 
         if self.atomic_contribution:
             # Sum up atomic contributions
-            return self.reduce_func(output, node_graph_indices)
+            return self._readout(output, node_graph_indices)
         else:
             # Return the value
             return output
+
+    def _readout(self, atom_state, node_graph_indices):
+        """Perform the readout function for the graph
+
+        Args:
+            atom_state: State describe each atom. Shape is (N_atoms, N_features)
+            node_graph_indices: Assignment of each node to a graph. Shape (N_atoms,)
+        Returns:
+            State of the molecule. Shape: (N_mols, N_features)
+        """
+        if self.reduce_function != "softmax":
+            # Sum over all atoms in a mol to form a single fingerprint
+            mol_state = self.reduce_func(atom_state, node_graph_indices)
+        elif self.reduce_func == "softmax":
+            # Compute the softmax for each feature
+            #  Compute the exponential of each atomic feature
+            exp_atom_state = tf.exp(atom_state)
+
+            # Compute the sum for each feature of each molecule
+            atom_state_denom = tf.math.segment_sum(exp_atom_state, node_graph_indices)
+
+            # Divide the atomic feature for each molecule by the summation for the whole molecule
+            atom_state_denom_per_atom = tf.gather(atom_state_denom, node_graph_indices)
+            atom_state_softmax = tf.divide(exp_atom_state, atom_state_denom_per_atom)
+
+            # Sum over each molecule again
+            mol_state = tf.math.segment_sum(atom_state_softmax, node_graph_indices)
+        else:
+            raise ValueError(f'Operation not yet implemented: {self.reduce_func}')
+        return mol_state
 
     def get_config(self):
         config = super().get_config()
