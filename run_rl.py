@@ -16,7 +16,7 @@ from molgym.envs.actions import MoleculeActions
 from molgym.envs.rewards import LogP
 from molgym.envs.simple import Molecule
 from molgym.envs.rewards.mpnn import MPNNReward
-from molgym.utils.conversions import convert_nx_to_smiles
+from molgym.utils.conversions import convert_nx_to_smiles, convert_smiles_to_nx
 from molgym.mpnn.layers import custom_objects
 from tensorflow.keras.models import load_model
 
@@ -109,6 +109,10 @@ if __name__ == "__main__":
                             default=10, type=int)
     arg_parser.add_argument('--reward', help='Which reward function to use.',
                             choices=['ic50', 'logP'], default='ic50')
+    arg_parser.add_argument('--hidden-layers', nargs='+', help='Number of units in the hidden layers of the Q network',
+                            default=(24, 48, 24), type=int)
+    arg_parser.add_argument('--no-backtrack', action='store_true', help='Disallow bond removal')
+    arg_parser.add_argument('--initial-molecule', type=str, default=None, help='Starting molecule')
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -136,15 +140,20 @@ if __name__ == "__main__":
         raise ValueError(f'Reward function not defined: {args.reward}')
 
     # Set up environment
-    action_space = MoleculeActions(elements)
-    env = Molecule(action_space, max_steps=args.max_steps, reward=reward)
+    action_space = MoleculeActions(elements, allow_removal=not args.no_backtrack)
+    init_mol = args.initial_molecule
+    if init_mol is not None:
+        init_mol = convert_smiles_to_nx(init_mol)
+    env = Molecule(action_space, max_steps=args.max_steps, reward=reward,
+                   init_mol=init_mol)
     logger.debug('using environment: %s' % env)
 
     # Setup agent
-    agent = DQNFinalState(env, preprocessor=MorganFingerprints(), epsilon=args.epsilon)
+    agent = DQNFinalState(env, preprocessor=MorganFingerprints(), epsilon=args.epsilon,
+                          q_network_dense=args.hidden_layers)
 
     # Make a test directory
-    test_dir = os.path.join('rl_tests', str(int(datetime.now().timestamp())))
+    test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", "."))
     if not os.path.isdir(test_dir):
         os.makedirs(test_dir)
 

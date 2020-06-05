@@ -10,6 +10,7 @@ dependencies:
   - rdkit==2019.03.2.0
   - xlrd==1.2.0
   - requests==2.22.0
+  - scikit-learn==0.22.*
   - networkx==2.4
   - scipy==1.4.1
   - jupyterlab

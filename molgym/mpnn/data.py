@@ -120,7 +120,7 @@ def convert_nx_to_dict(graph: nx.Graph, atom_types: List[int], bond_types: List[
 def parse_records(example_proto):
     """Parse data from the TFRecord"""
     features = {
-        'ic50': tf.io.FixedLenFeature([], tf.float32, default_value=np.nan),
+        'pIC50': tf.io.FixedLenFeature([], tf.float32, default_value=np.nan),
         'n_atom': tf.io.FixedLenFeature([], tf.int64),
         'n_bond': tf.io.FixedLenFeature([], tf.int64),
         'connectivity': tf.io.VarLenFeature(tf.int64),
@@ -160,7 +160,7 @@ def combine_graphs(batch):
     return batch
 
 
-def make_training_tuple(batch, target_name='ic50'):
+def make_training_tuple(batch, target_name='pIC50'):
     """Get the output tuple.
     
     Makes a tuple dataset with the inputs as the first element

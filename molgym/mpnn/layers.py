@@ -79,7 +79,7 @@ class GraphNetwork(layers.Layer):
     can be computed as a sum over atomic energies."""
 
     def __init__(self, atom_classes, bond_classes, atom_dimension, num_messages, 
-                 output_layer_sizes=None, **kwargs):
+                 output_layer_sizes=None, atomic_contribution: bool = False, **kwargs):
         """
         Args:
              atom_classes (int): Number of possible types of nodes
@@ -93,13 +93,15 @@ class GraphNetwork(layers.Layer):
         self.atom_embedding = layers.Embedding(atom_classes, atom_dimension, name='atom_embedding')
         self.bond_embedding = layers.Embedding(bond_classes, atom_dimension, name='bond_embedding')
         self.message_layers = [MessageBlock(atom_dimension) for _ in range(num_messages)]
+        self.atomic_contribution = atomic_contribution
         
         # Make the output MLP
         if output_layer_sizes is None:
             output_layer_sizes = []
-        self.output_layers = [layers.Dense(s, activation='relu') for s in output_layer_sizes]
+        self.output_layers = [layers.Dense(s, activation='relu', name=f'dense_{i}')
+                              for i, s in enumerate(output_layer_sizes)]
         self.output_layer_sizes = output_layer_sizes
-        self.last_layer = layers.Dense(1)
+        self.last_layer = layers.Dense(1, name='output')
 
     def call(self, inputs):
         atom_types, bond_types, node_graph_indices, connectivity = inputs
@@ -112,15 +114,26 @@ class GraphNetwork(layers.Layer):
         for message_layer in self.message_layers:
             atom_state, bond_state = message_layer([atom_state, bond_state, connectivity])
 
-        # Sum over all atoms in a mol to form a single fingerprint
-        mol_state = tf.math.segment_sum(atom_state, node_graph_indices)
+        if self.atomic_contribution:
+            # Represent the atom state as the state of the molecule
+            mol_state = atom_state
+        else:
+            # Sum over all atoms in a mol to form a single fingerprint
+            mol_state = tf.math.segment_sum(atom_state, node_graph_indices)
         
         # Apply the MLP layers
         for layer in self.output_layers:
             mol_state = layer(mol_state)
 
-        # Reduce mol to a single prediction
-        return self.last_layer(mol_state)
+        # Reduce to a single prediction
+        output = self.last_layer(mol_state)
+
+        if self.atomic_contribution:
+            # Sum up atomic contributions
+            return tf.math.segment_sum(output, node_graph_indices)
+        else:
+            # Return the value
+            return output
 
     def get_config(self):
         config = super().get_config()

@@ -1,6 +1,6 @@
 import random
 import logging
-from typing import Optional
+from typing import Optional, List, Iterable
 
 import numpy as np
 from collections import deque
@@ -31,11 +31,14 @@ class DQNFinalState:
     Follows the implementation described by `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_.
     """
 
-    def __init__(self, env: Molecule, preprocessor: MorganFingerprints, epsilon=1.0):
+    def __init__(self, env: Molecule, preprocessor: MorganFingerprints,
+                 epsilon: float = 1.0, q_network_dense: Iterable[int] = (24, 48, 24)):
         """
         Args:
+            env (Molecule): Molecule environment
             epsilon (float): Exploration rate, beginning
             preprocessor (MorganFingerprints): Tool to compute Morgan fingerprints for each molecule
+            q_network_dense ([int]): Number of units in each hidden layer for the Q networks
         """
         self.env = env
         self.preprocessor = preprocessor
@@ -48,6 +51,7 @@ class DQNFinalState:
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
         self.batch_size = 32
+        self.q_network_dense = q_network_dense
 
         # Create the model
         self._build_model()
@@ -77,14 +81,13 @@ class DQNFinalState:
         #   this model is not trained
         # - Takes a list of actions as input
         # - Produces the value of each action as output
-        # TODO (wardlt): Allow users to specify a different architecture
 
         def make_q_network(input_shape, name=None):
             inputs = Input(batch_shape=input_shape, name=f'{name}_input')
-            h1 = Dense(24, activation='relu')(inputs)
-            h2 = Dense(48, activation='relu')(h1)
-            h3 = Dense(24, activation='relu')(h2)
-            output = Dense(1, activation='linear')(h3)
+            h = inputs
+            for n in self.q_network_dense:
+                h = Dense(n, activation='relu')(h)
+            output = Dense(1, activation='linear')(h)
             return Model(inputs=inputs, outputs=output, name=name)
 
         q_t = make_q_network((None, fingerprint_size), name='q_t')
@@ -141,6 +144,7 @@ class DQNFinalState:
         else:
             # Invoke the action network, which gives the action with the highest reward
             actions_features = self.preprocessor.get_features(actions)
+            actions_features = tf.convert_to_tensor(actions_features)
             action_scores = self.action_network.predict(actions_features)
             action_ix = np.argmax(action_scores)
         return actions[action_ix]
@@ -177,7 +181,7 @@ class DQNFinalState:
             if na.shape == (0,):
                 if not d:
                     raise RuntimeError('Found a move that is not terminal, yet has no next actions')
-                next_actions[i] = np.zeros((1, self.action_network.input_shape[1]))
+                next_actions[i] = tf.zeros((1, self.action_network.input_shape[1]))
 
         # Compute the error signal between the data
         with tf.GradientTape() as tape:
