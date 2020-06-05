@@ -4,8 +4,7 @@ Taken from the ``tf2`` branch of the ``nfp`` code:
 
 https://github.com/NREL/nfp/blob/tf2/examples/tf2_tests.ipynb
 """
-
-"""Adapted from https://github.com/NREL/nfp/blob/tf2/examples/tf2_tests.ipynb"""
+from typing import List
 
 import tensorflow as tf
 from tensorflow.keras import layers
@@ -86,6 +85,7 @@ class GraphNetwork(layers.Layer):
 
     def __init__(self, atom_classes, bond_classes, atom_dimension, num_messages, 
                  output_layer_sizes=None, atomic_contribution: bool = False,
+                 attention_mlp_sizes: List[int] = None,
                  reduce_function: str = 'sum', **kwargs):
         """
         Args:
@@ -93,7 +93,8 @@ class GraphNetwork(layers.Layer):
              bond_classes (int): Number of possible types of edges
              atom_dimension (int): Number of features used to represent a node and bond
              num_messages (int): Number of message passing steps to perform
-             output_layer_sizes ([int]): Number of dense layers that map the atom state to energy
+             output_layer_sizes ([int]): Number of nodes in MLP that reduces dimensionality of atomic/molecular features
+             attention_mlp_sizes ([int]): Number of nodes in MLP to map atomic features to attention weights
              dropout (float): Dropout rate
         """
         super(GraphNetwork, self).__init__(**kwargs)
@@ -112,12 +113,17 @@ class GraphNetwork(layers.Layer):
 
         # Get the proper reduce function
         self.reduce_function = reduce_function.lower()
-        if reduce_function != "softmax":
-            self.reduce_func = getattr(tf.math, f'segment_{reduce_function.lower()}')
-        else:
-            self.reduce_func = tf.math.segment_sum
+        assert not (attention_mlp_sizes is not None and self.reduce_function != "attention"),\
+            "You cannot both specify attention layers sizes and not use attention"
+        if attention_mlp_sizes is None:
+            attention_mlp_sizes = []
+        self.attention_mlp_sizes = attention_mlp_sizes
 
-    def call(self, inputs):
+        self.attention_layers = [layers.Dense(size, activation='relu', name=f'attn_{i}')
+                                 for i, size in enumerate(self.attention_mlp_sizes)]
+        self.attention_output = layers.Dense(1, activation='linear', name='attention_output')
+
+    def call(self, inputs, **kwargs):
         atom_types, bond_types, node_graph_indices, connectivity = inputs
 
         # Initialize the atom and bond embedding vectors
@@ -143,40 +149,68 @@ class GraphNetwork(layers.Layer):
 
         if self.atomic_contribution:
             # Sum up atomic contributions
-            return self._readout(output, node_graph_indices)
+            return self._readout(output, node_graph_indices, atom_state)
         else:
             # Return the value
             return output
 
-    def _readout(self, atom_state, node_graph_indices):
+    def _readout(self, atom_state, node_graph_indices, attention_input=None):
         """Perform the readout function for the graph
 
         Args:
             atom_state: State describe each atom. Shape is (N_atoms, N_features)
             node_graph_indices: Assignment of each node to a graph. Shape (N_atoms,)
+            attention_input: State that describes each atom, used to compute attention weights. Shape (N_atoms, x)
         Returns:
             State of the molecule. Shape: (N_mols, N_features)
         """
-        if self.reduce_function != "softmax":
+        if self.reduce_function in ["sum", "mean", "max", "min", "prod"]:
             # Sum over all atoms in a mol to form a single fingerprint
-            mol_state = self.reduce_func(atom_state, node_graph_indices)
-        elif self.reduce_func == "softmax":
+            reduce_func = getattr(tf.math, f'segment_{self.reduce_function.lower()}')
+            mol_state = reduce_func(atom_state, node_graph_indices)
+        elif self.reduce_function == "softmax":
             # Compute the softmax for each feature
-            #  Compute the exponential of each atomic feature
-            exp_atom_state = tf.exp(atom_state)
-
-            # Compute the sum for each feature of each molecule
-            atom_state_denom = tf.math.segment_sum(exp_atom_state, node_graph_indices)
-
-            # Divide the atomic feature for each molecule by the summation for the whole molecule
-            atom_state_denom_per_atom = tf.gather(atom_state_denom, node_graph_indices)
-            atom_state_softmax = tf.divide(exp_atom_state, atom_state_denom_per_atom)
+            self.atom_state_softmax = self._per_graph_softmax(atom_state, node_graph_indices)
 
             # Sum over each molecule again
-            mol_state = tf.math.segment_sum(atom_state_softmax, node_graph_indices)
+            mol_state = tf.math.segment_sum(self.atom_state_softmax, node_graph_indices)
+        elif self.reduce_function == "attention":
+            # Use the atomic state as inputs to the attention computer,
+            if attention_input is None:
+                attention_input = atom_state
+
+            # Pass the attention input through an MLP
+            for layer in self.attention_layers:
+                attention_input = layer(attention_input)
+
+            # Reduce the dimensionality to 1 and compute the softmax
+            attention_weight = self.attention_output(attention_input)
+            self.attention_values = self._per_graph_softmax(attention_weight, node_graph_indices)
+
+            # Apply the attention weights to the atom_state to create the molecule state
+            atom_state_weighted = tf.multiply(atom_state, self.attention_values)
+            mol_state = tf.math.segment_sum(atom_state_weighted, node_graph_indices)
         else:
             raise ValueError(f'Operation not yet implemented: {self.reduce_func}')
         return mol_state
+
+    def _per_graph_softmax(self, atom_state, node_graph_indices):
+        """Softmax where you compute the softmax for each graph in a batch separately
+
+        Args:
+            atom_state: Atomic state to be "softmax"ed. Shape is (N_atoms, N_features)
+            node_graph_indices: Assignment of each node/atom to a graph. Shape (N_atoms,)
+        Returns:
+            Softmaxed version of atom_state. Shape (N_atoms, N_featurs)
+        """
+        # Compute the exponential of each atomic feature
+        exp_atom_state = tf.exp(atom_state)
+        # Compute the sum for each feature of each molecule
+        atom_state_denom = tf.math.segment_sum(exp_atom_state, node_graph_indices)
+        # Divide the atomic feature for each molecule by the summation for the whole molecule
+        atom_state_denom_per_atom = tf.gather(atom_state_denom, node_graph_indices)
+        atom_state_softmax = tf.divide(exp_atom_state, atom_state_denom_per_atom)
+        return atom_state_softmax
 
     def get_config(self):
         config = super().get_config()
@@ -187,7 +221,8 @@ class GraphNetwork(layers.Layer):
             'output_layer_sizes': self.output_layer_sizes,
             'num_messages': len(self.message_layers),
             'reduce_function': self.reduce_function,
-            'atomic_contribution': self.atomic_contribution
+            'atomic_contribution': self.atomic_contribution,
+            'attention_mlp_sizes': self.attention_mlp_sizes
         })
         return config
 
