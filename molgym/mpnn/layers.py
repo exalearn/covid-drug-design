@@ -79,7 +79,8 @@ class GraphNetwork(layers.Layer):
     can be computed as a sum over atomic energies."""
 
     def __init__(self, atom_classes, bond_classes, atom_dimension, num_messages, 
-                 output_layer_sizes=None, atomic_contribution: bool = False, **kwargs):
+                 output_layer_sizes=None, atomic_contribution: bool = False,
+                 reduce_function: str = 'sum', **kwargs):
         """
         Args:
              atom_classes (int): Number of possible types of nodes
@@ -103,6 +104,10 @@ class GraphNetwork(layers.Layer):
         self.output_layer_sizes = output_layer_sizes
         self.last_layer = layers.Dense(1, name='output')
 
+        # Get the proper reduce function
+        self.reduce_function = reduce_function.lower()
+        self.reduce_func = getattr(tf.math, f'segment_{reduce_function.lower()}')
+
     def call(self, inputs):
         atom_types, bond_types, node_graph_indices, connectivity = inputs
 
@@ -119,7 +124,7 @@ class GraphNetwork(layers.Layer):
             mol_state = atom_state
         else:
             # Sum over all atoms in a mol to form a single fingerprint
-            mol_state = tf.math.segment_sum(atom_state, node_graph_indices)
+            mol_state = self.reduce_func(atom_state, node_graph_indices)
         
         # Apply the MLP layers
         for layer in self.output_layers:
@@ -130,7 +135,7 @@ class GraphNetwork(layers.Layer):
 
         if self.atomic_contribution:
             # Sum up atomic contributions
-            return tf.math.segment_sum(output, node_graph_indices)
+            return self.reduce_func(output, node_graph_indices)
         else:
             # Return the value
             return output
@@ -142,7 +147,9 @@ class GraphNetwork(layers.Layer):
             'bond_classes': self.bond_embedding.input_dim,
             'atom_dimension': self.atom_embedding.output_dim,
             'output_layer_sizes': self.output_layer_sizes,
-            'num_messages': len(self.message_layers)
+            'num_messages': len(self.message_layers),
+            'reduce_function': self.reduce_function,
+            'atomic_contribution': self.atomic_contribution
         })
         return config
 
