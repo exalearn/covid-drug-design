@@ -130,14 +130,15 @@ if __name__ == "__main__":
 
     # Make the reward function
     if args.reward == 'ic50':
-        model = load_model(os.path.join(mpnn_dir, 'model.h5'), custom_objects=custom_objects)
+        model = load_model(os.path.join(mpnn_dir, 'best_model.h5'), custom_objects=custom_objects)
         with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
             bond_types = json.load(fp)
-        reward = MPNNReward(model, atom_types, bond_types, maximize=False)
+        reward = MPNNReward(model, atom_types, bond_types, maximize=True)
     elif args.reward == 'logP':
         reward = LogP(maximize=False)
     else:
         raise ValueError(f'Reward function not defined: {args.reward}')
+    run_params['maximize'] = reward.maximize
 
     # Set up environment
     action_space = MoleculeActions(elements, allow_removal=not args.no_backtrack)
@@ -153,7 +154,7 @@ if __name__ == "__main__":
                           q_network_dense=args.hidden_layers)
 
     # Make a test directory
-    test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", "."))
+    test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", ".") + f'_{run_params["reward"]}')
     if not os.path.isdir(test_dir):
         os.makedirs(test_dir)
 
