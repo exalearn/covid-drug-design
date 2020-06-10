@@ -1,8 +1,9 @@
 import random
 import logging
-from typing import Optional, List, Iterable
+from typing import Optional, Iterable
 
 import numpy as np
+import pandas as pd
 from collections import deque
 import tensorflow as tf
 from tensorflow.keras.models import Model
@@ -31,11 +32,12 @@ class DQNFinalState:
     Follows the implementation described by `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_.
     """
 
-    def __init__(self, env: Molecule, preprocessor: MorganFingerprints,
+    def __init__(self, env: Molecule, preprocessor: MorganFingerprints, gamma: float = 0.995,
                  epsilon: float = 1.0, q_network_dense: Iterable[int] = (24, 48, 24)):
         """
         Args:
             env (Molecule): Molecule environment
+            gamma (float): Discount rate for
             epsilon (float): Exploration rate, beginning
             preprocessor (MorganFingerprints): Tool to compute Morgan fingerprints for each molecule
             q_network_dense ([int]): Number of units in each hidden layer for the Q networks
@@ -45,11 +47,10 @@ class DQNFinalState:
         self.memory = deque(maxlen=2000)
 
         # Hyper-parameters
-        self.gamma = 0.995    # discount rate
+        self.gamma = gamma  # discount rate
         self.epsilon = epsilon  # exploration rate
-        self.epsilon_min = 0.05
+        self.epsilon_min = 0.10
         self.epsilon_decay = 0.995
-        self.learning_rate = 0.001
         self.batch_size = 32
         self.q_network_dense = q_network_dense
 
@@ -58,7 +59,7 @@ class DQNFinalState:
 
     def _huber_loss(self, target, prediction):
         error = prediction - target
-        return K.mean(K.sqrt(1+K.square(error))-1, axis=-1)
+        return tf.reduce_mean(tf.sqrt(1+tf.math.square(error)) - 1, axis=-1)
 
     def _build_model(self):
         # Get the shape of the environment
@@ -186,7 +187,7 @@ class DQNFinalState:
         # Compute the error signal between the data
         with tf.GradientTape() as tape:
             error = self.train_network.predict_on_batch([actions, done, rewards] + list(next_actions))
-            loss = tf.reduce_sum(tf.pow(error, 2, name='loss_pow'), name='loss_sum')
+            loss = tf.reduce_mean(tf.sqrt(1 + tf.math.square(error)) - 1)  # Huber Loss
         gradients = tape.gradient(loss, self.train_network.trainable_variables)
         self.optimzer.apply_gradients(zip(gradients, self.train_network.trainable_variables))
         return float(loss.numpy())
@@ -195,7 +196,7 @@ class DQNFinalState:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-    def load(self, path):
+    def load_model(self, path):
         """Load the weights of the model
         
         Args:
@@ -208,10 +209,22 @@ class DQNFinalState:
         q_weights = self.train_network.get_layer('q_t').get_weights()
         self.action_network.get_layer('q_t').set_weights(q_weights)
 
-    def save(self, path):
+    def save_model(self, path):
         """Save the model state
 
         Args:
             path (str): Path to save weights
         """
         self.train_network.save_weights(path)
+
+    def save_data(self, path):
+        """Save the training data for the model
+
+        Saves the data in JSON-LD format.
+
+        Args:
+            path (str): Path to output data
+        """
+
+        data = pd.DataFrame(self.memory, columns=['actions', 'rewards', 'next_actions', 'done'])
+        data.to_json(path, orient='records', lines=True)

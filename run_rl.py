@@ -102,7 +102,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--epsilon', help='Controls degree of exploration',
                             default=1.0, type=float)
     arg_parser.add_argument('--max-steps', help='Maximum number of steps per episode',
-                            default=32, type=int)
+                            default=40, type=int)
     arg_parser.add_argument('--episodes', help='Number of episodes to run',
                             default=200, type=int)
     arg_parser.add_argument('--q-update-freq', help='After how many episodes to update Q network',
@@ -110,7 +110,11 @@ if __name__ == "__main__":
     arg_parser.add_argument('--reward', help='Which reward function to use.',
                             choices=['ic50', 'logP'], default='ic50')
     arg_parser.add_argument('--hidden-layers', nargs='+', help='Number of units in the hidden layers of the Q network',
-                            default=(24, 48, 24), type=int)
+                            default=(1024, 512, 128, 32), type=int)
+    arg_parser.add_argument('--gamma', help='Decay weight for future rewards in Bellman Equation',
+                            default=0.9, type=float)
+    arg_parser.add_argument('--fingerprint-size', help='Fingerprint size for molecular features',
+                            default=2048, type=int)
     arg_parser.add_argument('--no-backtrack', action='store_true', help='Disallow bond removal')
     arg_parser.add_argument('--initial-molecule', type=str, default=None, help='Starting molecule')
 
@@ -150,8 +154,8 @@ if __name__ == "__main__":
     logger.debug('using environment: %s' % env)
 
     # Setup agent
-    agent = DQNFinalState(env, preprocessor=MorganFingerprints(), epsilon=args.epsilon,
-                          q_network_dense=args.hidden_layers)
+    agent = DQNFinalState(env, gamma=args.gamma, preprocessor=MorganFingerprints(args.fingerprint_size),
+                          epsilon=args.epsilon, q_network_dense=args.hidden_layers)
 
     # Make a test directory
     test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", ".") + f'_{run_params["reward"]}')
@@ -177,3 +181,7 @@ if __name__ == "__main__":
         platform_info['runtime'] = end - start
         with open(os.path.join(test_dir, 'performance.json'), 'w') as fp:
             json.dump(platform_info, fp)
+
+    # Save the model
+    agent.save_model(os.path.join(test_dir, 'model.h5'))
+    agent.save_data(os.path.join(test_dir, 'memory.json.gz'))

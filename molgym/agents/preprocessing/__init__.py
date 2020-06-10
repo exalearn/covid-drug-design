@@ -50,7 +50,7 @@ class MoleculePreprocessor:
 class MorganFingerprints(MoleculePreprocessor):
     """Compute the Morgan fingerprints for a series of molecules"""
 
-    def __init__(self, length: int = 512, radius: int = 3):
+    def __init__(self, length: int = 2048, radius: int = 3):
         self.length = length
         self.radius = radius
 
