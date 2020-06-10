@@ -13,8 +13,8 @@ from argparse import ArgumentParser
 from molgym.agents.moldqn import DQNFinalState
 from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.actions import MoleculeActions
-from molgym.envs.rewards import LogP
 from molgym.envs.simple import Molecule
+from molgym.envs.rewards.rdkit import LogP
 from molgym.envs.rewards.mpnn import MPNNReward
 from molgym.utils.conversions import convert_nx_to_smiles, convert_smiles_to_nx
 from molgym.mpnn.layers import custom_objects

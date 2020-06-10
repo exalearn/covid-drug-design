@@ -6,7 +6,8 @@ import gym
 
 from .actions import MoleculeActions
 from .spaces import AllMolecules
-from .rewards import LogP, RewardFunction
+from .rewards import RewardFunction
+from .rewards.rdkit import LogP
 
 logger = logging.getLogger(__name__)
 
