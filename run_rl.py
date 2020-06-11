@@ -118,7 +118,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--q-update-freq', help='After how many episodes to update Q network',
                             default=10, type=int)
     arg_parser.add_argument('--reward', help='Which reward function to use.',
-                            choices=['ic50', 'logP', 'MO'], default='ic50')
+                            choices=['ic50', 'logP', 'MO', 'QED'], default='ic50')
     arg_parser.add_argument('--hidden-layers', nargs='+', help='Number of units in the hidden layers of the Q network',
                             default=(1024, 512, 128, 32), type=int)
     arg_parser.add_argument('--gamma', help='Decay weight for future rewards in Bellman Equation',
