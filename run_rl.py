@@ -61,7 +61,7 @@ def run_experiment(episodes, n_steps, update_q_every, log_file, rewards: Dict[st
         current_state = env.reset()
         for s in tqdm(range(n_steps), desc='\t RL Steps', disable=True):
             # Get action based on current state
-            action = agent.action()
+            action, q, was_random = agent.action()
 
             # Fix cluster action
             new_state, reward, done, _ = env.step(action)
@@ -84,7 +84,8 @@ def run_experiment(episodes, n_steps, update_q_every, log_file, rewards: Dict[st
             # Write to output log
             log_file.writerow({
                 'episode': e, 'step': s, 'smiles': convert_nx_to_smiles(env.state),
-                'loss': loss, 'reward': reward, 'epsilon': agent.epsilon,
+                'loss': loss, 'reward': reward, 'epsilon': agent.epsilon, 'q': q,
+                'random': was_random,
                 **state_rewards
             })
 
@@ -124,6 +125,7 @@ if __name__ == "__main__":
                             default=0.9, type=float)
     arg_parser.add_argument('--fingerprint-size', help='Fingerprint size for molecular features',
                             default=2048, type=int)
+    arg_parser.add_argument('--batch-size', help='Batch size when training the NN', default=32, type=int)
     arg_parser.add_argument('--no-backtrack', action='store_true', help='Disallow bond removal')
     arg_parser.add_argument('--initial-molecule', type=str, default=None, help='Starting molecule')
 
@@ -181,7 +183,8 @@ if __name__ == "__main__":
 
     # Setup agent
     agent = DQNFinalState(env, gamma=args.gamma, preprocessor=MorganFingerprints(args.fingerprint_size),
-                          epsilon=args.epsilon, q_network_dense=args.hidden_layers, epsilon_decay=args.epsilon_decay)
+                          batch_size=args.batch_size, epsilon=args.epsilon,
+                          q_network_dense=args.hidden_layers, epsilon_decay=args.epsilon_decay)
 
     # Make a test directory
     test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", ".") + f'_{run_params["reward"]}')
@@ -195,7 +198,7 @@ if __name__ == "__main__":
     # Run experiment
     with open(os.path.join(test_dir, 'molecules.csv'), 'w', newline='') as log_fp:
         log_file = DictWriter(log_fp, fieldnames=['episode', 'step', 'epsilon',
-                                                  'smiles', 'reward', 'loss'] + list(rewards.keys()))
+                                                  'smiles', 'reward', 'q', 'random', 'loss'] + list(rewards.keys()))
         log_file.writeheader()
 
         start = timeit.default_timer()

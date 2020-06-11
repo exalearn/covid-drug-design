@@ -1,6 +1,6 @@
 import random
 import logging
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Tuple, Any
 
 import numpy as np
 import pandas as pd
@@ -32,7 +32,7 @@ class DQNFinalState:
     Follows the implementation described by `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_.
     """
 
-    def __init__(self, env: Molecule, preprocessor: MorganFingerprints, gamma: float = 0.995,
+    def __init__(self, env: Molecule, preprocessor: MorganFingerprints, gamma: float = 0.9,
                  batch_size: int = 32, epsilon: float = 1.0, q_network_dense: Iterable[int] = (24, 48, 24),
                  epsilon_decay: float = 0.995):
         """
@@ -127,7 +127,7 @@ class DQNFinalState:
             outputs=error)
 
         # Add the optimizer
-        self.optimzer = tf.keras.optimizers.Adam()
+        self.optimizer = tf.keras.optimizers.Adam()
 
     def remember(self, state, action, reward, next_state, next_actions, done):
         # Save the actions as features, we no longer need to know they are molecules
@@ -138,20 +138,30 @@ class DQNFinalState:
             next_actions_features = []
         self.memory.append((action_features, reward, next_actions_features, done))
 
-    def action(self):
-        """Choose the next action"""
+    def action(self) -> Tuple[Any, float, bool]:
+        """Choose the next action
+
+        Returns:
+            - Selected next step
+            - (float) Predicted Q for the next step
+            - (bool) Whether the move was random
+        """
         # Get the actions as SMILES
         actions = self.env.action_space.get_possible_actions()
 
-        if np.random.rand() <= self.epsilon:
+        # Invoke the action network, which gives the "q" for each action
+        actions_features = self.preprocessor.get_features(actions)
+        actions_features = tf.convert_to_tensor(actions_features)
+        action_scores = self.action_network.predict(actions_features)
+
+        # Get the next
+        random_move = np.random.rand() <= self.epsilon
+        if random_move:
             action_ix = random.randrange(self.env.action_space.n)
         else:
-            # Invoke the action network, which gives the action with the highest reward
-            actions_features = self.preprocessor.get_features(actions)
-            actions_features = tf.convert_to_tensor(actions_features)
-            action_scores = self.action_network.predict(actions_features)
             action_ix = np.argmax(action_scores)
-        return actions[action_ix]
+        q = action_scores[action_ix][0]
+        return actions[action_ix], q, random_move
 
     def update_target_q_network(self):
         """Updates the Q function used to define the target to use the current Q network"""
@@ -192,7 +202,7 @@ class DQNFinalState:
             error = self.train_network.predict_on_batch([actions, done, rewards] + list(next_actions))
             loss = tf.reduce_mean(tf.sqrt(1 + tf.math.square(error)) - 1)  # Huber Loss
         gradients = tape.gradient(loss, self.train_network.trainable_variables)
-        self.optimzer.apply_gradients(zip(gradients, self.train_network.trainable_variables))
+        self.optimizer.apply_gradients(zip(gradients, self.train_network.trainable_variables))
         return float(loss.numpy())
 
     def epsilon_adj(self):

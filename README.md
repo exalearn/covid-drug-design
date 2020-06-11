@@ -37,6 +37,8 @@ and a log containing records at each step:
 - `episode`: Episode number
 - `step`: Step number within that episode
 - `epsilon`: Degree of randomness used in selecting next step
-- `smiles`: State of th emolecule after choosing an action in this step
+- `smiles`: State of the molecule after choosing an action in this step
 - `reward`: Observed reward value for choosing that action
+- `q`: The predicted Q value for this move
+- `random`: Whether move was randomly-selected or based on `argmax(q)`
 - `loss`: Training loss for the Q network at each step
