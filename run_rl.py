@@ -4,6 +4,8 @@ import timeit
 import logging
 import platform
 from math import inf
+from typing import Dict
+
 from tqdm import tqdm
 from datetime import datetime
 from csv import DictWriter
@@ -13,8 +15,10 @@ from argparse import ArgumentParser
 from molgym.agents.moldqn import DQNFinalState
 from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.actions import MoleculeActions
+from molgym.envs.rewards import RewardFunction
+from molgym.envs.rewards.multiobjective import AdditiveReward
 from molgym.envs.simple import Molecule
-from molgym.envs.rewards.rdkit import LogP
+from molgym.envs.rewards.rdkit import LogP, QEDReward, SAScore, CycleLength
 from molgym.envs.rewards.mpnn import MPNNReward
 from molgym.utils.conversions import convert_nx_to_smiles, convert_smiles_to_nx
 from molgym.mpnn.layers import custom_objects
@@ -42,7 +46,7 @@ def get_platform_info():
     }
 
 
-def run_experiment(episodes, n_steps, update_q_every, log_file):
+def run_experiment(episodes, n_steps, update_q_every, log_file, rewards: Dict[str, RewardFunction]):
     """Perform the RL experiment
 
     Args:
@@ -74,10 +78,14 @@ def run_experiment(episodes, n_steps, update_q_every, log_file):
             # Train model
             loss = agent.train()
 
+            # Compute all of the rewards
+            state_rewards = dict((name, r(new_state)) for name, r in rewards.items())
+
             # Write to output log
             log_file.writerow({
                 'episode': e, 'step': s, 'smiles': convert_nx_to_smiles(env.state),
-                'loss': loss, 'reward': reward, 'epsilon': agent.epsilon
+                'loss': loss, 'reward': reward, 'epsilon': agent.epsilon,
+                **state_rewards
             })
 
             # Update state
@@ -108,7 +116,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--q-update-freq', help='After how many episodes to update Q network',
                             default=10, type=int)
     arg_parser.add_argument('--reward', help='Which reward function to use.',
-                            choices=['ic50', 'logP'], default='ic50')
+                            choices=['ic50', 'logP', 'MO'], default='ic50')
     arg_parser.add_argument('--hidden-layers', nargs='+', help='Number of units in the hidden layers of the Q network',
                             default=(1024, 512, 128, 32), type=int)
     arg_parser.add_argument('--gamma', help='Decay weight for future rewards in Bellman Equation',
@@ -132,14 +140,34 @@ if __name__ == "__main__":
     elements = [e for e in elements if MolFromSmiles(e) is not None]
     logger.info(f'Using {len(elements)} elements: {elements}')
 
+    # Making all of the reward functions
+    model = load_model(os.path.join(mpnn_dir, 'best_model.h5'), custom_objects=custom_objects)
+    with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
+        bond_types = json.load(fp)
+    rewards = {
+        'logP': LogP(maximize=True),
+        'ic50': MPNNReward(model, atom_types, bond_types, maximize=True),
+        'QED': QEDReward(maximize=True),
+        'SA': SAScore(maximize=False),
+        'cycles': CycleLength(maximize=False)
+    }
+
+    # Load in the ranges for reward functions, used in making multi-objective searches
+    with open('reward_ranges.json') as fp:
+        ranges = json.load(fp)
+
     # Make the reward function
     if args.reward == 'ic50':
-        model = load_model(os.path.join(mpnn_dir, 'best_model.h5'), custom_objects=custom_objects)
-        with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
-            bond_types = json.load(fp)
-        reward = MPNNReward(model, atom_types, bond_types, maximize=True)
+        reward = rewards['ic50']
     elif args.reward == 'logP':
-        reward = LogP(maximize=False)
+        reward = AdditiveReward([{'reward': rewards['SA']}, {'reward': rewards['SA']}, {'reward': rewards['cycles']}])
+    elif args.reward == "MO":
+        reward = AdditiveReward([
+            {'reward': rewards['ic50'], **ranges['ic50']},
+            {'reward': rewards['QED'], **ranges['QED']},
+            {'reward': rewards['SA']},
+            {'reward': rewards['cycles']},
+        ])
     else:
         raise ValueError(f'Reward function not defined: {args.reward}')
     run_params['maximize'] = reward.maximize
@@ -169,11 +197,11 @@ if __name__ == "__main__":
     # Run experiment
     with open(os.path.join(test_dir, 'molecules.csv'), 'w', newline='') as log_fp:
         log_file = DictWriter(log_fp, fieldnames=['episode', 'step', 'epsilon',
-                                                  'smiles', 'reward', 'loss'])
+                                                  'smiles', 'reward', 'loss'] + list(rewards.keys()))
         log_file.writeheader()
 
         start = timeit.default_timer()
-        run_experiment(args.episodes, args.max_steps, args.q_update_freq, log_file)
+        run_experiment(args.episodes, args.max_steps, args.q_update_freq, log_file, rewards)
         end = timeit.default_timer()
 
         # Save the performance information

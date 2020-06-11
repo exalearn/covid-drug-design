@@ -41,3 +41,21 @@ class SAScore(RewardFunction):
     def _call(self, graph: nx.Graph) -> float:
         mol = convert_nx_to_rdkit(graph)
         return calculateScore(mol)
+
+
+class CycleLength(RewardFunction):
+    """Reward based on the maximum number of cycles
+
+    Taken from """
+
+    def _call(self, graph: nx.Graph) -> float:
+        cycle_list = nx.cycle_basis(graph)
+        if len(cycle_list) == 0:
+            cycle_length = 0
+        else:
+            cycle_length = max([len(j) for j in cycle_list])
+        if cycle_length <= 6:
+            cycle_length = 0
+        else:
+            cycle_length = cycle_length - 6
+        return float(cycle_length)
