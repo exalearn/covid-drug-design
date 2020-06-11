@@ -33,14 +33,17 @@ class DQNFinalState:
     """
 
     def __init__(self, env: Molecule, preprocessor: MorganFingerprints, gamma: float = 0.995,
-                 epsilon: float = 1.0, q_network_dense: Iterable[int] = (24, 48, 24)):
+                 batch_size: int = 32, epsilon: float = 1.0, q_network_dense: Iterable[int] = (24, 48, 24),
+                 epsilon_decay: float = 0.995):
         """
         Args:
             env (Molecule): Molecule environment
             gamma (float): Discount rate for
+            batch_size (int): Size of each training batch
             epsilon (float): Exploration rate, beginning
             preprocessor (MorganFingerprints): Tool to compute Morgan fingerprints for each molecule
             q_network_dense ([int]): Number of units in each hidden layer for the Q networks
+            epsilon_decay (float): Fraction to decay epsilon after each epoch
         """
         self.env = env
         self.preprocessor = preprocessor
@@ -50,8 +53,8 @@ class DQNFinalState:
         self.gamma = gamma  # discount rate
         self.epsilon = epsilon  # exploration rate
         self.epsilon_min = 0.10
-        self.epsilon_decay = 0.995
-        self.batch_size = 32
+        self.epsilon_decay = epsilon_decay
+        self.batch_size = batch_size
         self.q_network_dense = q_network_dense
 
         # Create the model

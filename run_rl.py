@@ -107,8 +107,9 @@ def run_experiment(episodes, n_steps, update_q_every, log_file, rewards: Dict[st
 if __name__ == "__main__":
     # Define the command line arguments
     arg_parser = ArgumentParser()
-    arg_parser.add_argument('--epsilon', help='Controls degree of exploration',
+    arg_parser.add_argument('--epsilon', help='Starting value of epsilon, which controls degree of exploration',
                             default=1.0, type=float)
+    arg_parser.add_argument('--epsilon-decay', help='Controls degree of exploration', default=0.995, type=float)
     arg_parser.add_argument('--max-steps', help='Maximum number of steps per episode',
                             default=40, type=int)
     arg_parser.add_argument('--episodes', help='Number of episodes to run',
@@ -160,14 +161,11 @@ if __name__ == "__main__":
     if args.reward == 'ic50':
         reward = rewards['ic50']
     elif args.reward == 'logP':
-        reward = AdditiveReward([{'reward': rewards['SA']}, {'reward': rewards['SA']}, {'reward': rewards['cycles']}])
+        reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['logP', 'SA', 'cycles']])
+    elif args.reward == "QED":
+        reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['logP', 'SA', 'cycles']])
     elif args.reward == "MO":
-        reward = AdditiveReward([
-            {'reward': rewards['ic50'], **ranges['ic50']},
-            {'reward': rewards['QED'], **ranges['QED']},
-            {'reward': rewards['SA']},
-            {'reward': rewards['cycles']},
-        ])
+        reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['ic50', 'QED', 'SA', 'cycles']])
     else:
         raise ValueError(f'Reward function not defined: {args.reward}')
     run_params['maximize'] = reward.maximize
@@ -183,7 +181,7 @@ if __name__ == "__main__":
 
     # Setup agent
     agent = DQNFinalState(env, gamma=args.gamma, preprocessor=MorganFingerprints(args.fingerprint_size),
-                          epsilon=args.epsilon, q_network_dense=args.hidden_layers)
+                          epsilon=args.epsilon, q_network_dense=args.hidden_layers, epsilon_decay=args.epsilon_decay)
 
     # Make a test directory
     test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", ".") + f'_{run_params["reward"]}')
