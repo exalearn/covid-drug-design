@@ -46,7 +46,7 @@ class SAScore(RewardFunction):
 class CycleLength(RewardFunction):
     """Reward based on the maximum number of cycles
 
-    Taken from """
+    Taken from https://github.com/Bibyutatsu/FastJTNNpy3/blob/master/fast_bo/gen_latent.py"""
 
     def _call(self, graph: nx.Graph) -> float:
         cycle_list = nx.cycle_basis(graph)
