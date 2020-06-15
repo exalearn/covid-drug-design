@@ -172,8 +172,12 @@ class GraphNetwork(layers.Layer):
             # Compute the softmax for each feature
             self.atom_state_softmax = self._per_graph_softmax(atom_state, node_graph_indices)
 
+            # Softmax gives a fraction of each feature to use when computing the "max"
+            #  Dot product with the original values to get the a meaningful number
+            atom_state_softmaxed = tf.multiply(atom_state, self.atom_state_softmax)
+
             # Sum over each molecule again
-            mol_state = tf.math.segment_sum(self.atom_state_softmax, node_graph_indices)
+            mol_state = tf.math.segment_sum(atom_state_softmaxed, node_graph_indices)
         elif self.reduce_function == "attention":
             # Use the atomic state as inputs to the attention computer,
             if attention_input is None:
