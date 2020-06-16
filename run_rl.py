@@ -165,7 +165,7 @@ if __name__ == "__main__":
     elif args.reward == 'logP':
         reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['logP', 'SA', 'cycles']])
     elif args.reward == "QED":
-        reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['logP', 'SA', 'cycles']])
+        reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['QED', 'SA', 'cycles']])
     elif args.reward == "MO":
         reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['ic50', 'QED', 'SA', 'cycles']])
     else:
