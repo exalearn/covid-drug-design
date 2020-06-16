@@ -187,7 +187,7 @@ if __name__ == "__main__":
                           q_network_dense=args.hidden_layers, epsilon_decay=args.epsilon_decay)
 
     # Make a test directory
-    test_dir = os.path.join('rl_tests', datetime.now().isoformat().replace(":", ".") + f'_{run_params["reward"]}')
+    test_dir = os.path.join('rl_tests', f'{run_params["reward"]}_' + datetime.now().isoformat().replace(":", "."))
     if not os.path.isdir(test_dir):
         os.makedirs(test_dir)
 
