@@ -18,21 +18,18 @@ class Molecule(gym.Env):
     Adapted from: https://github.com/google-research/google-research/blob/master/mol_dqn/chemgraph/dqn/molecules.py"""
 
     def __init__(self, action_space: MoleculeActions = None, observation_space: Space = None,
-                 reward: RewardFunction = None, init_mol: nx.Graph = None, max_steps=10,
-                 target_fn=None, record_path=False):
+                 reward: RewardFunction = None, init_mol: nx.Graph = None, record_path: bool = False):
         """Initializes the parameters for the MDP.
 
         Internal state will be stored as SMILES strings, but but the environment will
         return the new state as an ML-ready fingerprint
 
         Args:
-          init_mol: Initial molecule as a networkx grpah. If None, an empty molecule will be created.
-          max_steps: Integer. The maximum number of steps to run.
-          target_fn: A function or None. The function should have Args of a
-            String, which is a SMILES string (the state), and Returns as
-            a Boolean which indicates whether the input satisfies a criterion.
-            If None, it will not be used as a criterion.
-          record_path: Boolean. Whether to record the steps internally.
+            action_space (MoleculeActions): Module to identify possible actiosn for a molecule
+            observation_space (Space): Space defining acceptable molecules
+            reward (RewardFunction): Definition of the reward function
+            init_mol (nx.Graph): Initial molecule as a networkx graph. If None, an empty molecule will be created.
+            record_path (bool): Whether to record the steps internally.
         """
 
         # Capture the user settings
@@ -42,11 +39,9 @@ class Molecule(gym.Env):
             observation_space = AllMolecules()
         if reward is None:
             reward = LogP()
-        self._reward = reward
+        self.reward_fn = reward
         self.action_space = action_space
         self.init_mol = init_mol
-        self.max_steps = max_steps
-        self.target_fn = target_fn
         self.record_path = record_path
         self.observation_space = observation_space
 
@@ -89,7 +84,7 @@ class Molecule(gym.Env):
         """
         if self._state is None:
             return 0
-        return self._reward(self._state)
+        return self.reward_fn(self._state)
 
     def step(self, action: nx.Graph):
         """Takes a step forward according to the action.
@@ -101,9 +96,6 @@ class Molecule(gym.Env):
           ValueError: If the number of steps taken exceeds the preset max_steps, or
             the action is not in the set of valid_actions.
         """
-        if self._counter >= self.max_steps:
-            raise ValueError('This episode is terminated.')
-
         # Get the SMILES string associated with this action
         self._state = action
         if self.record_path:
@@ -115,7 +107,7 @@ class Molecule(gym.Env):
 
         # Check if we have finished
         #  Out of steps or no more moves
-        done = ((self._counter >= self.max_steps) or len(self.action_space.get_possible_actions()) == 0)
+        done = len(self.action_space.get_possible_actions()) == 0
 
         # Compute the fingerprints for the state
         return self._state, self.reward(), done, {}
