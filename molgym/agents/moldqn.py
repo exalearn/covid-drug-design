@@ -60,6 +60,31 @@ class DQNFinalState:
         # Create the model
         self._build_model()
 
+    def __getstate__(self):
+        output = self.__dict__.copy()
+
+        # Replace the networks with their weights
+        for i in ['action_network', 'optimizer', 'train_network']:
+            output[f'{i}_weights'] = output[i].get_weights()
+            del output[i]
+        return output
+
+    def __setstate__(self, state: dict):
+        # Make an internal copy to avoid overwriting
+        state = state.copy()
+
+        # Remove the weights from the state
+        _networks = ['action_network', 'optimizer', 'train_network']
+        weights = dict((n, state.pop(f'{n}_weights')) for n in _networks)
+
+        # Set the rest of the state
+        self.__dict__.update(state)
+
+        # Rebuild networks and set the state
+        self._build_model()
+        for n in _networks:
+            getattr(self, n).set_weights(weights.pop(n))
+
     def _huber_loss(self, target, prediction):
         error = prediction - target
         return tf.reduce_mean(tf.sqrt(1+tf.math.square(error)) - 1, axis=-1)
