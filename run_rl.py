@@ -177,8 +177,7 @@ if __name__ == "__main__":
     init_mol = args.initial_molecule
     if init_mol is not None:
         init_mol = convert_smiles_to_nx(init_mol)
-    env = Molecule(action_space, max_steps=args.max_steps, reward=reward,
-                   init_mol=init_mol)
+    env = Molecule(action_space, reward=reward, init_mol=init_mol)
     logger.debug('using environment: %s' % env)
 
     # Setup agent
