@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from collections import deque
 import tensorflow as tf
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, model_from_config
 from tensorflow.keras.layers import Dense, Input, Lambda, Subtract, Concatenate
 from tensorflow.keras import backend as K
 
@@ -63,8 +63,8 @@ class DQNFinalState:
     def __getstate__(self):
         output = self.__dict__.copy()
 
-        # Replace the networks with their weights
-        for i in ['action_network', 'optimizer', 'train_network']:
+        # Store the weights of the networks and not the network object
+        for i in ['action_network', 'train_network']:
             output[f'{i}_weights'] = output[i].get_weights()
             del output[i]
         return output
@@ -74,7 +74,7 @@ class DQNFinalState:
         state = state.copy()
 
         # Remove the weights from the state
-        _networks = ['action_network', 'optimizer', 'train_network']
+        _networks = ['action_network', 'train_network']
         weights = dict((n, state.pop(f'{n}_weights')) for n in _networks)
 
         # Set the rest of the state
