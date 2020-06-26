@@ -1,4 +1,5 @@
 """Utilities for creating a data-loader"""
+from functools import partial
 from typing import List, Tuple
 
 import tensorflow as tf
@@ -117,10 +118,17 @@ def convert_nx_to_dict(graph: nx.Graph, atom_types: List[int], bond_types: List[
     }
 
 
-def parse_records(example_proto):
-    """Parse data from the TFRecord"""
+def parse_records(example_proto, target_name: str = 'pIC50'):
+    """Parse data from the TFRecord
+
+    Args:
+        example_proto: Batch of serialized TF records
+        target_name (str): Name of the output property
+    Returns:
+        Batch of parsed TF records
+    """
     features = {
-        'pIC50': tf.io.FixedLenFeature([], tf.float32, default_value=np.nan),
+        target_name: tf.io.FixedLenFeature([], tf.float32, default_value=np.nan),
         'n_atom': tf.io.FixedLenFeature([], tf.int64),
         'n_bond': tf.io.FixedLenFeature([], tf.int64),
         'connectivity': tf.io.VarLenFeature(tf.int64),
@@ -179,7 +187,7 @@ def make_training_tuple(batch, target_name='pIC50'):
 
 def make_data_loader(file_path, batch_size=32, shuffle_buffer=None, 
                      n_threads=tf.data.experimental.AUTOTUNE, shard=None,
-                     cache: bool = False) -> tf.data.TFRecordDataset:
+                     cache: bool = False, output_property: str = 'pIC50') -> tf.data.TFRecordDataset:
     """Make a data loader for tensorflow
     
     Args:
@@ -189,6 +197,7 @@ def make_data_loader(file_path, batch_size=32, shuffle_buffer=None,
         n_threads (int): Number of threads over which to parallelize data loading
         cache (bool): Whether to load the whole dataset into memory
         shard ((int, int)): Parameters used to shared the dataset: (size, rank)
+        output_property (str): Which property to use as the output
     Returns:
         (tf.data.TFRecordDataset) An infinite dataset generator
     """
@@ -209,7 +218,10 @@ def make_data_loader(file_path, batch_size=32, shuffle_buffer=None,
 
     # Add in the data preprocessing steps
     #  Note that the `batch` is the first operation
-    r = r.batch(batch_size).map(parse_records, n_threads).map(prepare_for_batching, n_threads)
+    parse = partial(parse_records, target_name=output_property)
+    r = r.batch(batch_size).map(parse, n_threads).map(prepare_for_batching, n_threads)
 
     # Return full batches
-    return r.map(combine_graphs, n_threads).map(make_training_tuple)
+    r = r.map(combine_graphs, n_threads)
+    train_tuple = partial(make_training_tuple, target_name=output_property)
+    return r.map(train_tuple)

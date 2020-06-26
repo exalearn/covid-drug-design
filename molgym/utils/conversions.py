@@ -71,9 +71,21 @@ def convert_nx_to_rdkit(graph: nx.Graph) -> Chem.Mol:
     return mol
 
 
-def convert_smiles_to_nx(smiles: str) -> nx.Graph:
-    """Compute a networkx graph from a SMILES string"""
-    return convert_rdkit_to_nx(Chem.MolFromSmiles(smiles))
+def convert_smiles_to_nx(smiles: str, add_hs: bool = False) -> nx.Graph:
+    """Compute a networkx graph from a SMILES string
+
+    Args:
+        smiles (str): SMILES string to be parsed
+        add_hs (str): Whether to add explicit hydrogens
+    Returns:
+        (nx.Graph) NetworkX representation of the molecule
+    """
+
+    mol = Chem.MolFromSmiles(smiles)
+    if add_hs:
+        mol = Chem.AddHs(mol)
+
+    return convert_rdkit_to_nx(mol)
 
 
 def convert_nx_to_smiles(graph: nx.Graph) -> str:
