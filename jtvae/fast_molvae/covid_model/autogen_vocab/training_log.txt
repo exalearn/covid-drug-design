@@ -1,0 +1,1130 @@
+Namespace(anneal_iter=40000, anneal_rate=0.9, batch_size=32, beta=0.0, clip_norm=50.0, depthG=3, depthT=20, epoch=200, hidden_size=450, kl_anneal_iter=2000, latent_size=56, load_epoch=0, lr=0.001, max_beta=1.0, print_iter=10, save_dir='covid_model/autogen_vocab/', save_iter=50, step_beta=0.002, train='../data/covid/processed', vocab='../data/covid/autogen_vocab.txt', warmup=40000)
+JTNNVAE(
+  (jtnn): JTNNEncoder(
+    (embedding): Embedding(331, 450)
+    (outputNN): Sequential(
+      (0): Linear(in_features=900, out_features=450, bias=True)
+      (1): ReLU()
+    )
+    (GRU): GraphGRU(
+      (W_z): Linear(in_features=900, out_features=450, bias=True)
+      (W_r): Linear(in_features=450, out_features=450, bias=False)
+      (U_r): Linear(in_features=450, out_features=450, bias=True)
+      (W_h): Linear(in_features=900, out_features=450, bias=True)
+    )
+  )
+  (decoder): JTNNDecoder(
+    (embedding): Embedding(331, 450)
+    (W_z): Linear(in_features=900, out_features=450, bias=True)
+    (U_r): Linear(in_features=450, out_features=450, bias=False)
+    (W_r): Linear(in_features=450, out_features=450, bias=True)
+    (W_h): Linear(in_features=900, out_features=450, bias=True)
+    (W): Linear(in_features=478, out_features=450, bias=True)
+    (U): Linear(in_features=478, out_features=450, bias=True)
+    (U_i): Linear(in_features=900, out_features=450, bias=True)
+    (W_o): Linear(in_features=450, out_features=331, bias=True)
+    (U_o): Linear(in_features=450, out_features=1, bias=True)
+    (pred_loss): CrossEntropyLoss()
+    (stop_loss): BCEWithLogitsLoss()
+  )
+  (jtmpn): JTMPN(
+    (W_i): Linear(in_features=40, out_features=450, bias=False)
+    (W_h): Linear(in_features=450, out_features=450, bias=False)
+    (W_o): Linear(in_features=485, out_features=450, bias=True)
+  )
+  (mpn): MPN(
+    (W_i): Linear(in_features=50, out_features=450, bias=False)
+    (W_h): Linear(in_features=450, out_features=450, bias=False)
+    (W_o): Linear(in_features=489, out_features=450, bias=True)
+  )
+  (A_assm): Linear(in_features=28, out_features=450, bias=False)
+  (assm_loss): CrossEntropyLoss()
+  (T_mean): Linear(in_features=450, out_features=28, bias=True)
+  (T_var): Linear(in_features=450, out_features=28, bias=True)
+  (G_mean): Linear(in_features=450, out_features=28, bias=True)
+  (G_var): Linear(in_features=450, out_features=28, bias=True)
+)
+Model #Params: 5070K
+[10] Beta: 0.000, KL: 129.99, Word: 19.45, Topo: 65.65, Assm: 60.41, PNorm: 99.21, GNorm: 50.00
+[20] Beta: 0.000, KL: 206.79, Word: 14.63, Topo: 74.39, Assm: 62.09, PNorm: 99.58, GNorm: 30.20
+CUDA out of memory. Tried to allocate 15.60 GiB (GPU 0; 15.78 GiB total capacity; 5.11 GiB already allocated; 6.00 GiB free; 3.66 GiB cached)
+CUDA out of memory. Tried to allocate 14.71 GiB (GPU 0; 15.78 GiB total capacity; 4.84 GiB already allocated; 6.00 GiB free; 3.92 GiB cached)
+[30] Beta: 0.000, KL: 166.35, Word: 24.79, Topo: 62.01, Assm: 48.85, PNorm: 99.92, GNorm: 32.88
+[40] Beta: 0.000, KL: 240.63, Word: 22.50, Topo: 82.71, Assm: 57.36, PNorm: 100.37, GNorm: 50.00
+CUDA out of memory. Tried to allocate 8.07 GiB (GPU 0; 15.78 GiB total capacity; 6.46 GiB already allocated; 221.19 MiB free; 8.09 GiB cached)
+CUDA out of memory. Tried to allocate 8.99 GiB (GPU 0; 15.78 GiB total capacity; 5.21 GiB already allocated; 2.20 GiB free; 7.35 GiB cached)
+[60] Beta: 0.000, KL: 266.59, Word: 62.76, Topo: 145.49, Assm: 120.44, PNorm: 100.99, GNorm: 48.20
+[70] Beta: 0.000, KL: 104.00, Word: 26.89, Topo: 84.32, Assm: 65.03, PNorm: 101.35, GNorm: 23.40
+[80] Beta: 0.000, KL: 104.47, Word: 29.58, Topo: 82.21, Assm: 59.33, PNorm: 101.69, GNorm: 50.00
+CUDA out of memory. Tried to allocate 5.27 GiB (GPU 0; 15.78 GiB total capacity; 3.94 GiB already allocated; 2.30 GiB free; 8.52 GiB cached)
+[90] Beta: 0.000, KL: 149.59, Word: 26.81, Topo: 75.62, Assm: 66.48, PNorm: 102.07, GNorm: 50.00
+[100] Beta: 0.000, KL: 107.07, Word: 37.13, Topo: 84.85, Assm: 71.88, PNorm: 102.48, GNorm: 50.00
+[110] Beta: 0.000, KL: 182.01, Word: 48.60, Topo: 86.17, Assm: 63.19, PNorm: 102.95, GNorm: 50.00
+[120] Beta: 0.000, KL: 129.77, Word: 42.47, Topo: 87.75, Assm: 62.25, PNorm: 103.33, GNorm: 50.00
+CUDA out of memory. Tried to allocate 10.20 GiB (GPU 0; 15.78 GiB total capacity; 3.51 GiB already allocated; 2.32 GiB free; 8.92 GiB cached)
+[130] Beta: 0.000, KL: 70.55, Word: 39.27, Topo: 79.18, Assm: 59.38, PNorm: 103.69, GNorm: 36.17
+[140] Beta: 0.000, KL: 95.80, Word: 40.89, Topo: 89.29, Assm: 62.61, PNorm: 104.10, GNorm: 31.77
+[150] Beta: 0.000, KL: 117.38, Word: 43.94, Topo: 90.56, Assm: 69.40, PNorm: 104.59, GNorm: 14.96
+[160] Beta: 0.000, KL: 101.56, Word: 44.59, Topo: 88.51, Assm: 64.78, PNorm: 104.98, GNorm: 50.00
+CUDA out of memory. Tried to allocate 8.82 GiB (GPU 0; 15.78 GiB total capacity; 4.42 GiB already allocated; 2.21 GiB free; 8.13 GiB cached)
+CUDA out of memory. Tried to allocate 7.84 GiB (GPU 0; 15.78 GiB total capacity; 5.91 GiB already allocated; 1.67 GiB free; 7.18 GiB cached)
+[180] Beta: 0.000, KL: 181.55, Word: 91.09, Topo: 157.96, Assm: 115.23, PNorm: 105.70, GNorm: 50.00
+[190] Beta: 0.000, KL: 90.48, Word: 51.54, Topo: 90.12, Assm: 64.94, PNorm: 106.13, GNorm: 21.33
+[200] Beta: 0.000, KL: 96.82, Word: 53.74, Topo: 91.60, Assm: 66.69, PNorm: 106.57, GNorm: 24.52
+[210] Beta: 0.000, KL: 99.90, Word: 49.68, Topo: 90.00, Assm: 66.68, PNorm: 107.05, GNorm: 20.73
+[220] Beta: 0.000, KL: 100.42, Word: 52.16, Topo: 88.09, Assm: 62.10, PNorm: 107.51, GNorm: 50.00
+[230] Beta: 0.000, KL: 124.53, Word: 54.24, Topo: 90.15, Assm: 62.65, PNorm: 108.00, GNorm: 50.00
+[240] Beta: 0.000, KL: 133.50, Word: 62.47, Topo: 91.68, Assm: 77.21, PNorm: 108.49, GNorm: 16.44
+[250] Beta: 0.000, KL: 108.81, Word: 54.49, Topo: 91.71, Assm: 63.67, PNorm: 109.00, GNorm: 50.00
+[260] Beta: 0.000, KL: 103.19, Word: 55.25, Topo: 91.19, Assm: 70.41, PNorm: 109.51, GNorm: 27.23
+[270] Beta: 0.000, KL: 101.94, Word: 52.65, Topo: 90.28, Assm: 67.35, PNorm: 109.91, GNorm: 21.31
+CUDA out of memory. Tried to allocate 11.96 GiB (GPU 0; 15.78 GiB total capacity; 4.42 GiB already allocated; 1.74 GiB free; 8.60 GiB cached)
+CUDA out of memory. Tried to allocate 18.63 GiB (GPU 0; 15.78 GiB total capacity; 5.86 GiB already allocated; 2.71 GiB free; 6.19 GiB cached)
+[290] Beta: 0.000, KL: 205.39, Word: 102.48, Topo: 163.37, Assm: 122.58, PNorm: 110.71, GNorm: 45.21
+CUDA out of memory. Tried to allocate 7.51 GiB (GPU 0; 15.78 GiB total capacity; 4.76 GiB already allocated; 2.60 GiB free; 7.40 GiB cached)
+[300] Beta: 0.000, KL: 151.71, Word: 55.95, Topo: 84.60, Assm: 69.17, PNorm: 111.08, GNorm: 25.24
+CUDA out of memory. Tried to allocate 11.02 GiB (GPU 0; 15.78 GiB total capacity; 3.92 GiB already allocated; 2.71 GiB free; 8.13 GiB cached)
+[310] Beta: 0.000, KL: 121.83, Word: 49.50, Topo: 82.19, Assm: 74.07, PNorm: 111.45, GNorm: 50.00
+[320] Beta: 0.000, KL: 132.63, Word: 49.56, Topo: 90.41, Assm: 71.40, PNorm: 111.88, GNorm: 15.43
+[330] Beta: 0.000, KL: 105.29, Word: 54.13, Topo: 90.49, Assm: 64.03, PNorm: 112.33, GNorm: 26.95
+[340] Beta: 0.000, KL: 139.46, Word: 54.89, Topo: 91.17, Assm: 78.57, PNorm: 112.76, GNorm: 50.00
+[350] Beta: 0.000, KL: 129.60, Word: 59.75, Topo: 93.13, Assm: 76.95, PNorm: 113.28, GNorm: 19.92
+[360] Beta: 0.000, KL: 137.75, Word: 66.97, Topo: 94.13, Assm: 79.82, PNorm: 113.87, GNorm: 50.00
+[370] Beta: 0.000, KL: 145.95, Word: 61.41, Topo: 92.63, Assm: 71.15, PNorm: 114.35, GNorm: 35.66
+CUDA out of memory. Tried to allocate 7.35 GiB (GPU 0; 15.78 GiB total capacity; 4.40 GiB already allocated; 2.81 GiB free; 7.55 GiB cached)
+[380] Beta: 0.000, KL: 101.38, Word: 56.36, Topo: 82.44, Assm: 62.66, PNorm: 114.76, GNorm: 49.76
+[390] Beta: 0.000, KL: 123.59, Word: 58.78, Topo: 93.12, Assm: 68.92, PNorm: 115.16, GNorm: 29.24
+[400] Beta: 0.000, KL: 135.74, Word: 65.11, Topo: 92.29, Assm: 75.16, PNorm: 115.63, GNorm: 50.00
+CUDA out of memory. Tried to allocate 6.84 GiB (GPU 0; 15.78 GiB total capacity; 3.82 GiB already allocated; 3.76 GiB free; 7.18 GiB cached)
+[420] Beta: 0.000, KL: 256.90, Word: 118.00, Topo: 175.34, Assm: 144.33, PNorm: 116.39, GNorm: 24.48
+CUDA out of memory. Tried to allocate 7.17 GiB (GPU 0; 15.78 GiB total capacity; 3.97 GiB already allocated; 3.67 GiB free; 7.12 GiB cached)
+CUDA out of memory. Tried to allocate 12.25 GiB (GPU 0; 15.78 GiB total capacity; 5.18 GiB already allocated; 3.66 GiB free; 5.92 GiB cached)
+[430] Beta: 0.000, KL: 105.68, Word: 52.05, Topo: 75.02, Assm: 50.60, PNorm: 116.70, GNorm: 20.17
+[440] Beta: 0.000, KL: 141.90, Word: 63.21, Topo: 91.44, Assm: 70.23, PNorm: 117.07, GNorm: 16.69
+[450] Beta: 0.000, KL: 132.35, Word: 63.15, Topo: 92.83, Assm: 66.55, PNorm: 117.44, GNorm: 50.00
+[460] Beta: 0.000, KL: 121.43, Word: 62.16, Topo: 91.34, Assm: 70.32, PNorm: 117.84, GNorm: 50.00
+[470] Beta: 0.000, KL: 122.26, Word: 65.10, Topo: 88.48, Assm: 69.80, PNorm: 118.21, GNorm: 38.50
+[480] Beta: 0.000, KL: 121.50, Word: 67.42, Topo: 92.53, Assm: 72.68, PNorm: 118.69, GNorm: 12.50
+[490] Beta: 0.000, KL: 133.97, Word: 71.74, Topo: 95.36, Assm: 81.20, PNorm: 119.06, GNorm: 37.38
+CUDA out of memory. Tried to allocate 6.81 GiB (GPU 0; 15.78 GiB total capacity; 4.11 GiB already allocated; 3.74 GiB free; 6.91 GiB cached)
+[500] Beta: 0.000, KL: 118.38, Word: 55.80, Topo: 83.19, Assm: 59.94, PNorm: 119.36, GNorm: 44.82
+[510] Beta: 0.000, KL: 134.79, Word: 68.32, Topo: 94.41, Assm: 75.16, PNorm: 119.77, GNorm: 35.44
+[520] Beta: 0.000, KL: 140.99, Word: 61.94, Topo: 91.39, Assm: 69.61, PNorm: 120.14, GNorm: 24.50
+[530] Beta: 0.000, KL: 147.69, Word: 64.97, Topo: 92.77, Assm: 72.99, PNorm: 120.47, GNorm: 32.53
+CUDA out of memory. Tried to allocate 7.68 GiB (GPU 0; 15.78 GiB total capacity; 3.34 GiB already allocated; 3.73 GiB free; 7.68 GiB cached)
+CUDA out of memory. Tried to allocate 20.16 GiB (GPU 0; 15.78 GiB total capacity; 6.16 GiB already allocated; 3.72 GiB free; 4.88 GiB cached)
+[540] Beta: 0.000, KL: 115.80, Word: 49.36, Topo: 74.13, Assm: 57.73, PNorm: 120.81, GNorm: 12.31
+CUDA out of memory. Tried to allocate 9.49 GiB (GPU 0; 15.78 GiB total capacity; 5.05 GiB already allocated; 3.62 GiB free; 6.09 GiB cached)
+CUDA out of memory. Tried to allocate 5.68 GiB (GPU 0; 15.78 GiB total capacity; 4.90 GiB already allocated; 3.66 GiB free; 6.21 GiB cached)
+[550] Beta: 0.000, KL: 136.08, Word: 54.90, Topo: 76.28, Assm: 65.01, PNorm: 121.11, GNorm: 50.00
+CUDA out of memory. Tried to allocate 7.13 GiB (GPU 0; 15.78 GiB total capacity; 4.46 GiB already allocated; 3.25 GiB free; 7.05 GiB cached)
+[560] Beta: 0.000, KL: 145.97, Word: 57.48, Topo: 83.72, Assm: 73.73, PNorm: 121.48, GNorm: 50.00
+[570] Beta: 0.000, KL: 178.43, Word: 58.85, Topo: 92.57, Assm: 81.24, PNorm: 121.85, GNorm: 17.36
+[580] Beta: 0.000, KL: 144.92, Word: 60.66, Topo: 93.30, Assm: 69.71, PNorm: 122.21, GNorm: 50.00
+[590] Beta: 0.000, KL: 166.98, Word: 65.78, Topo: 92.31, Assm: 82.53, PNorm: 122.57, GNorm: 28.93
+[600] Beta: 0.000, KL: 161.93, Word: 67.83, Topo: 92.88, Assm: 82.92, PNorm: 123.00, GNorm: 50.00
+[610] Beta: 0.000, KL: 145.40, Word: 68.75, Topo: 93.39, Assm: 84.02, PNorm: 123.48, GNorm: 45.85
+[620] Beta: 0.000, KL: 176.97, Word: 69.54, Topo: 94.26, Assm: 81.49, PNorm: 123.94, GNorm: 25.92
+[630] Beta: 0.000, KL: 158.20, Word: 68.32, Topo: 93.72, Assm: 76.44, PNorm: 124.36, GNorm: 50.00
+CUDA out of memory. Tried to allocate 6.78 GiB (GPU 0; 15.78 GiB total capacity; 4.08 GiB already allocated; 3.30 GiB free; 7.38 GiB cached)
+[640] Beta: 0.000, KL: 134.82, Word: 57.54, Topo: 84.23, Assm: 69.22, PNorm: 124.71, GNorm: 50.00
+[650] Beta: 0.000, KL: 154.15, Word: 70.99, Topo: 95.10, Assm: 79.36, PNorm: 125.11, GNorm: 22.31
+[660] Beta: 0.000, KL: 164.05, Word: 68.97, Topo: 93.60, Assm: 83.45, PNorm: 125.45, GNorm: 28.39
+CUDA out of memory. Tried to allocate 7.06 GiB (GPU 0; 15.78 GiB total capacity; 3.94 GiB already allocated; 3.28 GiB free; 7.54 GiB cached)
+[670] Beta: 0.000, KL: 147.55, Word: 61.96, Topo: 85.33, Assm: 69.75, PNorm: 125.77, GNorm: 17.57
+CUDA out of memory. Tried to allocate 7.18 GiB (GPU 0; 15.78 GiB total capacity; 4.40 GiB already allocated; 3.15 GiB free; 7.21 GiB cached)
+[680] Beta: 0.000, KL: 130.44, Word: 64.23, Topo: 85.08, Assm: 64.55, PNorm: 126.10, GNorm: 50.00
+[690] Beta: 0.000, KL: 173.62, Word: 66.16, Topo: 92.87, Assm: 77.34, PNorm: 126.46, GNorm: 50.00
+[700] Beta: 0.000, KL: 168.69, Word: 65.09, Topo: 93.86, Assm: 73.98, PNorm: 126.75, GNorm: 50.00
+[710] Beta: 0.000, KL: 169.60, Word: 65.98, Topo: 94.36, Assm: 76.18, PNorm: 127.13, GNorm: 50.00
+[720] Beta: 0.000, KL: 156.53, Word: 71.20, Topo: 93.38, Assm: 75.04, PNorm: 127.47, GNorm: 42.21
+[730] Beta: 0.000, KL: 158.72, Word: 73.95, Topo: 94.59, Assm: 76.19, PNorm: 127.87, GNorm: 12.93
+[740] Beta: 0.000, KL: 171.44, Word: 72.70, Topo: 94.37, Assm: 79.85, PNorm: 128.23, GNorm: 35.21
+[750] Beta: 0.000, KL: 168.87, Word: 71.37, Topo: 94.73, Assm: 72.28, PNorm: 128.59, GNorm: 48.95
+[760] Beta: 0.000, KL: 171.98, Word: 72.82, Topo: 95.34, Assm: 76.01, PNorm: 128.93, GNorm: 49.33
+[770] Beta: 0.000, KL: 178.92, Word: 71.84, Topo: 95.23, Assm: 78.25, PNorm: 129.25, GNorm: 22.88
+[780] Beta: 0.000, KL: 184.29, Word: 65.18, Topo: 92.97, Assm: 73.20, PNorm: 129.54, GNorm: 25.15
+CUDA out of memory. Tried to allocate 17.73 GiB (GPU 0; 15.78 GiB total capacity; 5.62 GiB already allocated; 3.25 GiB free; 5.89 GiB cached)
+CUDA out of memory. Tried to allocate 9.88 GiB (GPU 0; 15.78 GiB total capacity; 3.66 GiB already allocated; 3.87 GiB free; 7.23 GiB cached)
+[790] Beta: 0.000, KL: 153.26, Word: 58.65, Topo: 76.55, Assm: 64.40, PNorm: 129.77, GNorm: 10.90
+CUDA out of memory. Tried to allocate 5.64 GiB (GPU 0; 15.78 GiB total capacity; 5.25 GiB already allocated; 3.75 GiB free; 5.76 GiB cached)
+CUDA out of memory. Tried to allocate 7.67 GiB (GPU 0; 15.78 GiB total capacity; 4.67 GiB already allocated; 3.74 GiB free; 6.34 GiB cached)
+CUDA out of memory. Tried to allocate 6.08 GiB (GPU 0; 15.78 GiB total capacity; 3.96 GiB already allocated; 3.82 GiB free; 6.98 GiB cached)
+[810] Beta: 0.000, KL: 357.31, Word: 129.47, Topo: 161.69, Assm: 142.14, PNorm: 130.32, GNorm: 25.05
+[820] Beta: 0.000, KL: 233.07, Word: 68.90, Topo: 94.85, Assm: 85.84, PNorm: 130.64, GNorm: 18.32
+[830] Beta: 0.000, KL: 207.46, Word: 65.63, Topo: 93.22, Assm: 73.57, PNorm: 130.96, GNorm: 18.22
+[840] Beta: 0.000, KL: 222.85, Word: 74.87, Topo: 95.68, Assm: 85.41, PNorm: 131.30, GNorm: 19.46
+[850] Beta: 0.000, KL: 217.21, Word: 74.30, Topo: 94.67, Assm: 88.15, PNorm: 131.67, GNorm: 35.04
+[860] Beta: 0.000, KL: 203.83, Word: 74.49, Topo: 92.30, Assm: 81.89, PNorm: 132.07, GNorm: 37.37
+[870] Beta: 0.000, KL: 200.14, Word: 76.30, Topo: 95.68, Assm: 86.97, PNorm: 132.51, GNorm: 16.10
+[880] Beta: 0.000, KL: 186.89, Word: 73.34, Topo: 95.49, Assm: 78.73, PNorm: 132.86, GNorm: 22.10
+CUDA out of memory. Tried to allocate 10.72 GiB (GPU 0; 15.78 GiB total capacity; 3.76 GiB already allocated; 3.89 GiB free; 7.11 GiB cached)
+[890] Beta: 0.000, KL: 176.43, Word: 59.88, Topo: 83.78, Assm: 67.42, PNorm: 133.19, GNorm: 21.28
+[900] Beta: 0.000, KL: 182.08, Word: 78.47, Topo: 96.57, Assm: 83.50, PNorm: 133.57, GNorm: 14.28
+[910] Beta: 0.000, KL: 212.13, Word: 74.76, Topo: 95.42, Assm: 83.98, PNorm: 133.92, GNorm: 25.60
+CUDA out of memory. Tried to allocate 6.30 GiB (GPU 0; 15.78 GiB total capacity; 3.60 GiB already allocated; 3.88 GiB free; 7.28 GiB cached)
+[920] Beta: 0.000, KL: 193.84, Word: 65.49, Topo: 84.20, Assm: 73.13, PNorm: 134.13, GNorm: 19.87
+CUDA out of memory. Tried to allocate 9.30 GiB (GPU 0; 15.78 GiB total capacity; 4.52 GiB already allocated; 3.78 GiB free; 6.45 GiB cached)
+[930] Beta: 0.000, KL: 173.96, Word: 65.66, Topo: 84.89, Assm: 69.01, PNorm: 134.37, GNorm: 43.99
+[940] Beta: 0.000, KL: 192.76, Word: 71.56, Topo: 93.38, Assm: 77.50, PNorm: 134.71, GNorm: 43.93
+[950] Beta: 0.000, KL: 191.28, Word: 69.57, Topo: 94.58, Assm: 77.87, PNorm: 135.03, GNorm: 50.00
+[960] Beta: 0.000, KL: 194.44, Word: 71.62, Topo: 95.08, Assm: 76.60, PNorm: 135.39, GNorm: 14.77
+[970] Beta: 0.000, KL: 175.58, Word: 73.38, Topo: 95.34, Assm: 78.39, PNorm: 135.76, GNorm: 50.00
+[980] Beta: 0.000, KL: 183.41, Word: 77.72, Topo: 95.92, Assm: 78.98, PNorm: 136.11, GNorm: 19.18
+[990] Beta: 0.000, KL: 180.85, Word: 75.48, Topo: 95.66, Assm: 78.76, PNorm: 136.48, GNorm: 50.00
+[1000] Beta: 0.000, KL: 197.41, Word: 76.17, Topo: 95.23, Assm: 77.31, PNorm: 136.87, GNorm: 14.00
+[1010] Beta: 0.000, KL: 191.54, Word: 76.07, Topo: 95.86, Assm: 78.00, PNorm: 137.22, GNorm: 19.65
+[1020] Beta: 0.000, KL: 199.09, Word: 73.73, Topo: 95.48, Assm: 82.69, PNorm: 137.56, GNorm: 22.11
+[1030] Beta: 0.000, KL: 219.30, Word: 68.76, Topo: 93.36, Assm: 74.46, PNorm: 137.85, GNorm: 28.43
+CUDA out of memory. Tried to allocate 16.63 GiB (GPU 0; 15.78 GiB total capacity; 5.44 GiB already allocated; 3.84 GiB free; 5.48 GiB cached)
+CUDA out of memory. Tried to allocate 18.88 GiB (GPU 0; 15.78 GiB total capacity; 5.79 GiB already allocated; 3.85 GiB free; 5.12 GiB cached)
+[1040] Beta: 0.000, KL: 164.60, Word: 61.92, Topo: 77.20, Assm: 67.89, PNorm: 138.07, GNorm: 15.46
+[1050] Beta: 0.000, KL: 230.87, Word: 77.52, Topo: 95.42, Assm: 81.55, PNorm: 138.38, GNorm: 37.57
+CUDA out of memory. Tried to allocate 6.55 GiB (GPU 0; 15.78 GiB total capacity; 4.21 GiB already allocated; 3.81 GiB free; 6.73 GiB cached)
+CUDA out of memory. Tried to allocate 8.24 GiB (GPU 0; 15.78 GiB total capacity; 3.29 GiB already allocated; 3.85 GiB free; 7.62 GiB cached)
+CUDA out of memory. Tried to allocate 7.35 GiB (GPU 0; 15.78 GiB total capacity; 4.49 GiB already allocated; 3.35 GiB free; 6.92 GiB cached)
+[1060] Beta: 0.000, KL: 156.60, Word: 53.69, Topo: 66.13, Assm: 57.41, PNorm: 138.55, GNorm: 50.00
+[1070] Beta: 0.000, KL: 241.95, Word: 75.52, Topo: 94.75, Assm: 92.08, PNorm: 138.90, GNorm: 21.64
+[1080] Beta: 0.000, KL: 225.55, Word: 69.90, Topo: 93.72, Assm: 80.64, PNorm: 139.31, GNorm: 13.42
+[1090] Beta: 0.000, KL: 215.05, Word: 73.59, Topo: 95.09, Assm: 81.40, PNorm: 139.70, GNorm: 50.00
+[1100] Beta: 0.000, KL: 215.99, Word: 76.49, Topo: 95.33, Assm: 85.43, PNorm: 140.06, GNorm: 50.00
+[1110] Beta: 0.000, KL: 245.38, Word: 75.21, Topo: 94.98, Assm: 86.63, PNorm: 140.40, GNorm: 50.00
+[1120] Beta: 0.000, KL: 192.14, Word: 82.26, Topo: 97.07, Assm: 91.66, PNorm: 140.77, GNorm: 45.62
+[1130] Beta: 0.000, KL: 225.84, Word: 74.47, Topo: 96.12, Assm: 82.45, PNorm: 141.03, GNorm: 50.00
+CUDA out of memory. Tried to allocate 8.70 GiB (GPU 0; 15.78 GiB total capacity; 3.12 GiB already allocated; 3.93 GiB free; 7.71 GiB cached)
+[1140] Beta: 0.000, KL: 216.13, Word: 64.22, Topo: 85.74, Assm: 71.70, PNorm: 141.30, GNorm: 25.45
+[1150] Beta: 0.000, KL: 205.73, Word: 77.60, Topo: 96.33, Assm: 82.28, PNorm: 141.64, GNorm: 22.03
+[1160] Beta: 0.000, KL: 242.38, Word: 77.76, Topo: 96.51, Assm: 80.57, PNorm: 141.93, GNorm: 41.45
+CUDA out of memory. Tried to allocate 6.93 GiB (GPU 0; 15.78 GiB total capacity; 3.86 GiB already allocated; 3.91 GiB free; 6.99 GiB cached)
+CUDA out of memory. Tried to allocate 6.50 GiB (GPU 0; 15.78 GiB total capacity; 3.67 GiB already allocated; 3.91 GiB free; 7.18 GiB cached)
+[1170] Beta: 0.000, KL: 207.79, Word: 62.72, Topo: 76.89, Assm: 68.66, PNorm: 142.09, GNorm: 32.46
+CUDA out of memory. Tried to allocate 11.65 GiB (GPU 0; 15.78 GiB total capacity; 4.95 GiB already allocated; 3.82 GiB free; 5.98 GiB cached)
+CUDA out of memory. Tried to allocate 7.79 GiB (GPU 0; 15.78 GiB total capacity; 4.33 GiB already allocated; 3.80 GiB free; 6.63 GiB cached)
+[1180] Beta: 0.000, KL: 206.39, Word: 59.75, Topo: 75.97, Assm: 67.53, PNorm: 142.26, GNorm: 50.00
+[1190] Beta: 0.000, KL: 229.12, Word: 77.92, Topo: 94.93, Assm: 79.95, PNorm: 142.56, GNorm: 21.33
+[1200] Beta: 0.000, KL: 242.45, Word: 74.38, Topo: 95.45, Assm: 80.62, PNorm: 142.86, GNorm: 20.68
+[1210] Beta: 0.000, KL: 229.01, Word: 77.14, Topo: 94.98, Assm: 87.15, PNorm: 143.14, GNorm: 23.62
+[1220] Beta: 0.000, KL: 213.39, Word: 73.23, Topo: 95.40, Assm: 78.37, PNorm: 143.44, GNorm: 11.49
+[1230] Beta: 0.000, KL: 211.37, Word: 79.70, Topo: 96.73, Assm: 80.57, PNorm: 143.76, GNorm: 29.66
+[1240] Beta: 0.000, KL: 227.46, Word: 77.24, Topo: 96.91, Assm: 78.91, PNorm: 144.01, GNorm: 25.70
+CUDA out of memory. Tried to allocate 6.79 GiB (GPU 0; 15.78 GiB total capacity; 4.35 GiB already allocated; 3.89 GiB free; 6.51 GiB cached)
+[1250] Beta: 0.000, KL: 208.50, Word: 72.14, Topo: 87.17, Assm: 74.26, PNorm: 144.27, GNorm: 15.52
+[1260] Beta: 0.000, KL: 244.47, Word: 80.04, Topo: 97.16, Assm: 80.29, PNorm: 144.58, GNorm: 26.36
+[1270] Beta: 0.000, KL: 255.63, Word: 76.65, Topo: 95.37, Assm: 86.08, PNorm: 144.85, GNorm: 44.34
+[1280] Beta: 0.000, KL: 263.00, Word: 72.69, Topo: 94.84, Assm: 78.28, PNorm: 145.13, GNorm: 14.84
+CUDA out of memory. Tried to allocate 12.58 GiB (GPU 0; 15.78 GiB total capacity; 4.38 GiB already allocated; 3.89 GiB free; 6.49 GiB cached)
+CUDA out of memory. Tried to allocate 14.29 GiB (GPU 0; 15.78 GiB total capacity; 4.97 GiB already allocated; 3.87 GiB free; 5.92 GiB cached)
+[1290] Beta: 0.000, KL: 198.51, Word: 63.33, Topo: 76.57, Assm: 70.52, PNorm: 145.37, GNorm: 19.91
+[1300] Beta: 0.000, KL: 273.84, Word: 79.02, Topo: 95.48, Assm: 82.39, PNorm: 145.62, GNorm: 41.97
+CUDA out of memory. Tried to allocate 5.87 GiB (GPU 0; 15.78 GiB total capacity; 5.22 GiB already allocated; 3.75 GiB free; 5.79 GiB cached)
+CUDA out of memory. Tried to allocate 6.64 GiB (GPU 0; 15.78 GiB total capacity; 4.25 GiB already allocated; 3.85 GiB free; 6.66 GiB cached)
+CUDA out of memory. Tried to allocate 7.68 GiB (GPU 0; 15.78 GiB total capacity; 3.13 GiB already allocated; 3.87 GiB free; 7.76 GiB cached)
+[1320] Beta: 0.000, KL: 485.18, Word: 142.14, Topo: 165.02, Assm: 154.43, PNorm: 146.05, GNorm: 20.75
+[1330] Beta: 0.000, KL: 299.15, Word: 73.78, Topo: 95.37, Assm: 82.43, PNorm: 146.35, GNorm: 17.81
+[1340] Beta: 0.000, KL: 281.52, Word: 78.61, Topo: 96.25, Assm: 82.02, PNorm: 146.58, GNorm: 35.99
+[1350] Beta: 0.000, KL: 276.60, Word: 81.58, Topo: 96.75, Assm: 91.15, PNorm: 146.85, GNorm: 25.58
+[1360] Beta: 0.000, KL: 285.57, Word: 80.08, Topo: 95.77, Assm: 88.11, PNorm: 147.16, GNorm: 50.00
+[1370] Beta: 0.000, KL: 221.08, Word: 84.75, Topo: 97.05, Assm: 93.66, PNorm: 147.46, GNorm: 42.62
+[1380] Beta: 0.000, KL: 264.06, Word: 77.42, Topo: 95.13, Assm: 85.44, PNorm: 147.74, GNorm: 27.46
+CUDA out of memory. Tried to allocate 10.19 GiB (GPU 0; 15.78 GiB total capacity; 3.61 GiB already allocated; 3.92 GiB free; 7.22 GiB cached)
+[1390] Beta: 0.000, KL: 237.66, Word: 69.08, Topo: 85.44, Assm: 76.35, PNorm: 148.05, GNorm: 17.87
+[1400] Beta: 0.000, KL: 263.33, Word: 77.78, Topo: 96.55, Assm: 82.01, PNorm: 148.45, GNorm: 17.23
+[1410] Beta: 0.000, KL: 289.88, Word: 83.25, Topo: 97.00, Assm: 83.58, PNorm: 148.72, GNorm: 14.10
+CUDA out of memory. Tried to allocate 6.86 GiB (GPU 0; 15.78 GiB total capacity; 3.85 GiB already allocated; 3.91 GiB free; 6.99 GiB cached)
+[1420] Beta: 0.000, KL: 262.23, Word: 71.30, Topo: 86.69, Assm: 80.24, PNorm: 148.91, GNorm: 50.00
+CUDA out of memory. Tried to allocate 8.84 GiB (GPU 0; 15.78 GiB total capacity; 4.60 GiB already allocated; 3.80 GiB free; 6.36 GiB cached)
+[1440] Beta: 0.000, KL: 497.86, Word: 152.52, Topo: 182.67, Assm: 158.67, PNorm: 149.33, GNorm: 26.06
+[1450] Beta: 0.000, KL: 288.10, Word: 77.97, Topo: 96.54, Assm: 83.67, PNorm: 149.66, GNorm: 22.81
+[1460] Beta: 0.000, KL: 254.92, Word: 79.58, Topo: 96.56, Assm: 86.73, PNorm: 149.95, GNorm: 21.51
+[1470] Beta: 0.000, KL: 257.93, Word: 72.07, Topo: 95.05, Assm: 78.78, PNorm: 150.29, GNorm: 22.31
+[1480] Beta: 0.000, KL: 241.26, Word: 81.66, Topo: 96.24, Assm: 84.50, PNorm: 150.61, GNorm: 27.47
+[1490] Beta: 0.000, KL: 257.50, Word: 79.51, Topo: 96.62, Assm: 78.18, PNorm: 150.92, GNorm: 36.12
+CUDA out of memory. Tried to allocate 6.92 GiB (GPU 0; 15.78 GiB total capacity; 4.08 GiB already allocated; 3.90 GiB free; 6.78 GiB cached)
+[1500] Beta: 0.000, KL: 221.56, Word: 76.60, Topo: 87.69, Assm: 80.25, PNorm: 151.14, GNorm: 16.34
+[1510] Beta: 0.000, KL: 288.07, Word: 83.52, Topo: 96.83, Assm: 80.44, PNorm: 151.41, GNorm: 23.50
+[1520] Beta: 0.000, KL: 279.30, Word: 81.06, Topo: 96.91, Assm: 84.49, PNorm: 151.69, GNorm: 12.26
+[1530] Beta: 0.000, KL: 307.14, Word: 77.35, Topo: 96.00, Assm: 82.89, PNorm: 151.97, GNorm: 15.67
+CUDA out of memory. Tried to allocate 11.05 GiB (GPU 0; 15.78 GiB total capacity; 4.04 GiB already allocated; 3.89 GiB free; 6.83 GiB cached)
+CUDA out of memory. Tried to allocate 17.60 GiB (GPU 0; 15.78 GiB total capacity; 5.63 GiB already allocated; 3.87 GiB free; 5.26 GiB cached)
+[1550] Beta: 0.000, KL: 558.17, Word: 147.15, Topo: 173.70, Assm: 154.40, PNorm: 152.40, GNorm: 30.05
+CUDA out of memory. Tried to allocate 5.35 GiB (GPU 0; 15.78 GiB total capacity; 5.16 GiB already allocated; 3.78 GiB free; 5.82 GiB cached)
+CUDA out of memory. Tried to allocate 7.65 GiB (GPU 0; 15.78 GiB total capacity; 4.35 GiB already allocated; 3.80 GiB free; 6.61 GiB cached)
+[1560] Beta: 0.000, KL: 250.71, Word: 68.13, Topo: 77.62, Assm: 70.44, PNorm: 152.59, GNorm: 23.11
+CUDA out of memory. Tried to allocate 10.22 GiB (GPU 0; 15.78 GiB total capacity; 3.71 GiB already allocated; 3.87 GiB free; 7.18 GiB cached)
+[1570] Beta: 0.000, KL: 285.04, Word: 78.55, Topo: 88.19, Assm: 83.82, PNorm: 152.80, GNorm: 28.04
+[1580] Beta: 0.000, KL: 347.23, Word: 79.58, Topo: 96.39, Assm: 86.11, PNorm: 153.08, GNorm: 14.41
+[1590] Beta: 0.000, KL: 321.59, Word: 81.42, Topo: 96.59, Assm: 82.20, PNorm: 153.32, GNorm: 13.23
+[1600] Beta: 0.000, KL: 307.07, Word: 83.99, Topo: 97.10, Assm: 91.84, PNorm: 153.55, GNorm: 34.12
+[1610] Beta: 0.000, KL: 321.77, Word: 81.29, Topo: 96.00, Assm: 88.43, PNorm: 153.85, GNorm: 22.31
+[1620] Beta: 0.000, KL: 271.95, Word: 86.21, Topo: 97.70, Assm: 93.92, PNorm: 154.14, GNorm: 32.99
+[1630] Beta: 0.000, KL: 299.33, Word: 79.30, Topo: 96.35, Assm: 87.32, PNorm: 154.44, GNorm: 23.75
+CUDA out of memory. Tried to allocate 9.32 GiB (GPU 0; 15.78 GiB total capacity; 3.37 GiB already allocated; 3.93 GiB free; 7.46 GiB cached)
+CUDA out of memory. Tried to allocate 6.67 GiB (GPU 0; 15.78 GiB total capacity; 3.94 GiB already allocated; 3.92 GiB free; 6.89 GiB cached)
+[1640] Beta: 0.000, KL: 221.18, Word: 66.47, Topo: 77.32, Assm: 71.62, PNorm: 154.69, GNorm: 29.26
+[1650] Beta: 0.000, KL: 313.87, Word: 80.33, Topo: 96.39, Assm: 86.97, PNorm: 155.00, GNorm: 35.63
+[1660] Beta: 0.000, KL: 319.79, Word: 84.80, Topo: 96.77, Assm: 85.55, PNorm: 155.29, GNorm: 21.91
+[1670] Beta: 0.000, KL: 353.68, Word: 81.11, Topo: 96.44, Assm: 86.75, PNorm: 155.51, GNorm: 30.73
+CUDA out of memory. Tried to allocate 6.47 GiB (GPU 0; 15.78 GiB total capacity; 3.65 GiB already allocated; 3.92 GiB free; 7.19 GiB cached)
+[1680] Beta: 0.000, KL: 297.56, Word: 72.84, Topo: 86.85, Assm: 79.44, PNorm: 155.66, GNorm: 15.20
+CUDA out of memory. Tried to allocate 7.79 GiB (GPU 0; 15.78 GiB total capacity; 4.18 GiB already allocated; 3.82 GiB free; 6.76 GiB cached)
+CUDA out of memory. Tried to allocate 8.87 GiB (GPU 0; 15.78 GiB total capacity; 4.52 GiB already allocated; 3.81 GiB free; 6.43 GiB cached)
+[1690] Beta: 0.000, KL: 235.31, Word: 68.25, Topo: 76.82, Assm: 67.92, PNorm: 155.85, GNorm: 30.09
+[1700] Beta: 0.000, KL: 330.20, Word: 83.28, Topo: 96.48, Assm: 87.38, PNorm: 156.16, GNorm: 17.74
+[1710] Beta: 0.000, KL: 295.63, Word: 81.23, Topo: 97.23, Assm: 88.31, PNorm: 156.46, GNorm: 50.00
+[1720] Beta: 0.000, KL: 296.44, Word: 75.85, Topo: 96.25, Assm: 84.53, PNorm: 156.73, GNorm: 21.36
+[1730] Beta: 0.000, KL: 293.31, Word: 79.24, Topo: 96.21, Assm: 85.19, PNorm: 157.03, GNorm: 23.79
+[1740] Beta: 0.000, KL: 290.61, Word: 82.47, Topo: 97.11, Assm: 83.04, PNorm: 157.35, GNorm: 12.42
+[1750] Beta: 0.000, KL: 294.48, Word: 84.52, Topo: 97.84, Assm: 89.62, PNorm: 157.66, GNorm: 20.58
+CUDA out of memory. Tried to allocate 6.49 GiB (GPU 0; 15.78 GiB total capacity; 3.95 GiB already allocated; 3.89 GiB free; 6.92 GiB cached)
+[1760] Beta: 0.000, KL: 304.63, Word: 73.59, Topo: 87.23, Assm: 74.33, PNorm: 157.88, GNorm: 22.91
+[1770] Beta: 0.000, KL: 304.13, Word: 84.50, Topo: 96.88, Assm: 87.13, PNorm: 158.14, GNorm: 25.80
+[1780] Beta: 0.000, KL: 337.69, Word: 79.67, Topo: 95.53, Assm: 85.03, PNorm: 158.43, GNorm: 23.98
+[1790] Beta: 0.000, KL: 340.48, Word: 83.74, Topo: 95.90, Assm: 89.27, PNorm: 158.66, GNorm: 14.25
+CUDA out of memory. Tried to allocate 15.21 GiB (GPU 0; 15.78 GiB total capacity; 5.07 GiB already allocated; 3.88 GiB free; 5.81 GiB cached)
+CUDA out of memory. Tried to allocate 11.14 GiB (GPU 0; 15.78 GiB total capacity; 4.11 GiB already allocated; 3.89 GiB free; 6.76 GiB cached)
+[1800] Beta: 0.000, KL: 305.35, Word: 66.32, Topo: 77.14, Assm: 68.29, PNorm: 158.84, GNorm: 13.81
+CUDA out of memory. Tried to allocate 10.24 GiB (GPU 0; 15.78 GiB total capacity; 4.99 GiB already allocated; 3.79 GiB free; 5.98 GiB cached)
+[1810] Beta: 0.000, KL: 330.85, Word: 78.57, Topo: 87.43, Assm: 81.99, PNorm: 159.01, GNorm: 40.36
+CUDA out of memory. Tried to allocate 6.82 GiB (GPU 0; 15.78 GiB total capacity; 4.26 GiB already allocated; 3.87 GiB free; 6.63 GiB cached)
+CUDA out of memory. Tried to allocate 8.74 GiB (GPU 0; 15.78 GiB total capacity; 3.37 GiB already allocated; 3.87 GiB free; 7.53 GiB cached)
+[1820] Beta: 0.000, KL: 280.69, Word: 69.65, Topo: 78.13, Assm: 73.82, PNorm: 159.20, GNorm: 19.58
+[1830] Beta: 0.000, KL: 403.97, Word: 83.79, Topo: 97.27, Assm: 91.68, PNorm: 159.44, GNorm: 15.18
+[1840] Beta: 0.000, KL: 370.38, Word: 83.48, Topo: 96.79, Assm: 86.54, PNorm: 159.67, GNorm: 18.44
+[1850] Beta: 0.000, KL: 356.43, Word: 85.15, Topo: 97.13, Assm: 90.20, PNorm: 159.88, GNorm: 11.70
+[1860] Beta: 0.000, KL: 352.64, Word: 87.00, Topo: 97.50, Assm: 90.26, PNorm: 160.10, GNorm: 25.06
+[1870] Beta: 0.000, KL: 354.59, Word: 87.40, Topo: 97.63, Assm: 94.08, PNorm: 160.37, GNorm: 21.27
+[1880] Beta: 0.000, KL: 335.11, Word: 83.23, Topo: 96.98, Assm: 89.99, PNorm: 160.61, GNorm: 27.74
+CUDA out of memory. Tried to allocate 7.28 GiB (GPU 0; 15.78 GiB total capacity; 4.41 GiB already allocated; 3.44 GiB free; 6.91 GiB cached)
+[1900] Beta: 0.000, KL: 640.98, Word: 156.91, Topo: 184.01, Assm: 169.81, PNorm: 161.15, GNorm: 24.11
+[1910] Beta: 0.000, KL: 320.24, Word: 84.74, Topo: 97.52, Assm: 87.76, PNorm: 161.45, GNorm: 16.07
+[1920] Beta: 0.000, KL: 361.56, Word: 85.40, Topo: 97.39, Assm: 87.40, PNorm: 161.71, GNorm: 29.25
+CUDA out of memory. Tried to allocate 6.77 GiB (GPU 0; 15.78 GiB total capacity; 3.78 GiB already allocated; 3.43 GiB free; 7.55 GiB cached)
+[1930] Beta: 0.000, KL: 312.43, Word: 76.54, Topo: 86.91, Assm: 80.93, PNorm: 161.91, GNorm: 18.43
+CUDA out of memory. Tried to allocate 7.17 GiB (GPU 0; 15.78 GiB total capacity; 5.25 GiB already allocated; 2.87 GiB free; 6.63 GiB cached)
+[1940] Beta: 0.000, KL: 274.39, Word: 79.61, Topo: 87.98, Assm: 76.97, PNorm: 162.10, GNorm: 23.05
+[1950] Beta: 0.000, KL: 357.98, Word: 84.84, Topo: 96.86, Assm: 88.22, PNorm: 162.41, GNorm: 33.62
+[1960] Beta: 0.000, KL: 341.44, Word: 84.17, Topo: 97.07, Assm: 87.56, PNorm: 162.70, GNorm: 38.33
+[1970] Beta: 0.000, KL: 334.73, Word: 79.68, Topo: 95.85, Assm: 85.03, PNorm: 162.90, GNorm: 50.00
+[1980] Beta: 0.000, KL: 303.90, Word: 84.20, Topo: 95.89, Assm: 84.82, PNorm: 163.10, GNorm: 43.65
+[1990] Beta: 0.000, KL: 300.55, Word: 85.81, Topo: 96.17, Assm: 88.73, PNorm: 163.38, GNorm: 13.01
+[2000] Beta: 0.000, KL: 320.63, Word: 85.35, Topo: 96.64, Assm: 88.64, PNorm: 163.65, GNorm: 32.30
+CUDA out of memory. Tried to allocate 7.05 GiB (GPU 0; 15.78 GiB total capacity; 4.47 GiB already allocated; 2.93 GiB free; 7.36 GiB cached)
+[2010] Beta: 0.000, KL: 312.05, Word: 76.05, Topo: 86.25, Assm: 76.14, PNorm: 163.91, GNorm: 39.46
+[2020] Beta: 0.000, KL: 341.25, Word: 86.74, Topo: 97.43, Assm: 88.63, PNorm: 164.18, GNorm: 30.44
+[2030] Beta: 0.000, KL: 349.84, Word: 84.74, Topo: 97.01, Assm: 88.90, PNorm: 164.41, GNorm: 22.21
+[2040] Beta: 0.000, KL: 382.97, Word: 83.57, Topo: 96.49, Assm: 88.71, PNorm: 164.64, GNorm: 21.30
+CUDA out of memory. Tried to allocate 10.71 GiB (GPU 0; 15.78 GiB total capacity; 3.97 GiB already allocated; 3.90 GiB free; 6.89 GiB cached)
+CUDA out of memory. Tried to allocate 13.89 GiB (GPU 0; 15.78 GiB total capacity; 4.86 GiB already allocated; 3.88 GiB free; 6.01 GiB cached)
+[2050] Beta: 0.000, KL: 318.49, Word: 70.83, Topo: 78.16, Assm: 72.82, PNorm: 164.81, GNorm: 13.73
+CUDA out of memory. Tried to allocate 9.88 GiB (GPU 0; 15.78 GiB total capacity; 4.85 GiB already allocated; 3.81 GiB free; 6.10 GiB cached)
+CUDA out of memory. Tried to allocate 6.82 GiB (GPU 0; 15.78 GiB total capacity; 4.39 GiB already allocated; 3.89 GiB free; 6.49 GiB cached)
+CUDA out of memory. Tried to allocate 6.28 GiB (GPU 0; 15.78 GiB total capacity; 4.06 GiB already allocated; 3.88 GiB free; 6.81 GiB cached)
+[2070] Beta: 0.000, KL: 663.04, Word: 150.82, Topo: 165.70, Assm: 152.66, PNorm: 165.14, GNorm: 15.64
+[2080] Beta: 0.000, KL: 422.03, Word: 87.05, Topo: 98.22, Assm: 92.57, PNorm: 165.35, GNorm: 14.50
+[2090] Beta: 0.000, KL: 443.23, Word: 83.23, Topo: 96.81, Assm: 85.78, PNorm: 165.59, GNorm: 18.77
+[2100] Beta: 0.000, KL: 369.93, Word: 87.24, Topo: 97.92, Assm: 92.59, PNorm: 165.79, GNorm: 27.99
+[2110] Beta: 0.000, KL: 397.34, Word: 89.53, Topo: 96.97, Assm: 93.54, PNorm: 166.01, GNorm: 22.61
+[2120] Beta: 0.000, KL: 368.79, Word: 89.00, Topo: 95.66, Assm: 91.78, PNorm: 166.30, GNorm: 26.52
+[2130] Beta: 0.000, KL: 339.76, Word: 87.96, Topo: 97.18, Assm: 93.66, PNorm: 166.59, GNorm: 19.25
+[2140] Beta: 0.000, KL: 361.42, Word: 86.28, Topo: 96.48, Assm: 90.99, PNorm: 166.85, GNorm: 32.05
+CUDA out of memory. Tried to allocate 11.97 GiB (GPU 0; 15.78 GiB total capacity; 3.89 GiB already allocated; 3.94 GiB free; 6.92 GiB cached)
+[2150] Beta: 0.000, KL: 321.26, Word: 71.26, Topo: 86.11, Assm: 78.88, PNorm: 167.16, GNorm: 33.55
+[2160] Beta: 0.000, KL: 343.01, Word: 87.47, Topo: 98.36, Assm: 90.91, PNorm: 167.47, GNorm: 14.40
+[2170] Beta: 0.000, KL: 413.91, Word: 86.89, Topo: 97.77, Assm: 88.40, PNorm: 167.70, GNorm: 18.13
+CUDA out of memory. Tried to allocate 6.52 GiB (GPU 0; 15.78 GiB total capacity; 3.67 GiB already allocated; 3.93 GiB free; 7.16 GiB cached)
+[2180] Beta: 0.000, KL: 340.25, Word: 75.75, Topo: 87.85, Assm: 83.16, PNorm: 167.85, GNorm: 29.36
+[2190] Beta: 0.000, KL: 364.93, Word: 86.95, Topo: 97.91, Assm: 88.68, PNorm: 168.06, GNorm: 17.08
+[2200] Beta: 0.000, KL: 377.78, Word: 87.22, Topo: 97.51, Assm: 88.29, PNorm: 168.29, GNorm: 29.78
+[2210] Beta: 0.000, KL: 364.16, Word: 84.70, Topo: 97.59, Assm: 89.82, PNorm: 168.53, GNorm: 43.16
+[2220] Beta: 0.000, KL: 345.03, Word: 80.79, Topo: 97.09, Assm: 88.31, PNorm: 168.81, GNorm: 22.30
+[2230] Beta: 0.000, KL: 357.10, Word: 83.61, Topo: 97.25, Assm: 86.67, PNorm: 169.07, GNorm: 31.93
+[2240] Beta: 0.000, KL: 324.03, Word: 86.77, Topo: 97.98, Assm: 88.83, PNorm: 169.33, GNorm: 17.29
+[2250] Beta: 0.000, KL: 344.73, Word: 86.04, Topo: 98.10, Assm: 88.43, PNorm: 169.58, GNorm: 36.07
+[2260] Beta: 0.000, KL: 390.59, Word: 86.03, Topo: 97.54, Assm: 87.36, PNorm: 169.79, GNorm: 14.31
+[2270] Beta: 0.000, KL: 387.40, Word: 89.01, Topo: 98.11, Assm: 88.35, PNorm: 169.98, GNorm: 21.48
+[2280] Beta: 0.000, KL: 394.72, Word: 86.83, Topo: 97.78, Assm: 91.19, PNorm: 170.20, GNorm: 21.67
+[2290] Beta: 0.000, KL: 437.39, Word: 85.70, Topo: 96.99, Assm: 88.84, PNorm: 170.42, GNorm: 21.41
+CUDA out of memory. Tried to allocate 21.78 GiB (GPU 0; 15.78 GiB total capacity; 6.49 GiB already allocated; 3.89 GiB free; 4.38 GiB cached)
+CUDA out of memory. Tried to allocate 13.34 GiB (GPU 0; 15.78 GiB total capacity; 4.69 GiB already allocated; 3.89 GiB free; 6.18 GiB cached)
+[2300] Beta: 0.000, KL: 342.82, Word: 71.70, Topo: 78.56, Assm: 75.61, PNorm: 170.59, GNorm: 12.37
+[2310] Beta: 0.000, KL: 464.51, Word: 91.32, Topo: 97.81, Assm: 90.60, PNorm: 170.75, GNorm: 42.55
+CUDA out of memory. Tried to allocate 9.95 GiB (GPU 0; 15.78 GiB total capacity; 5.10 GiB already allocated; 3.79 GiB free; 5.87 GiB cached)
+CUDA out of memory. Tried to allocate 6.07 GiB (GPU 0; 15.78 GiB total capacity; 4.03 GiB already allocated; 3.86 GiB free; 6.87 GiB cached)
+CUDA out of memory. Tried to allocate 7.51 GiB (GPU 0; 15.78 GiB total capacity; 3.09 GiB already allocated; 3.88 GiB free; 7.79 GiB cached)
+CUDA out of memory. Tried to allocate 7.52 GiB (GPU 0; 15.78 GiB total capacity; 3.17 GiB already allocated; 3.89 GiB free; 7.70 GiB cached)
+[2320] Beta: 0.000, KL: 251.87, Word: 52.50, Topo: 58.67, Assm: 54.64, PNorm: 170.87, GNorm: 21.22
+[2330] Beta: 0.000, KL: 438.21, Word: 90.48, Topo: 98.53, Assm: 94.69, PNorm: 171.05, GNorm: 17.71
+[2340] Beta: 0.000, KL: 479.27, Word: 88.40, Topo: 97.47, Assm: 89.41, PNorm: 171.27, GNorm: 13.60
+[2350] Beta: 0.000, KL: 397.60, Word: 87.49, Topo: 97.60, Assm: 90.23, PNorm: 171.45, GNorm: 29.89
+[2360] Beta: 0.000, KL: 438.18, Word: 90.75, Topo: 98.11, Assm: 92.56, PNorm: 171.63, GNorm: 27.31
+[2370] Beta: 0.000, KL: 434.41, Word: 89.90, Topo: 98.28, Assm: 93.03, PNorm: 171.86, GNorm: 30.39
+[2380] Beta: 0.000, KL: 323.94, Word: 90.83, Topo: 98.77, Assm: 95.90, PNorm: 172.06, GNorm: 50.00
+[2390] Beta: 0.000, KL: 407.67, Word: 87.90, Topo: 98.25, Assm: 90.82, PNorm: 172.29, GNorm: 44.39
+CUDA out of memory. Tried to allocate 8.90 GiB (GPU 0; 15.78 GiB total capacity; 3.17 GiB already allocated; 3.95 GiB free; 7.64 GiB cached)
+[2400] Beta: 0.000, KL: 405.56, Word: 77.37, Topo: 88.12, Assm: 83.28, PNorm: 172.48, GNorm: 22.48
+[2410] Beta: 0.000, KL: 435.71, Word: 87.98, Topo: 98.27, Assm: 90.47, PNorm: 172.71, GNorm: 19.44
+[2420] Beta: 0.000, KL: 466.55, Word: 90.29, Topo: 98.09, Assm: 88.57, PNorm: 172.93, GNorm: 27.21
+CUDA out of memory. Tried to allocate 6.71 GiB (GPU 0; 15.78 GiB total capacity; 3.76 GiB already allocated; 3.92 GiB free; 7.07 GiB cached)
+[2430] Beta: 0.000, KL: 378.97, Word: 79.17, Topo: 88.29, Assm: 84.11, PNorm: 173.09, GNorm: 35.15
+CUDA out of memory. Tried to allocate 12.67 GiB (GPU 0; 15.78 GiB total capacity; 5.48 GiB already allocated; 3.81 GiB free; 5.47 GiB cached)
+[2440] Beta: 0.000, KL: 416.54, Word: 79.93, Topo: 88.13, Assm: 81.88, PNorm: 173.26, GNorm: 29.88
+[2450] Beta: 0.000, KL: 452.40, Word: 91.53, Topo: 97.77, Assm: 88.85, PNorm: 173.46, GNorm: 11.37
+[2460] Beta: 0.000, KL: 426.03, Word: 88.69, Topo: 97.56, Assm: 89.19, PNorm: 173.65, GNorm: 16.48
+[2470] Beta: 0.000, KL: 400.05, Word: 86.87, Topo: 97.14, Assm: 92.47, PNorm: 173.86, GNorm: 21.19
+[2480] Beta: 0.000, KL: 417.48, Word: 83.94, Topo: 96.64, Assm: 88.75, PNorm: 174.07, GNorm: 13.49
+[2490] Beta: 0.000, KL: 373.49, Word: 88.78, Topo: 97.92, Assm: 89.20, PNorm: 174.31, GNorm: 33.66
+[2500] Beta: 0.000, KL: 366.46, Word: 89.34, Topo: 98.31, Assm: 89.28, PNorm: 174.56, GNorm: 26.86
+[2510] Beta: 0.000, KL: 382.95, Word: 87.71, Topo: 97.83, Assm: 88.42, PNorm: 174.81, GNorm: 16.38
+[2520] Beta: 0.000, KL: 425.73, Word: 91.99, Topo: 98.57, Assm: 88.24, PNorm: 175.04, GNorm: 22.37
+[2530] Beta: 0.000, KL: 438.94, Word: 89.44, Topo: 97.91, Assm: 92.44, PNorm: 175.22, GNorm: 21.38
+[2540] Beta: 0.000, KL: 467.95, Word: 87.44, Topo: 97.99, Assm: 90.25, PNorm: 175.44, GNorm: 13.70
+CUDA out of memory. Tried to allocate 19.01 GiB (GPU 0; 15.78 GiB total capacity; 5.84 GiB already allocated; 3.89 GiB free; 5.03 GiB cached)
+CUDA out of memory. Tried to allocate 10.86 GiB (GPU 0; 15.78 GiB total capacity; 4.14 GiB already allocated; 3.89 GiB free; 6.73 GiB cached)
+[2550] Beta: 0.000, KL: 365.91, Word: 71.71, Topo: 78.53, Assm: 75.10, PNorm: 175.59, GNorm: 19.74
+[2560] Beta: 0.000, KL: 511.09, Word: 91.20, Topo: 97.65, Assm: 91.62, PNorm: 175.78, GNorm: 50.00
+CUDA out of memory. Tried to allocate 14.40 GiB (GPU 0; 15.78 GiB total capacity; 5.99 GiB already allocated; 3.80 GiB free; 4.98 GiB cached)
+CUDA out of memory. Tried to allocate 6.75 GiB (GPU 0; 15.78 GiB total capacity; 4.43 GiB already allocated; 3.88 GiB free; 6.45 GiB cached)
+CUDA out of memory. Tried to allocate 8.94 GiB (GPU 0; 15.78 GiB total capacity; 3.45 GiB already allocated; 3.89 GiB free; 7.42 GiB cached)
+[2580] Beta: 0.000, KL: 804.29, Word: 156.23, Topo: 167.60, Assm: 160.52, PNorm: 176.06, GNorm: 16.85
+[2590] Beta: 0.000, KL: 530.29, Word: 90.85, Topo: 97.95, Assm: 91.41, PNorm: 176.23, GNorm: 13.22
+[2600] Beta: 0.000, KL: 476.95, Word: 89.22, Topo: 97.94, Assm: 89.14, PNorm: 176.39, GNorm: 35.13
+[2610] Beta: 0.000, KL: 445.64, Word: 91.79, Topo: 98.57, Assm: 94.62, PNorm: 176.58, GNorm: 27.09
+[2620] Beta: 0.000, KL: 485.15, Word: 90.81, Topo: 98.32, Assm: 93.88, PNorm: 176.79, GNorm: 43.02
+[2630] Beta: 0.000, KL: 355.67, Word: 92.34, Topo: 98.92, Assm: 96.23, PNorm: 177.01, GNorm: 25.19
+[2640] Beta: 0.000, KL: 441.97, Word: 89.02, Topo: 98.18, Assm: 91.27, PNorm: 177.23, GNorm: 19.91
+[2650] Beta: 0.000, KL: 443.39, Word: 87.02, Topo: 97.35, Assm: 91.22, PNorm: 177.50, GNorm: 25.94
+[2660] Beta: 0.000, KL: 455.95, Word: 87.82, Topo: 98.21, Assm: 92.20, PNorm: 177.73, GNorm: 20.84
+[2670] Beta: 0.000, KL: 460.61, Word: 92.16, Topo: 98.40, Assm: 90.68, PNorm: 177.96, GNorm: 15.37
+CUDA out of memory. Tried to allocate 6.46 GiB (GPU 0; 15.78 GiB total capacity; 3.69 GiB already allocated; 3.92 GiB free; 7.15 GiB cached)
+CUDA out of memory. Tried to allocate 6.38 GiB (GPU 0; 15.78 GiB total capacity; 3.62 GiB already allocated; 3.93 GiB free; 7.21 GiB cached)
+[2680] Beta: 0.000, KL: 355.77, Word: 71.46, Topo: 78.66, Assm: 74.89, PNorm: 178.12, GNorm: 22.94
+CUDA out of memory. Tried to allocate 7.18 GiB (GPU 0; 15.78 GiB total capacity; 4.14 GiB already allocated; 3.82 GiB free; 6.80 GiB cached)
+CUDA out of memory. Tried to allocate 10.03 GiB (GPU 0; 15.78 GiB total capacity; 4.59 GiB already allocated; 3.84 GiB free; 6.34 GiB cached)
+[2700] Beta: 0.000, KL: 862.56, Word: 163.63, Topo: 177.09, Assm: 163.81, PNorm: 178.43, GNorm: 28.75
+[2710] Beta: 0.000, KL: 490.07, Word: 90.23, Topo: 98.15, Assm: 90.34, PNorm: 178.60, GNorm: 28.44
+[2720] Beta: 0.000, KL: 418.13, Word: 89.09, Topo: 98.44, Assm: 93.52, PNorm: 178.79, GNorm: 44.07
+[2730] Beta: 0.000, KL: 441.72, Word: 81.52, Topo: 96.75, Assm: 88.23, PNorm: 178.98, GNorm: 35.01
+[2740] Beta: 0.000, KL: 419.58, Word: 88.97, Topo: 98.12, Assm: 88.99, PNorm: 179.20, GNorm: 34.06
+[2750] Beta: 0.000, KL: 418.38, Word: 88.73, Topo: 98.35, Assm: 89.89, PNorm: 179.49, GNorm: 25.31
+[2760] Beta: 0.000, KL: 405.63, Word: 90.53, Topo: 98.70, Assm: 93.42, PNorm: 179.73, GNorm: 17.49
+[2770] Beta: 0.000, KL: 472.76, Word: 92.12, Topo: 98.57, Assm: 89.19, PNorm: 179.95, GNorm: 17.61
+[2780] Beta: 0.000, KL: 464.33, Word: 91.54, Topo: 98.47, Assm: 92.68, PNorm: 180.14, GNorm: 13.91
+[2790] Beta: 0.000, KL: 490.27, Word: 89.07, Topo: 98.23, Assm: 90.66, PNorm: 180.34, GNorm: 13.81
+CUDA out of memory. Tried to allocate 14.53 GiB (GPU 0; 15.78 GiB total capacity; 5.03 GiB already allocated; 3.88 GiB free; 5.85 GiB cached)
+CUDA out of memory. Tried to allocate 18.51 GiB (GPU 0; 15.78 GiB total capacity; 5.69 GiB already allocated; 3.90 GiB free; 5.18 GiB cached)
+[2810] Beta: 0.000, KL: 910.56, Word: 164.05, Topo: 177.09, Assm: 166.98, PNorm: 180.65, GNorm: 21.59
+CUDA out of memory. Tried to allocate 5.97 GiB (GPU 0; 15.78 GiB total capacity; 5.03 GiB already allocated; 3.83 GiB free; 5.90 GiB cached)
+[2820] Beta: 0.000, KL: 426.37, Word: 82.52, Topo: 88.74, Assm: 83.85, PNorm: 180.78, GNorm: 18.08
+CUDA out of memory. Tried to allocate 7.96 GiB (GPU 0; 15.78 GiB total capacity; 3.33 GiB already allocated; 3.88 GiB free; 7.55 GiB cached)
+[2830] Beta: 0.000, KL: 435.73, Word: 83.93, Topo: 88.89, Assm: 86.04, PNorm: 180.89, GNorm: 20.67
+[2840] Beta: 0.000, KL: 561.41, Word: 92.74, Topo: 98.52, Assm: 94.75, PNorm: 181.04, GNorm: 9.36
+[2850] Beta: 0.000, KL: 546.32, Word: 91.66, Topo: 98.36, Assm: 90.11, PNorm: 181.19, GNorm: 13.63
+[2860] Beta: 0.000, KL: 505.83, Word: 93.21, Topo: 98.52, Assm: 95.01, PNorm: 181.34, GNorm: 23.17
+[2870] Beta: 0.000, KL: 489.73, Word: 92.72, Topo: 98.59, Assm: 93.04, PNorm: 181.54, GNorm: 20.50
+[2880] Beta: 0.000, KL: 395.66, Word: 92.69, Topo: 98.56, Assm: 96.97, PNorm: 181.73, GNorm: 30.58
+[2890] Beta: 0.000, KL: 491.53, Word: 90.41, Topo: 97.94, Assm: 92.84, PNorm: 181.97, GNorm: 21.48
+CUDA out of memory. Tried to allocate 9.82 GiB (GPU 0; 15.78 GiB total capacity; 3.35 GiB already allocated; 3.94 GiB free; 7.47 GiB cached)
+[2900] Beta: 0.000, KL: 400.18, Word: 80.72, Topo: 88.20, Assm: 84.40, PNorm: 182.18, GNorm: 32.51
+[2910] Beta: 0.000, KL: 489.95, Word: 90.57, Topo: 98.51, Assm: 92.85, PNorm: 182.39, GNorm: 33.24
+[2920] Beta: 0.000, KL: 462.64, Word: 92.29, Topo: 98.51, Assm: 90.39, PNorm: 182.59, GNorm: 13.08
+[2930] Beta: 0.000, KL: 495.40, Word: 89.56, Topo: 98.30, Assm: 92.21, PNorm: 182.75, GNorm: 41.78
+CUDA out of memory. Tried to allocate 6.86 GiB (GPU 0; 15.78 GiB total capacity; 3.86 GiB already allocated; 3.92 GiB free; 6.97 GiB cached)
+[2940] Beta: 0.000, KL: 425.69, Word: 82.92, Topo: 88.52, Assm: 84.76, PNorm: 182.89, GNorm: 10.98
+CUDA out of memory. Tried to allocate 7.27 GiB (GPU 0; 15.78 GiB total capacity; 3.98 GiB already allocated; 3.84 GiB free; 6.94 GiB cached)
+CUDA out of memory. Tried to allocate 9.35 GiB (GPU 0; 15.78 GiB total capacity; 4.71 GiB already allocated; 3.81 GiB free; 6.24 GiB cached)
+[2950] Beta: 0.000, KL: 374.99, Word: 75.27, Topo: 78.76, Assm: 71.81, PNorm: 183.04, GNorm: 14.83
+[2960] Beta: 0.000, KL: 535.20, Word: 93.51, Topo: 98.43, Assm: 94.07, PNorm: 183.23, GNorm: 13.19
+[2970] Beta: 0.000, KL: 467.82, Word: 91.28, Topo: 98.56, Assm: 92.79, PNorm: 183.39, GNorm: 26.20
+[2980] Beta: 0.000, KL: 489.09, Word: 86.71, Topo: 98.05, Assm: 90.09, PNorm: 183.55, GNorm: 16.44
+[2990] Beta: 0.000, KL: 482.37, Word: 89.68, Topo: 98.32, Assm: 89.87, PNorm: 183.75, GNorm: 23.11
+[3000] Beta: 0.000, KL: 462.10, Word: 91.16, Topo: 98.46, Assm: 89.97, PNorm: 183.95, GNorm: 13.29
+[3010] Beta: 0.000, KL: 409.40, Word: 91.66, Topo: 98.75, Assm: 94.09, PNorm: 184.14, GNorm: 22.04
+[3020] Beta: 0.000, KL: 505.47, Word: 91.84, Topo: 97.88, Assm: 89.82, PNorm: 184.34, GNorm: 15.87
+[3030] Beta: 0.000, KL: 470.35, Word: 92.56, Topo: 98.57, Assm: 93.13, PNorm: 184.53, GNorm: 20.10
+[3040] Beta: 0.000, KL: 525.22, Word: 90.67, Topo: 98.32, Assm: 91.13, PNorm: 184.73, GNorm: 17.47
+[3050] Beta: 0.000, KL: 487.97, Word: 91.31, Topo: 98.49, Assm: 93.65, PNorm: 184.91, GNorm: 11.23
+CUDA out of memory. Tried to allocate 7.03 GiB (GPU 0; 15.78 GiB total capacity; 4.49 GiB already allocated; 3.91 GiB free; 6.36 GiB cached)
+CUDA out of memory. Tried to allocate 16.52 GiB (GPU 0; 15.78 GiB total capacity; 5.42 GiB already allocated; 3.88 GiB free; 5.45 GiB cached)
+[3060] Beta: 0.000, KL: 469.99, Word: 75.29, Topo: 78.75, Assm: 73.81, PNorm: 185.03, GNorm: 12.45
+CUDA out of memory. Tried to allocate 6.88 GiB (GPU 0; 15.78 GiB total capacity; 4.38 GiB already allocated; 3.80 GiB free; 6.59 GiB cached)
+CUDA out of memory. Tried to allocate 5.69 GiB (GPU 0; 15.78 GiB total capacity; 5.40 GiB already allocated; 3.78 GiB free; 5.57 GiB cached)
+CUDA out of memory. Tried to allocate 7.12 GiB (GPU 0; 15.78 GiB total capacity; 4.50 GiB already allocated; 3.38 GiB free; 6.88 GiB cached)
+CUDA out of memory. Tried to allocate 10.08 GiB (GPU 0; 15.78 GiB total capacity; 3.56 GiB already allocated; 3.90 GiB free; 7.30 GiB cached)
+[3080] Beta: 0.000, KL: 843.37, Word: 150.43, Topo: 157.87, Assm: 150.83, PNorm: 185.23, GNorm: 21.57
+[3090] Beta: 0.000, KL: 581.09, Word: 93.42, Topo: 98.95, Assm: 96.03, PNorm: 185.35, GNorm: 18.60
+[3100] Beta: 0.000, KL: 564.48, Word: 91.79, Topo: 98.53, Assm: 92.68, PNorm: 185.50, GNorm: 20.72
+[3110] Beta: 0.000, KL: 551.20, Word: 93.51, Topo: 98.96, Assm: 94.80, PNorm: 185.64, GNorm: 13.40
+[3120] Beta: 0.000, KL: 523.12, Word: 94.31, Topo: 99.15, Assm: 93.71, PNorm: 185.80, GNorm: 22.48
+[3130] Beta: 0.000, KL: 512.21, Word: 94.24, Topo: 98.98, Assm: 95.49, PNorm: 185.98, GNorm: 20.08
+[3140] Beta: 0.000, KL: 484.40, Word: 92.39, Topo: 98.51, Assm: 93.20, PNorm: 186.17, GNorm: 21.15
+[3150] Beta: 0.000, KL: 492.43, Word: 92.19, Topo: 98.21, Assm: 94.09, PNorm: 186.33, GNorm: 43.56
+[3160] Beta: 0.000, KL: 528.69, Word: 91.72, Topo: 98.17, Assm: 92.42, PNorm: 186.52, GNorm: 19.31
+[3170] Beta: 0.000, KL: 496.32, Word: 93.52, Topo: 98.82, Assm: 92.78, PNorm: 186.71, GNorm: 11.92
+[3180] Beta: 0.000, KL: 566.34, Word: 92.59, Topo: 98.82, Assm: 92.71, PNorm: 186.88, GNorm: 22.41
+CUDA out of memory. Tried to allocate 6.58 GiB (GPU 0; 15.78 GiB total capacity; 3.74 GiB already allocated; 3.93 GiB free; 7.09 GiB cached)
+[3190] Beta: 0.000, KL: 460.27, Word: 80.25, Topo: 88.67, Assm: 85.94, PNorm: 187.02, GNorm: 24.71
+CUDA out of memory. Tried to allocate 7.97 GiB (GPU 0; 15.78 GiB total capacity; 3.93 GiB already allocated; 3.86 GiB free; 6.97 GiB cached)
+CUDA out of memory. Tried to allocate 9.32 GiB (GPU 0; 15.78 GiB total capacity; 4.47 GiB already allocated; 3.84 GiB free; 6.45 GiB cached)
+[3200] Beta: 0.000, KL: 383.15, Word: 74.56, Topo: 78.50, Assm: 72.73, PNorm: 187.14, GNorm: 50.00
+[3210] Beta: 0.000, KL: 548.18, Word: 91.63, Topo: 98.24, Assm: 93.29, PNorm: 187.36, GNorm: 31.58
+[3220] Beta: 0.000, KL: 492.50, Word: 91.09, Topo: 98.21, Assm: 93.33, PNorm: 187.58, GNorm: 21.12
+[3230] Beta: 0.000, KL: 519.30, Word: 88.23, Topo: 97.61, Assm: 91.88, PNorm: 187.83, GNorm: 36.67
+[3240] Beta: 0.000, KL: 509.17, Word: 91.50, Topo: 97.85, Assm: 93.70, PNorm: 188.05, GNorm: 35.84
+[3250] Beta: 0.000, KL: 474.39, Word: 90.81, Topo: 98.42, Assm: 94.22, PNorm: 188.27, GNorm: 14.68
+[3260] Beta: 0.000, KL: 457.98, Word: 91.88, Topo: 98.46, Assm: 93.36, PNorm: 188.51, GNorm: 29.64
+[3270] Beta: 0.000, KL: 545.80, Word: 92.47, Topo: 98.08, Assm: 90.59, PNorm: 188.76, GNorm: 33.86
+[3280] Beta: 0.000, KL: 547.83, Word: 93.49, Topo: 98.66, Assm: 94.39, PNorm: 188.94, GNorm: 32.72
+[3290] Beta: 0.000, KL: 517.86, Word: 91.64, Topo: 98.77, Assm: 93.75, PNorm: 189.11, GNorm: 20.18
+[3300] Beta: 0.000, KL: 571.99, Word: 91.20, Topo: 98.35, Assm: 93.44, PNorm: 189.27, GNorm: 20.60
+CUDA out of memory. Tried to allocate 7.21 GiB (GPU 0; 15.78 GiB total capacity; 4.61 GiB already allocated; 3.43 GiB free; 6.72 GiB cached)
+CUDA out of memory. Tried to allocate 15.23 GiB (GPU 0; 15.78 GiB total capacity; 5.13 GiB already allocated; 3.41 GiB free; 6.22 GiB cached)
+[3310] Beta: 0.000, KL: 442.73, Word: 76.00, Topo: 78.99, Assm: 75.54, PNorm: 189.40, GNorm: 13.90
+CUDA out of memory. Tried to allocate 7.34 GiB (GPU 0; 15.78 GiB total capacity; 4.65 GiB already allocated; 3.30 GiB free; 6.81 GiB cached)
+CUDA out of memory. Tried to allocate 6.76 GiB (GPU 0; 15.78 GiB total capacity; 4.38 GiB already allocated; 3.41 GiB free; 6.97 GiB cached)
+CUDA out of memory. Tried to allocate 6.17 GiB (GPU 0; 15.78 GiB total capacity; 4.16 GiB already allocated; 3.41 GiB free; 7.19 GiB cached)
+[3330] Beta: 0.000, KL: 881.11, Word: 160.00, Topo: 166.92, Assm: 158.12, PNorm: 189.66, GNorm: 14.25
+[3340] Beta: 0.000, KL: 587.07, Word: 94.16, Topo: 98.84, Assm: 96.54, PNorm: 189.82, GNorm: 18.57
+[3350] Beta: 0.000, KL: 618.63, Word: 93.31, Topo: 97.96, Assm: 93.08, PNorm: 189.99, GNorm: 16.59
+[3360] Beta: 0.000, KL: 542.17, Word: 93.48, Topo: 98.72, Assm: 95.14, PNorm: 190.14, GNorm: 18.17
+[3370] Beta: 0.000, KL: 557.36, Word: 95.19, Topo: 99.19, Assm: 96.11, PNorm: 190.26, GNorm: 26.95
+[3380] Beta: 0.000, KL: 516.91, Word: 93.78, Topo: 98.99, Assm: 95.14, PNorm: 190.38, GNorm: 31.51
+[3390] Beta: 0.000, KL: 453.04, Word: 93.72, Topo: 98.86, Assm: 95.20, PNorm: 190.54, GNorm: 12.46
+[3400] Beta: 0.000, KL: 519.75, Word: 94.02, Topo: 98.89, Assm: 94.54, PNorm: 190.72, GNorm: 16.77
+[3410] Beta: 0.000, KL: 561.12, Word: 91.11, Topo: 97.88, Assm: 94.15, PNorm: 190.92, GNorm: 17.36
+[3420] Beta: 0.000, KL: 508.02, Word: 94.49, Topo: 98.94, Assm: 93.76, PNorm: 191.10, GNorm: 13.05
+[3430] Beta: 0.000, KL: 573.12, Word: 95.14, Topo: 99.05, Assm: 92.89, PNorm: 191.26, GNorm: 14.09
+[3440] Beta: 0.000, KL: 483.88, Word: 90.18, Topo: 98.47, Assm: 95.00, PNorm: 191.39, GNorm: 18.09
+CUDA out of memory. Tried to allocate 11.60 GiB (GPU 0; 15.78 GiB total capacity; 4.80 GiB already allocated; 3.37 GiB free; 6.59 GiB cached)
+[3450] Beta: 0.000, KL: 485.75, Word: 84.56, Topo: 88.91, Assm: 82.81, PNorm: 191.55, GNorm: 23.17
+[3460] Beta: 0.000, KL: 605.17, Word: 94.19, Topo: 98.72, Assm: 93.80, PNorm: 191.69, GNorm: 29.84
+[3470] Beta: 0.000, KL: 530.63, Word: 90.83, Topo: 98.59, Assm: 92.53, PNorm: 191.84, GNorm: 42.34
+[3480] Beta: 0.000, KL: 483.72, Word: 89.80, Topo: 97.74, Assm: 93.77, PNorm: 192.03, GNorm: 23.55
+[3490] Beta: 0.000, KL: 523.98, Word: 91.38, Topo: 98.26, Assm: 92.77, PNorm: 192.21, GNorm: 37.69
+[3500] Beta: 0.000, KL: 473.00, Word: 92.30, Topo: 98.49, Assm: 93.18, PNorm: 192.40, GNorm: 20.36
+[3510] Beta: 0.000, KL: 465.84, Word: 92.79, Topo: 98.83, Assm: 92.38, PNorm: 192.63, GNorm: 27.85
+[3520] Beta: 0.000, KL: 530.30, Word: 93.75, Topo: 98.26, Assm: 93.39, PNorm: 192.84, GNorm: 14.03
+[3530] Beta: 0.000, KL: 556.04, Word: 94.41, Topo: 98.62, Assm: 94.32, PNorm: 193.08, GNorm: 17.55
+[3540] Beta: 0.000, KL: 554.30, Word: 93.64, Topo: 98.35, Assm: 94.73, PNorm: 193.25, GNorm: 23.70
+[3550] Beta: 0.000, KL: 567.98, Word: 93.46, Topo: 98.35, Assm: 91.67, PNorm: 193.42, GNorm: 26.12
+CUDA out of memory. Tried to allocate 22.95 GiB (GPU 0; 15.78 GiB total capacity; 6.80 GiB already allocated; 3.41 GiB free; 4.55 GiB cached)
+CUDA out of memory. Tried to allocate 7.39 GiB (GPU 0; 15.78 GiB total capacity; 4.75 GiB already allocated; 3.41 GiB free; 6.60 GiB cached)
+[3560] Beta: 0.000, KL: 443.44, Word: 75.16, Topo: 78.90, Assm: 76.03, PNorm: 193.56, GNorm: 12.12
+[3570] Beta: 0.000, KL: 608.06, Word: 94.80, Topo: 98.37, Assm: 93.53, PNorm: 193.69, GNorm: 19.59
+CUDA out of memory. Tried to allocate 9.59 GiB (GPU 0; 15.78 GiB total capacity; 4.70 GiB already allocated; 3.33 GiB free; 6.73 GiB cached)
+CUDA out of memory. Tried to allocate 9.20 GiB (GPU 0; 15.78 GiB total capacity; 3.54 GiB already allocated; 3.89 GiB free; 7.33 GiB cached)
+CUDA out of memory. Tried to allocate 11.45 GiB (GPU 0; 15.78 GiB total capacity; 3.90 GiB already allocated; 3.89 GiB free; 6.97 GiB cached)
+[3580] Beta: 0.000, KL: 356.22, Word: 65.27, Topo: 69.21, Assm: 65.80, PNorm: 193.77, GNorm: 23.83
+[3590] Beta: 0.000, KL: 558.13, Word: 94.36, Topo: 98.97, Assm: 97.41, PNorm: 193.92, GNorm: 16.57
+[3600] Beta: 0.000, KL: 636.52, Word: 95.50, Topo: 98.88, Assm: 95.82, PNorm: 194.05, GNorm: 13.46
+[3610] Beta: 0.000, KL: 548.79, Word: 93.14, Topo: 98.65, Assm: 93.36, PNorm: 194.21, GNorm: 18.51
+[3620] Beta: 0.000, KL: 580.70, Word: 95.96, Topo: 98.96, Assm: 94.47, PNorm: 194.35, GNorm: 24.99
+[3630] Beta: 0.000, KL: 576.90, Word: 95.42, Topo: 98.89, Assm: 94.87, PNorm: 194.47, GNorm: 34.08
+[3640] Beta: 0.000, KL: 433.13, Word: 94.44, Topo: 99.07, Assm: 97.06, PNorm: 194.64, GNorm: 30.77
+[3650] Beta: 0.000, KL: 539.04, Word: 94.96, Topo: 99.04, Assm: 93.12, PNorm: 194.81, GNorm: 50.00
+CUDA out of memory. Tried to allocate 13.11 GiB (GPU 0; 15.78 GiB total capacity; 4.21 GiB already allocated; 3.94 GiB free; 6.61 GiB cached)
+[3660] Beta: 0.000, KL: 539.51, Word: 84.36, Topo: 88.70, Assm: 85.68, PNorm: 194.97, GNorm: 13.38
+[3670] Beta: 0.000, KL: 547.35, Word: 93.39, Topo: 99.02, Assm: 94.23, PNorm: 195.14, GNorm: 15.80
+[3680] Beta: 0.000, KL: 628.58, Word: 95.97, Topo: 99.39, Assm: 93.10, PNorm: 195.31, GNorm: 18.63
+CUDA out of memory. Tried to allocate 6.35 GiB (GPU 0; 15.78 GiB total capacity; 3.60 GiB already allocated; 3.93 GiB free; 7.22 GiB cached)
+CUDA out of memory. Tried to allocate 6.39 GiB (GPU 0; 15.78 GiB total capacity; 3.63 GiB already allocated; 3.93 GiB free; 7.20 GiB cached)
+[3690] Beta: 0.000, KL: 418.21, Word: 74.73, Topo: 79.26, Assm: 76.56, PNorm: 195.41, GNorm: 32.72
+CUDA out of memory. Tried to allocate 16.84 GiB (GPU 0; 15.78 GiB total capacity; 6.28 GiB already allocated; 3.82 GiB free; 4.66 GiB cached)
+[3700] Beta: 0.000, KL: 525.26, Word: 84.55, Topo: 89.10, Assm: 82.50, PNorm: 195.55, GNorm: 36.04
+[3710] Beta: 0.000, KL: 579.82, Word: 95.84, Topo: 99.14, Assm: 93.06, PNorm: 195.71, GNorm: 14.33
+[3720] Beta: 0.000, KL: 576.85, Word: 94.30, Topo: 98.99, Assm: 93.39, PNorm: 195.84, GNorm: 17.53
+[3730] Beta: 0.000, KL: 512.10, Word: 91.82, Topo: 98.15, Assm: 93.41, PNorm: 195.98, GNorm: 27.44
+[3740] Beta: 0.000, KL: 547.71, Word: 91.41, Topo: 98.03, Assm: 91.87, PNorm: 196.22, GNorm: 11.85
+[3750] Beta: 0.000, KL: 494.10, Word: 92.67, Topo: 97.37, Assm: 92.13, PNorm: 196.42, GNorm: 50.00
+[3760] Beta: 0.000, KL: 502.81, Word: 93.41, Topo: 97.72, Assm: 92.04, PNorm: 196.65, GNorm: 25.82
+[3770] Beta: 0.000, KL: 510.12, Word: 92.69, Topo: 98.19, Assm: 92.60, PNorm: 196.91, GNorm: 19.47
+[3780] Beta: 0.000, KL: 567.15, Word: 95.60, Topo: 98.69, Assm: 93.35, PNorm: 197.10, GNorm: 27.76
+[3790] Beta: 0.000, KL: 543.37, Word: 94.82, Topo: 98.35, Assm: 94.82, PNorm: 197.30, GNorm: 35.59
+[3800] Beta: 0.000, KL: 585.28, Word: 94.24, Topo: 98.55, Assm: 93.05, PNorm: 197.47, GNorm: 12.98
+CUDA out of memory. Tried to allocate 14.09 GiB (GPU 0; 15.78 GiB total capacity; 4.73 GiB already allocated; 3.90 GiB free; 6.12 GiB cached)
+CUDA out of memory. Tried to allocate 9.89 GiB (GPU 0; 15.78 GiB total capacity; 3.81 GiB already allocated; 3.91 GiB free; 7.05 GiB cached)
+[3810] Beta: 0.000, KL: 422.32, Word: 75.54, Topo: 78.96, Assm: 75.62, PNorm: 197.60, GNorm: 13.59
+[3820] Beta: 0.000, KL: 598.92, Word: 96.48, Topo: 98.98, Assm: 92.49, PNorm: 197.72, GNorm: 17.09
+CUDA out of memory. Tried to allocate 5.39 GiB (GPU 0; 15.78 GiB total capacity; 5.13 GiB already allocated; 3.80 GiB free; 5.83 GiB cached)
+[3830] Beta: 0.000, KL: 479.69, Word: 84.93, Topo: 89.16, Assm: 84.73, PNorm: 197.81, GNorm: 32.00
+CUDA out of memory. Tried to allocate 8.28 GiB (GPU 0; 15.78 GiB total capacity; 3.33 GiB already allocated; 3.89 GiB free; 7.54 GiB cached)
+[3840] Beta: 0.000, KL: 501.72, Word: 86.09, Topo: 89.23, Assm: 87.82, PNorm: 197.92, GNorm: 24.62
+[3850] Beta: 0.000, KL: 664.05, Word: 95.63, Topo: 99.17, Assm: 95.25, PNorm: 198.05, GNorm: 10.76
+[3860] Beta: 0.000, KL: 596.42, Word: 95.07, Topo: 98.82, Assm: 93.94, PNorm: 198.16, GNorm: 25.59
+[3870] Beta: 0.000, KL: 591.91, Word: 95.62, Topo: 98.80, Assm: 96.17, PNorm: 198.30, GNorm: 21.14
+[3880] Beta: 0.000, KL: 616.04, Word: 95.12, Topo: 98.27, Assm: 95.33, PNorm: 198.44, GNorm: 32.07
+[3890] Beta: 0.000, KL: 427.85, Word: 95.25, Topo: 99.08, Assm: 97.91, PNorm: 198.59, GNorm: 17.94
+[3900] Beta: 0.000, KL: 551.48, Word: 93.78, Topo: 98.47, Assm: 93.48, PNorm: 198.77, GNorm: 21.70
+CUDA out of memory. Tried to allocate 6.33 GiB (GPU 0; 15.78 GiB total capacity; 3.96 GiB already allocated; 3.95 GiB free; 6.85 GiB cached)
+CUDA out of memory. Tried to allocate 6.94 GiB (GPU 0; 15.78 GiB total capacity; 4.21 GiB already allocated; 3.94 GiB free; 6.61 GiB cached)
+[3910] Beta: 0.000, KL: 440.52, Word: 74.81, Topo: 79.11, Assm: 76.41, PNorm: 198.91, GNorm: 27.03
+[3920] Beta: 0.000, KL: 592.87, Word: 94.04, Topo: 99.01, Assm: 94.81, PNorm: 199.11, GNorm: 17.97
+[3930] Beta: 0.000, KL: 597.75, Word: 95.86, Topo: 99.08, Assm: 94.71, PNorm: 199.24, GNorm: 13.23
+[3940] Beta: 0.000, KL: 560.23, Word: 92.99, Topo: 98.99, Assm: 95.22, PNorm: 199.34, GNorm: 23.07
+[3950] Beta: 0.000, KL: 577.92, Word: 93.93, Topo: 99.03, Assm: 96.09, PNorm: 199.46, GNorm: 47.26
+CUDA out of memory. Tried to allocate 12.66 GiB (GPU 0; 15.78 GiB total capacity; 5.14 GiB already allocated; 3.84 GiB free; 5.78 GiB cached)
+[3960] Beta: 0.000, KL: 510.89, Word: 85.36, Topo: 89.29, Assm: 82.78, PNorm: 199.58, GNorm: 32.14
+[3970] Beta: 0.000, KL: 595.19, Word: 94.31, Topo: 99.34, Assm: 93.04, PNorm: 199.71, GNorm: 19.66
+[3980] Beta: 0.000, KL: 491.01, Word: 93.44, Topo: 98.91, Assm: 94.83, PNorm: 199.88, GNorm: 25.88
+[3990] Beta: 0.000, KL: 587.44, Word: 91.14, Topo: 98.16, Assm: 92.89, PNorm: 200.08, GNorm: 22.94
+[4000] Beta: 0.000, KL: 555.45, Word: 92.72, Topo: 98.52, Assm: 92.21, PNorm: 200.24, GNorm: 32.89
+[4010] Beta: 0.000, KL: 516.40, Word: 92.98, Topo: 98.95, Assm: 91.79, PNorm: 200.43, GNorm: 32.90
+[4020] Beta: 0.000, KL: 462.49, Word: 93.88, Topo: 99.17, Assm: 95.68, PNorm: 200.62, GNorm: 16.13
+[4030] Beta: 0.000, KL: 561.08, Word: 95.17, Topo: 98.98, Assm: 93.08, PNorm: 200.80, GNorm: 24.91
+[4040] Beta: 0.000, KL: 585.40, Word: 95.01, Topo: 99.20, Assm: 96.12, PNorm: 200.96, GNorm: 11.98
+[4050] Beta: 0.000, KL: 617.75, Word: 94.32, Topo: 98.87, Assm: 94.07, PNorm: 201.11, GNorm: 11.77
+CUDA out of memory. Tried to allocate 14.27 GiB (GPU 0; 15.78 GiB total capacity; 4.84 GiB already allocated; 3.90 GiB free; 6.02 GiB cached)
+CUDA out of memory. Tried to allocate 21.46 GiB (GPU 0; 15.78 GiB total capacity; 6.57 GiB already allocated; 3.88 GiB free; 4.31 GiB cached)
+[4070] Beta: 0.000, KL: 1075.01, Word: 171.86, Topo: 178.57, Assm: 171.69, PNorm: 201.33, GNorm: 25.12
+CUDA out of memory. Tried to allocate 11.60 GiB (GPU 0; 15.78 GiB total capacity; 5.48 GiB already allocated; 3.79 GiB free; 5.48 GiB cached)
+[4080] Beta: 0.000, KL: 505.95, Word: 85.75, Topo: 89.17, Assm: 85.90, PNorm: 201.43, GNorm: 13.63
+CUDA out of memory. Tried to allocate 8.21 GiB (GPU 0; 15.78 GiB total capacity; 3.24 GiB already allocated; 3.89 GiB free; 7.64 GiB cached)
+CUDA out of memory. Tried to allocate 8.03 GiB (GPU 0; 15.78 GiB total capacity; 3.17 GiB already allocated; 3.90 GiB free; 7.68 GiB cached)
+[4090] Beta: 0.000, KL: 462.98, Word: 76.83, Topo: 79.38, Assm: 78.09, PNorm: 201.51, GNorm: 35.37
+[4100] Beta: 0.000, KL: 688.75, Word: 96.50, Topo: 99.15, Assm: 97.25, PNorm: 201.62, GNorm: 12.47
+[4110] Beta: 0.000, KL: 652.52, Word: 95.71, Topo: 98.99, Assm: 94.11, PNorm: 201.74, GNorm: 13.12
+[4120] Beta: 0.000, KL: 609.04, Word: 95.89, Topo: 98.96, Assm: 97.23, PNorm: 201.85, GNorm: 50.00
+[4130] Beta: 0.000, KL: 597.72, Word: 96.02, Topo: 99.39, Assm: 94.79, PNorm: 201.97, GNorm: 12.98
+[4140] Beta: 0.000, KL: 515.43, Word: 95.05, Topo: 99.13, Assm: 97.43, PNorm: 202.07, GNorm: 23.85
+[4150] Beta: 0.000, KL: 601.20, Word: 94.94, Topo: 99.02, Assm: 95.77, PNorm: 202.28, GNorm: 14.08
+CUDA out of memory. Tried to allocate 10.31 GiB (GPU 0; 15.78 GiB total capacity; 3.60 GiB already allocated; 3.94 GiB free; 7.22 GiB cached)
+[4160] Beta: 0.000, KL: 509.96, Word: 84.31, Topo: 88.76, Assm: 85.00, PNorm: 202.43, GNorm: 41.69
+[4170] Beta: 0.000, KL: 639.63, Word: 95.12, Topo: 98.98, Assm: 94.82, PNorm: 202.61, GNorm: 16.46
+[4180] Beta: 0.000, KL: 595.62, Word: 95.84, Topo: 99.31, Assm: 94.40, PNorm: 202.76, GNorm: 14.49
+[4190] Beta: 0.000, KL: 582.47, Word: 94.49, Topo: 99.28, Assm: 95.18, PNorm: 202.88, GNorm: 39.58
+CUDA out of memory. Tried to allocate 7.03 GiB (GPU 0; 15.78 GiB total capacity; 3.93 GiB already allocated; 3.92 GiB free; 6.90 GiB cached)
+[4200] Beta: 0.000, KL: 553.97, Word: 85.25, Topo: 89.32, Assm: 86.75, PNorm: 202.99, GNorm: 14.40
+CUDA out of memory. Tried to allocate 11.37 GiB (GPU 0; 15.78 GiB total capacity; 5.13 GiB already allocated; 3.82 GiB free; 5.81 GiB cached)
+[4210] Beta: 0.000, KL: 503.38, Word: 86.31, Topo: 89.43, Assm: 83.74, PNorm: 203.09, GNorm: 13.97
+[4220] Beta: 0.000, KL: 633.78, Word: 95.18, Topo: 99.20, Assm: 96.00, PNorm: 203.19, GNorm: 9.82
+[4230] Beta: 0.000, KL: 520.16, Word: 94.76, Topo: 99.14, Assm: 95.35, PNorm: 203.32, GNorm: 33.14
+[4240] Beta: 0.000, KL: 601.28, Word: 92.09, Topo: 98.55, Assm: 94.08, PNorm: 203.47, GNorm: 14.64
+[4250] Beta: 0.000, KL: 593.76, Word: 93.69, Topo: 98.72, Assm: 92.91, PNorm: 203.63, GNorm: 31.34
+[4260] Beta: 0.000, KL: 538.04, Word: 93.19, Topo: 98.84, Assm: 94.21, PNorm: 203.74, GNorm: 12.52
+[4270] Beta: 0.000, KL: 462.81, Word: 94.52, Topo: 99.33, Assm: 96.60, PNorm: 203.94, GNorm: 21.21
+[4280] Beta: 0.000, KL: 615.10, Word: 95.71, Topo: 99.02, Assm: 94.48, PNorm: 204.10, GNorm: 11.09
+[4290] Beta: 0.000, KL: 542.11, Word: 95.36, Topo: 99.17, Assm: 95.88, PNorm: 204.25, GNorm: 16.06
+[4300] Beta: 0.000, KL: 620.82, Word: 94.78, Topo: 99.10, Assm: 94.30, PNorm: 204.38, GNorm: 17.85
+[4310] Beta: 0.000, KL: 572.68, Word: 94.99, Topo: 99.23, Assm: 96.23, PNorm: 204.51, GNorm: 16.04
+CUDA out of memory. Tried to allocate 13.52 GiB (GPU 0; 15.78 GiB total capacity; 4.63 GiB already allocated; 3.90 GiB free; 6.23 GiB cached)
+CUDA out of memory. Tried to allocate 14.60 GiB (GPU 0; 15.78 GiB total capacity; 4.88 GiB already allocated; 3.90 GiB free; 5.98 GiB cached)
+[4320] Beta: 0.000, KL: 577.34, Word: 77.32, Topo: 79.49, Assm: 76.01, PNorm: 204.58, GNorm: 10.04
+CUDA out of memory. Tried to allocate 10.56 GiB (GPU 0; 15.78 GiB total capacity; 4.89 GiB already allocated; 3.82 GiB free; 6.05 GiB cached)
+[4330] Beta: 0.000, KL: 517.74, Word: 86.04, Topo: 89.19, Assm: 85.71, PNorm: 204.67, GNorm: 22.91
+CUDA out of memory. Tried to allocate 7.28 GiB (GPU 0; 15.78 GiB total capacity; 4.57 GiB already allocated; 3.41 GiB free; 6.78 GiB cached)
+CUDA out of memory. Tried to allocate 8.72 GiB (GPU 0; 15.78 GiB total capacity; 3.40 GiB already allocated; 3.88 GiB free; 7.48 GiB cached)
+[4340] Beta: 0.000, KL: 466.53, Word: 76.01, Topo: 79.33, Assm: 77.98, PNorm: 204.76, GNorm: 15.30
+[4350] Beta: 0.000, KL: 700.59, Word: 95.94, Topo: 99.33, Assm: 97.31, PNorm: 204.88, GNorm: 8.93
+[4360] Beta: 0.000, KL: 646.98, Word: 95.97, Topo: 99.36, Assm: 95.67, PNorm: 205.00, GNorm: 14.42
+[4370] Beta: 0.000, KL: 649.04, Word: 96.21, Topo: 99.45, Assm: 97.84, PNorm: 205.13, GNorm: 8.63
+[4380] Beta: 0.000, KL: 618.95, Word: 96.20, Topo: 99.33, Assm: 95.60, PNorm: 205.23, GNorm: 31.96
+[4390] Beta: 0.000, KL: 586.41, Word: 96.26, Topo: 99.44, Assm: 97.22, PNorm: 205.32, GNorm: 11.67
+[4400] Beta: 0.000, KL: 591.81, Word: 95.10, Topo: 99.19, Assm: 96.68, PNorm: 205.44, GNorm: 28.45
+[4410] Beta: 0.000, KL: 585.82, Word: 96.00, Topo: 99.27, Assm: 95.74, PNorm: 205.56, GNorm: 39.34
+CUDA out of memory. Tried to allocate 12.18 GiB (GPU 0; 15.78 GiB total capacity; 3.99 GiB already allocated; 3.96 GiB free; 6.81 GiB cached)
+[4420] Beta: 0.000, KL: 563.31, Word: 84.98, Topo: 89.04, Assm: 86.99, PNorm: 205.71, GNorm: 21.78
+[4430] Beta: 0.000, KL: 602.62, Word: 96.05, Topo: 99.17, Assm: 96.00, PNorm: 205.85, GNorm: 11.54
+[4440] Beta: 0.000, KL: 675.21, Word: 95.01, Topo: 99.54, Assm: 96.37, PNorm: 205.95, GNorm: 21.10
+CUDA out of memory. Tried to allocate 6.67 GiB (GPU 0; 15.78 GiB total capacity; 3.75 GiB already allocated; 3.95 GiB free; 7.06 GiB cached)
+CUDA out of memory. Tried to allocate 6.14 GiB (GPU 0; 15.78 GiB total capacity; 3.53 GiB already allocated; 3.95 GiB free; 7.28 GiB cached)
+[4450] Beta: 0.000, KL: 507.17, Word: 75.91, Topo: 79.37, Assm: 78.10, PNorm: 206.02, GNorm: 15.65
+CUDA out of memory. Tried to allocate 7.32 GiB (GPU 0; 15.78 GiB total capacity; 4.05 GiB already allocated; 3.85 GiB free; 6.85 GiB cached)
+CUDA out of memory. Tried to allocate 6.71 GiB (GPU 0; 15.78 GiB total capacity; 4.19 GiB already allocated; 3.83 GiB free; 6.74 GiB cached)
+[4460] Beta: 0.000, KL: 470.13, Word: 77.38, Topo: 79.46, Assm: 74.45, PNorm: 206.13, GNorm: 13.89
+[4470] Beta: 0.000, KL: 689.94, Word: 96.11, Topo: 99.37, Assm: 94.16, PNorm: 206.23, GNorm: 20.12
+CUDA out of memory. Tried to allocate 5.91 GiB (GPU 0; 15.78 GiB total capacity; 3.84 GiB already allocated; 3.92 GiB free; 7.00 GiB cached)
+[4480] Beta: 0.000, KL: 577.95, Word: 85.52, Topo: 89.29, Assm: 86.64, PNorm: 206.33, GNorm: 31.01
+[4490] Beta: 0.000, KL: 606.95, Word: 93.34, Topo: 98.69, Assm: 94.48, PNorm: 206.45, GNorm: 21.65
+[4500] Beta: 0.000, KL: 605.66, Word: 95.54, Topo: 99.14, Assm: 95.16, PNorm: 206.58, GNorm: 30.16
+[4510] Beta: 0.000, KL: 566.55, Word: 94.05, Topo: 99.10, Assm: 94.80, PNorm: 206.74, GNorm: 13.51
+[4520] Beta: 0.000, KL: 562.99, Word: 94.50, Topo: 99.38, Assm: 97.17, PNorm: 206.89, GNorm: 25.10
+[4530] Beta: 0.000, KL: 633.00, Word: 95.60, Topo: 99.31, Assm: 94.00, PNorm: 207.03, GNorm: 26.73
+[4540] Beta: 0.000, KL: 580.74, Word: 96.03, Topo: 99.38, Assm: 95.61, PNorm: 207.17, GNorm: 26.59
+[4550] Beta: 0.000, KL: 610.22, Word: 95.89, Topo: 99.22, Assm: 95.29, PNorm: 207.30, GNorm: 11.56
+[4560] Beta: 0.000, KL: 670.19, Word: 95.95, Topo: 99.23, Assm: 96.05, PNorm: 207.42, GNorm: 17.39
+CUDA out of memory. Tried to allocate 18.80 GiB (GPU 0; 15.78 GiB total capacity; 5.90 GiB already allocated; 3.91 GiB free; 4.95 GiB cached)
+CUDA out of memory. Tried to allocate 12.92 GiB (GPU 0; 15.78 GiB total capacity; 4.44 GiB already allocated; 3.93 GiB free; 6.40 GiB cached)
+[4570] Beta: 0.000, KL: 539.77, Word: 77.95, Topo: 79.64, Assm: 76.98, PNorm: 207.50, GNorm: 7.68
+CUDA out of memory. Tried to allocate 7.25 GiB (GPU 0; 15.78 GiB total capacity; 4.29 GiB already allocated; 3.83 GiB free; 6.63 GiB cached)
+CUDA out of memory. Tried to allocate 5.43 GiB (GPU 0; 15.78 GiB total capacity; 4.92 GiB already allocated; 3.84 GiB free; 6.00 GiB cached)
+CUDA out of memory. Tried to allocate 9.16 GiB (GPU 0; 15.78 GiB total capacity; 3.36 GiB already allocated; 3.92 GiB free; 7.49 GiB cached)
+CUDA out of memory. Tried to allocate 8.27 GiB (GPU 0; 15.78 GiB total capacity; 3.29 GiB already allocated; 3.92 GiB free; 7.56 GiB cached)
+[4590] Beta: 0.000, KL: 977.97, Word: 154.55, Topo: 158.76, Assm: 153.69, PNorm: 207.67, GNorm: 12.31
+[4600] Beta: 0.000, KL: 666.58, Word: 96.72, Topo: 99.45, Assm: 97.37, PNorm: 207.76, GNorm: 10.61
+[4610] Beta: 0.000, KL: 728.91, Word: 97.51, Topo: 99.49, Assm: 95.86, PNorm: 207.85, GNorm: 14.15
+[4620] Beta: 0.000, KL: 623.29, Word: 96.27, Topo: 99.42, Assm: 97.05, PNorm: 207.95, GNorm: 22.63
+[4630] Beta: 0.000, KL: 640.34, Word: 97.66, Topo: 99.50, Assm: 96.63, PNorm: 208.07, GNorm: 10.35
+[4640] Beta: 0.000, KL: 601.49, Word: 96.31, Topo: 99.50, Assm: 96.01, PNorm: 208.16, GNorm: 19.24
+[4650] Beta: 0.000, KL: 548.08, Word: 96.15, Topo: 99.49, Assm: 97.45, PNorm: 208.29, GNorm: 15.21
+[4660] Beta: 0.000, KL: 584.00, Word: 95.59, Topo: 99.42, Assm: 96.24, PNorm: 208.42, GNorm: 19.41
+CUDA out of memory. Tried to allocate 6.95 GiB (GPU 0; 15.78 GiB total capacity; 4.27 GiB already allocated; 3.96 GiB free; 6.53 GiB cached)
+CUDA out of memory. Tried to allocate 9.25 GiB (GPU 0; 15.78 GiB total capacity; 3.28 GiB already allocated; 3.97 GiB free; 7.50 GiB cached)
+[4670] Beta: 0.000, KL: 527.41, Word: 75.07, Topo: 79.50, Assm: 77.31, PNorm: 208.54, GNorm: 15.85
+[4680] Beta: 0.000, KL: 601.01, Word: 96.32, Topo: 99.27, Assm: 95.87, PNorm: 208.73, GNorm: 12.13
+[4690] Beta: 0.000, KL: 727.63, Word: 96.46, Topo: 99.37, Assm: 95.55, PNorm: 208.84, GNorm: 15.78
+CUDA out of memory. Tried to allocate 6.51 GiB (GPU 0; 15.78 GiB total capacity; 3.67 GiB already allocated; 3.95 GiB free; 7.14 GiB cached)
+CUDA out of memory. Tried to allocate 6.63 GiB (GPU 0; 15.78 GiB total capacity; 3.73 GiB already allocated; 3.95 GiB free; 7.08 GiB cached)
+[4700] Beta: 0.000, KL: 507.06, Word: 75.61, Topo: 79.48, Assm: 77.65, PNorm: 208.89, GNorm: 17.64
+CUDA out of memory. Tried to allocate 6.67 GiB (GPU 0; 15.78 GiB total capacity; 4.13 GiB already allocated; 3.84 GiB free; 6.79 GiB cached)
+CUDA out of memory. Tried to allocate 6.66 GiB (GPU 0; 15.78 GiB total capacity; 5.36 GiB already allocated; 3.40 GiB free; 6.00 GiB cached)
+[4710] Beta: 0.000, KL: 525.77, Word: 77.53, Topo: 79.57, Assm: 76.77, PNorm: 208.97, GNorm: 14.06
+[4720] Beta: 0.000, KL: 684.10, Word: 97.51, Topo: 99.63, Assm: 94.68, PNorm: 209.07, GNorm: 16.20
+[4730] Beta: 0.000, KL: 636.28, Word: 96.57, Topo: 99.46, Assm: 95.39, PNorm: 209.17, GNorm: 21.95
+[4740] Beta: 0.000, KL: 620.74, Word: 95.52, Topo: 99.31, Assm: 95.83, PNorm: 209.28, GNorm: 15.51
+[4750] Beta: 0.000, KL: 676.09, Word: 96.20, Topo: 99.44, Assm: 94.93, PNorm: 209.40, GNorm: 21.03
+[4760] Beta: 0.000, KL: 608.79, Word: 95.40, Topo: 99.19, Assm: 95.24, PNorm: 209.51, GNorm: 14.60
+[4770] Beta: 0.000, KL: 621.05, Word: 96.21, Topo: 99.55, Assm: 96.79, PNorm: 209.61, GNorm: 15.51
+CUDA out of memory. Tried to allocate 6.25 GiB (GPU 0; 15.78 GiB total capacity; 4.02 GiB already allocated; 3.46 GiB free; 7.27 GiB cached)
+[4780] Beta: 0.000, KL: 571.54, Word: 86.94, Topo: 89.33, Assm: 85.87, PNorm: 209.72, GNorm: 10.79
+[4790] Beta: 0.000, KL: 674.44, Word: 97.21, Topo: 99.43, Assm: 94.65, PNorm: 209.84, GNorm: 13.05
+[4800] Beta: 0.000, KL: 654.84, Word: 96.70, Topo: 99.30, Assm: 96.80, PNorm: 209.98, GNorm: 14.65
+[4810] Beta: 0.000, KL: 709.59, Word: 96.49, Topo: 99.12, Assm: 95.63, PNorm: 210.10, GNorm: 18.10
+CUDA out of memory. Tried to allocate 23.00 GiB (GPU 0; 15.78 GiB total capacity; 6.80 GiB already allocated; 3.46 GiB free; 4.50 GiB cached)
+[4820] Beta: 0.000, KL: 586.68, Word: 86.93, Topo: 89.40, Assm: 86.75, PNorm: 210.17, GNorm: 9.86
+[4830] Beta: 0.000, KL: 705.07, Word: 97.44, Topo: 98.99, Assm: 95.55, PNorm: 210.24, GNorm: 50.00
+CUDA out of memory. Tried to allocate 7.62 GiB (GPU 0; 15.78 GiB total capacity; 4.61 GiB already allocated; 3.37 GiB free; 6.78 GiB cached)
+CUDA out of memory. Tried to allocate 7.63 GiB (GPU 0; 15.78 GiB total capacity; 4.28 GiB already allocated; 3.40 GiB free; 7.08 GiB cached)
+CUDA out of memory. Tried to allocate 9.69 GiB (GPU 0; 15.78 GiB total capacity; 3.66 GiB already allocated; 3.94 GiB free; 7.16 GiB cached)
+CUDA out of memory. Tried to allocate 7.11 GiB (GPU 0; 15.78 GiB total capacity; 4.53 GiB already allocated; 3.47 GiB free; 6.77 GiB cached)
+[4840] Beta: 0.000, KL: 384.36, Word: 58.05, Topo: 59.68, Assm: 58.17, PNorm: 210.32, GNorm: 16.08
+[4850] Beta: 0.000, KL: 666.87, Word: 97.05, Topo: 99.48, Assm: 97.34, PNorm: 210.44, GNorm: 11.09
+[4860] Beta: 0.000, KL: 751.26, Word: 97.75, Topo: 99.55, Assm: 97.33, PNorm: 210.55, GNorm: 10.27
+[4870] Beta: 0.000, KL: 621.21, Word: 96.35, Topo: 99.39, Assm: 96.27, PNorm: 210.65, GNorm: 36.41
+[4880] Beta: 0.000, KL: 656.97, Word: 97.54, Topo: 99.50, Assm: 95.85, PNorm: 210.75, GNorm: 28.32
+[4890] Beta: 0.000, KL: 690.08, Word: 96.52, Topo: 99.52, Assm: 96.51, PNorm: 210.82, GNorm: 39.49
+[4900] Beta: 0.000, KL: 544.42, Word: 96.37, Topo: 99.53, Assm: 97.39, PNorm: 210.91, GNorm: 27.55
+[4910] Beta: 0.000, KL: 600.51, Word: 96.99, Topo: 99.53, Assm: 96.40, PNorm: 211.06, GNorm: 38.87
+CUDA out of memory. Tried to allocate 7.26 GiB (GPU 0; 15.78 GiB total capacity; 4.26 GiB already allocated; 3.52 GiB free; 6.98 GiB cached)
+[4920] Beta: 0.000, KL: 619.71, Word: 86.94, Topo: 89.32, Assm: 86.51, PNorm: 211.21, GNorm: 14.83
+[4930] Beta: 0.000, KL: 656.63, Word: 96.82, Topo: 99.36, Assm: 95.53, PNorm: 211.34, GNorm: 12.15
+[4940] Beta: 0.000, KL: 693.19, Word: 97.63, Topo: 99.60, Assm: 95.43, PNorm: 211.47, GNorm: 20.55
+[4950] Beta: 0.000, KL: 593.78, Word: 94.32, Topo: 99.16, Assm: 96.15, PNorm: 211.56, GNorm: 27.92
+CUDA out of memory. Tried to allocate 7.24 GiB (GPU 0; 15.78 GiB total capacity; 5.32 GiB already allocated; 2.93 GiB free; 6.51 GiB cached)
+[4960] Beta: 0.000, KL: 610.98, Word: 86.50, Topo: 89.62, Assm: 86.86, PNorm: 211.67, GNorm: 30.30
+[4970] Beta: 0.000, KL: 663.24, Word: 97.04, Topo: 99.46, Assm: 94.78, PNorm: 211.80, GNorm: 9.96
+[4980] Beta: 0.000, KL: 649.83, Word: 96.70, Topo: 99.56, Assm: 95.25, PNorm: 211.94, GNorm: 11.87
+[4990] Beta: 0.000, KL: 578.40, Word: 96.05, Topo: 99.41, Assm: 96.63, PNorm: 212.06, GNorm: 17.45
+[5000] Beta: 0.000, KL: 698.29, Word: 96.06, Topo: 99.31, Assm: 95.50, PNorm: 212.18, GNorm: 8.47
+[5010] Beta: 0.000, KL: 615.86, Word: 95.79, Topo: 99.39, Assm: 95.38, PNorm: 212.30, GNorm: 31.36
+[5020] Beta: 0.000, KL: 603.18, Word: 96.76, Topo: 99.32, Assm: 95.41, PNorm: 212.44, GNorm: 15.66
+[5030] Beta: 0.000, KL: 623.46, Word: 96.58, Topo: 99.16, Assm: 95.92, PNorm: 212.57, GNorm: 10.81
+[5040] Beta: 0.000, KL: 669.62, Word: 97.71, Topo: 99.36, Assm: 94.80, PNorm: 212.69, GNorm: 16.93
+[5050] Beta: 0.000, KL: 674.37, Word: 97.25, Topo: 99.42, Assm: 96.97, PNorm: 212.83, GNorm: 15.69
+[5060] Beta: 0.000, KL: 715.21, Word: 97.08, Topo: 99.51, Assm: 97.23, PNorm: 212.94, GNorm: 11.69
+CUDA out of memory. Tried to allocate 12.66 GiB (GPU 0; 15.78 GiB total capacity; 4.48 GiB already allocated; 3.46 GiB free; 6.81 GiB cached)
+CUDA out of memory. Tried to allocate 13.29 GiB (GPU 0; 15.78 GiB total capacity; 4.62 GiB already allocated; 3.46 GiB free; 6.67 GiB cached)
+[5070] Beta: 0.000, KL: 512.67, Word: 76.88, Topo: 79.36, Assm: 76.68, PNorm: 213.02, GNorm: 10.15
+[5080] Beta: 0.000, KL: 710.44, Word: 97.85, Topo: 99.46, Assm: 95.39, PNorm: 213.08, GNorm: 25.21
+CUDA out of memory. Tried to allocate 10.17 GiB (GPU 0; 15.78 GiB total capacity; 5.13 GiB already allocated; 3.36 GiB free; 6.27 GiB cached)
+CUDA out of memory. Tried to allocate 7.86 GiB (GPU 0; 15.78 GiB total capacity; 3.23 GiB already allocated; 3.94 GiB free; 7.58 GiB cached)
+CUDA out of memory. Tried to allocate 7.16 GiB (GPU 0; 15.78 GiB total capacity; 4.64 GiB already allocated; 3.45 GiB free; 6.67 GiB cached)
+[5100] Beta: 0.000, KL: 1090.48, Word: 164.81, Topo: 168.90, Assm: 163.81, PNorm: 213.25, GNorm: 14.15
+[5110] Beta: 0.000, KL: 765.81, Word: 98.16, Topo: 99.46, Assm: 97.73, PNorm: 213.33, GNorm: 12.03
+[5120] Beta: 0.000, KL: 697.59, Word: 97.11, Topo: 99.31, Assm: 95.79, PNorm: 213.45, GNorm: 26.95
+[5130] Beta: 0.000, KL: 672.87, Word: 97.67, Topo: 99.33, Assm: 96.79, PNorm: 213.56, GNorm: 16.83
+[5140] Beta: 0.000, KL: 660.43, Word: 97.35, Topo: 99.42, Assm: 95.40, PNorm: 213.66, GNorm: 38.45
+[5150] Beta: 0.000, KL: 520.68, Word: 96.88, Topo: 99.42, Assm: 98.27, PNorm: 213.77, GNorm: 19.98
+[5160] Beta: 0.000, KL: 678.92, Word: 97.04, Topo: 99.25, Assm: 95.86, PNorm: 213.92, GNorm: 14.80
+CUDA out of memory. Tried to allocate 12.16 GiB (GPU 0; 15.78 GiB total capacity; 3.99 GiB already allocated; 3.99 GiB free; 6.77 GiB cached)
+CUDA out of memory. Tried to allocate 6.78 GiB (GPU 0; 15.78 GiB total capacity; 3.93 GiB already allocated; 3.99 GiB free; 6.84 GiB cached)
+[5170] Beta: 0.000, KL: 516.54, Word: 77.34, Topo: 79.58, Assm: 77.23, PNorm: 214.01, GNorm: 8.19
+[5180] Beta: 0.000, KL: 695.10, Word: 97.41, Topo: 99.37, Assm: 95.54, PNorm: 214.15, GNorm: 11.68
+[5190] Beta: 0.000, KL: 686.60, Word: 97.99, Topo: 99.48, Assm: 96.16, PNorm: 214.29, GNorm: 12.21
+CUDA out of memory. Tried to allocate 6.90 GiB (GPU 0; 15.78 GiB total capacity; 3.88 GiB already allocated; 3.98 GiB free; 6.91 GiB cached)
+[5200] Beta: 0.000, KL: 582.87, Word: 86.00, Topo: 89.44, Assm: 87.35, PNorm: 214.38, GNorm: 20.83
+[5210] Beta: 0.000, KL: 704.47, Word: 96.80, Topo: 99.45, Assm: 96.49, PNorm: 214.47, GNorm: 50.00
+CUDA out of memory. Tried to allocate 14.20 GiB (GPU 0; 15.78 GiB total capacity; 5.87 GiB already allocated; 3.86 GiB free; 5.04 GiB cached)
+[5220] Beta: 0.000, KL: 577.57, Word: 87.75, Topo: 89.41, Assm: 84.80, PNorm: 214.55, GNorm: 19.19
+[5230] Beta: 0.000, KL: 691.14, Word: 97.28, Topo: 99.53, Assm: 94.45, PNorm: 214.65, GNorm: 22.20
+[5240] Beta: 0.000, KL: 572.29, Word: 96.30, Topo: 99.54, Assm: 97.27, PNorm: 214.76, GNorm: 18.72
+[5250] Beta: 0.000, KL: 680.35, Word: 95.64, Topo: 99.19, Assm: 96.53, PNorm: 214.91, GNorm: 23.32
+[5260] Beta: 0.000, KL: 684.25, Word: 96.20, Topo: 99.25, Assm: 93.95, PNorm: 215.03, GNorm: 29.95
+[5270] Beta: 0.000, KL: 656.01, Word: 96.22, Topo: 99.46, Assm: 97.18, PNorm: 215.15, GNorm: 23.99
+[5280] Beta: 0.000, KL: 576.34, Word: 96.57, Topo: 99.36, Assm: 97.36, PNorm: 215.27, GNorm: 16.51
+[5290] Beta: 0.000, KL: 694.81, Word: 97.20, Topo: 99.34, Assm: 95.88, PNorm: 215.40, GNorm: 12.92
+[5300] Beta: 0.000, KL: 690.25, Word: 97.33, Topo: 99.38, Assm: 96.92, PNorm: 215.53, GNorm: 11.98
+[5310] Beta: 0.000, KL: 738.26, Word: 97.16, Topo: 99.40, Assm: 96.59, PNorm: 215.62, GNorm: 14.24
+CUDA out of memory. Tried to allocate 14.86 GiB (GPU 0; 15.78 GiB total capacity; 4.93 GiB already allocated; 3.95 GiB free; 5.88 GiB cached)
+CUDA out of memory. Tried to allocate 12.36 GiB (GPU 0; 15.78 GiB total capacity; 4.46 GiB already allocated; 3.94 GiB free; 6.36 GiB cached)
+[5330] Beta: 0.000, KL: 1289.68, Word: 175.05, Topo: 179.00, Assm: 172.84, PNorm: 215.77, GNorm: 15.44
+CUDA out of memory. Tried to allocate 5.83 GiB (GPU 0; 15.78 GiB total capacity; 5.16 GiB already allocated; 3.86 GiB free; 5.73 GiB cached)
+CUDA out of memory. Tried to allocate 5.29 GiB (GPU 0; 15.78 GiB total capacity; 5.67 GiB already allocated; 3.80 GiB free; 5.29 GiB cached)
+CUDA out of memory. Tried to allocate 6.54 GiB (GPU 0; 15.78 GiB total capacity; 4.15 GiB already allocated; 3.92 GiB free; 6.69 GiB cached)
+[5340] Beta: 0.000, KL: 484.11, Word: 68.42, Topo: 69.52, Assm: 67.47, PNorm: 215.82, GNorm: 8.04
+CUDA out of memory. Tried to allocate 7.88 GiB (GPU 0; 15.78 GiB total capacity; 3.26 GiB already allocated; 3.94 GiB free; 7.56 GiB cached)
+[5350] Beta: 0.000, KL: 565.46, Word: 87.40, Topo: 89.30, Assm: 87.14, PNorm: 215.91, GNorm: 50.00
+[5360] Beta: 0.000, KL: 787.06, Word: 97.91, Topo: 99.39, Assm: 97.75, PNorm: 216.01, GNorm: 7.53
+[5370] Beta: 0.000, KL: 704.29, Word: 96.96, Topo: 99.23, Assm: 96.24, PNorm: 216.15, GNorm: 11.19
+[5380] Beta: 0.000, KL: 710.11, Word: 96.56, Topo: 99.20, Assm: 98.07, PNorm: 216.27, GNorm: 50.00
+[5390] Beta: 0.000, KL: 692.47, Word: 96.81, Topo: 98.76, Assm: 96.10, PNorm: 216.50, GNorm: 19.86
+[5400] Beta: 0.000, KL: 553.23, Word: 96.02, Topo: 99.14, Assm: 97.58, PNorm: 216.63, GNorm: 24.83
+[5410] Beta: 0.000, KL: 628.09, Word: 95.87, Topo: 98.40, Assm: 96.08, PNorm: 216.87, GNorm: 17.99
+CUDA out of memory. Tried to allocate 5.89 GiB (GPU 0; 15.78 GiB total capacity; 3.74 GiB already allocated; 3.99 GiB free; 7.02 GiB cached)
+CUDA out of memory. Tried to allocate 7.03 GiB (GPU 0; 15.78 GiB total capacity; 4.31 GiB already allocated; 3.99 GiB free; 6.45 GiB cached)
+[5420] Beta: 0.000, KL: 460.06, Word: 77.01, Topo: 79.35, Assm: 76.70, PNorm: 216.99, GNorm: 22.55
+[5430] Beta: 0.000, KL: 643.84, Word: 96.57, Topo: 98.64, Assm: 96.18, PNorm: 217.20, GNorm: 21.22
+[5440] Beta: 0.000, KL: 652.13, Word: 96.88, Topo: 98.92, Assm: 96.95, PNorm: 217.40, GNorm: 10.26
+CUDA out of memory. Tried to allocate 6.36 GiB (GPU 0; 15.78 GiB total capacity; 3.65 GiB already allocated; 3.98 GiB free; 7.13 GiB cached)
+CUDA out of memory. Tried to allocate 6.18 GiB (GPU 0; 15.78 GiB total capacity; 3.53 GiB already allocated; 3.98 GiB free; 7.25 GiB cached)
+[5460] Beta: 0.000, KL: 1189.71, Word: 172.95, Topo: 178.50, Assm: 174.10, PNorm: 217.64, GNorm: 10.29
+CUDA out of memory. Tried to allocate 14.21 GiB (GPU 0; 15.78 GiB total capacity; 5.62 GiB already allocated; 3.88 GiB free; 5.26 GiB cached)
+[5470] Beta: 0.000, KL: 563.52, Word: 87.06, Topo: 89.09, Assm: 83.57, PNorm: 217.82, GNorm: 16.42
+[5480] Beta: 0.000, KL: 709.34, Word: 96.84, Topo: 98.92, Assm: 95.42, PNorm: 217.93, GNorm: 18.10
+[5490] Beta: 0.000, KL: 579.46, Word: 96.27, Topo: 99.15, Assm: 96.47, PNorm: 218.11, GNorm: 18.29
+[5500] Beta: 0.000, KL: 649.19, Word: 95.32, Topo: 98.71, Assm: 96.32, PNorm: 218.29, GNorm: 13.83
+[5510] Beta: 0.000, KL: 691.11, Word: 97.01, Topo: 98.95, Assm: 95.10, PNorm: 218.44, GNorm: 18.36
+[5520] Beta: 0.000, KL: 660.16, Word: 96.63, Topo: 99.36, Assm: 96.25, PNorm: 218.55, GNorm: 8.79
+[5530] Beta: 0.000, KL: 558.57, Word: 96.32, Topo: 99.30, Assm: 97.07, PNorm: 218.69, GNorm: 17.49
+[5540] Beta: 0.000, KL: 732.50, Word: 97.23, Topo: 98.95, Assm: 96.23, PNorm: 218.81, GNorm: 13.44
+[5550] Beta: 0.000, KL: 618.36, Word: 96.57, Topo: 99.41, Assm: 96.82, PNorm: 218.96, GNorm: 15.69
+[5560] Beta: 0.000, KL: 726.18, Word: 97.00, Topo: 99.27, Assm: 96.12, PNorm: 219.08, GNorm: 9.98
+[5570] Beta: 0.000, KL: 687.06, Word: 96.75, Topo: 99.27, Assm: 97.48, PNorm: 219.15, GNorm: 11.99
+CUDA out of memory. Tried to allocate 11.60 GiB (GPU 0; 15.78 GiB total capacity; 4.27 GiB already allocated; 3.95 GiB free; 6.54 GiB cached)
+[5580] Beta: 0.000, KL: 678.72, Word: 88.22, Topo: 89.46, Assm: 86.75, PNorm: 219.22, GNorm: 8.46
+CUDA out of memory. Tried to allocate 10.50 GiB (GPU 0; 15.78 GiB total capacity; 5.47 GiB already allocated; 3.82 GiB free; 5.46 GiB cached)
+[5590] Beta: 0.000, KL: 580.62, Word: 86.73, Topo: 89.19, Assm: 86.08, PNorm: 219.33, GNorm: 20.67
+CUDA out of memory. Tried to allocate 9.46 GiB (GPU 0; 15.78 GiB total capacity; 3.62 GiB already allocated; 3.94 GiB free; 7.20 GiB cached)
+[5600] Beta: 0.000, KL: 585.26, Word: 86.81, Topo: 89.36, Assm: 87.18, PNorm: 219.42, GNorm: 17.86
+[5610] Beta: 0.000, KL: 744.27, Word: 97.66, Topo: 99.38, Assm: 98.20, PNorm: 219.52, GNorm: 10.78
+[5620] Beta: 0.000, KL: 720.36, Word: 97.64, Topo: 99.38, Assm: 96.58, PNorm: 219.62, GNorm: 16.38
+[5630] Beta: 0.000, KL: 723.27, Word: 97.67, Topo: 99.45, Assm: 97.48, PNorm: 219.74, GNorm: 8.40
+[5640] Beta: 0.000, KL: 671.70, Word: 97.43, Topo: 99.37, Assm: 95.65, PNorm: 219.82, GNorm: 15.48
+[5650] Beta: 0.000, KL: 635.01, Word: 97.36, Topo: 99.26, Assm: 97.61, PNorm: 219.95, GNorm: 10.97
+[5660] Beta: 0.000, KL: 664.12, Word: 97.08, Topo: 99.24, Assm: 97.59, PNorm: 220.07, GNorm: 15.97
+[5670] Beta: 0.000, KL: 675.18, Word: 96.03, Topo: 98.84, Assm: 95.92, PNorm: 220.20, GNorm: 50.00
+CUDA out of memory. Tried to allocate 10.27 GiB (GPU 0; 15.78 GiB total capacity; 3.52 GiB already allocated; 4.00 GiB free; 7.24 GiB cached)
+[5680] Beta: 0.000, KL: 637.95, Word: 86.78, Topo: 89.26, Assm: 86.68, PNorm: 220.32, GNorm: 17.40
+[5690] Beta: 0.000, KL: 669.62, Word: 97.06, Topo: 99.46, Assm: 96.79, PNorm: 220.48, GNorm: 9.86
+[5700] Beta: 0.000, KL: 711.66, Word: 96.57, Topo: 98.96, Assm: 96.39, PNorm: 220.60, GNorm: 20.62
+CUDA out of memory. Tried to allocate 6.17 GiB (GPU 0; 15.78 GiB total capacity; 3.55 GiB already allocated; 3.98 GiB free; 7.23 GiB cached)
+[5710] Beta: 0.000, KL: 590.64, Word: 86.34, Topo: 88.83, Assm: 88.24, PNorm: 220.71, GNorm: 13.38
+CUDA out of memory. Tried to allocate 7.21 GiB (GPU 0; 15.78 GiB total capacity; 4.11 GiB already allocated; 3.88 GiB free; 6.77 GiB cached)
+[5720] Beta: 0.000, KL: 583.00, Word: 87.33, Topo: 89.26, Assm: 85.65, PNorm: 220.84, GNorm: 19.05
+[5730] Beta: 0.000, KL: 735.39, Word: 96.45, Topo: 99.28, Assm: 94.61, PNorm: 220.97, GNorm: 30.15
+[5740] Beta: 0.000, KL: 670.87, Word: 95.30, Topo: 99.23, Assm: 95.94, PNorm: 221.09, GNorm: 26.68
+[5750] Beta: 0.000, KL: 664.06, Word: 95.28, Topo: 98.49, Assm: 95.96, PNorm: 221.30, GNorm: 43.66
+[5760] Beta: 0.000, KL: 671.50, Word: 96.33, Topo: 98.61, Assm: 96.45, PNorm: 221.47, GNorm: 31.33
+[5770] Beta: 0.000, KL: 644.80, Word: 95.91, Topo: 98.80, Assm: 96.23, PNorm: 221.66, GNorm: 12.26
+[5780] Beta: 0.000, KL: 620.03, Word: 96.02, Topo: 99.04, Assm: 97.09, PNorm: 221.82, GNorm: 19.82
+[5790] Beta: 0.000, KL: 721.86, Word: 97.12, Topo: 99.20, Assm: 95.86, PNorm: 221.95, GNorm: 19.51
+[5800] Beta: 0.000, KL: 662.52, Word: 97.43, Topo: 99.46, Assm: 96.32, PNorm: 222.10, GNorm: 22.40
+[5810] Beta: 0.000, KL: 659.78, Word: 97.02, Topo: 99.44, Assm: 96.51, PNorm: 222.23, GNorm: 15.29
+[5820] Beta: 0.000, KL: 716.26, Word: 97.35, Topo: 99.23, Assm: 96.81, PNorm: 222.33, GNorm: 18.74
+CUDA out of memory. Tried to allocate 7.87 GiB (GPU 0; 15.78 GiB total capacity; 3.46 GiB already allocated; 3.95 GiB free; 7.35 GiB cached)
+CUDA out of memory. Tried to allocate 13.58 GiB (GPU 0; 15.78 GiB total capacity; 4.62 GiB already allocated; 3.95 GiB free; 6.19 GiB cached)
+[5830] Beta: 0.000, KL: 586.28, Word: 78.77, Topo: 79.69, Assm: 77.51, PNorm: 222.40, GNorm: 6.15
+CUDA out of memory. Tried to allocate 6.84 GiB (GPU 0; 15.78 GiB total capacity; 4.17 GiB already allocated; 3.87 GiB free; 6.72 GiB cached)
+CUDA out of memory. Tried to allocate 7.80 GiB (GPU 0; 15.78 GiB total capacity; 4.32 GiB already allocated; 3.87 GiB free; 6.57 GiB cached)
+CUDA out of memory. Tried to allocate 6.46 GiB (GPU 0; 15.78 GiB total capacity; 4.34 GiB already allocated; 3.93 GiB free; 6.49 GiB cached)
+[5850] Beta: 0.000, KL: 1165.09, Word: 164.76, Topo: 168.95, Assm: 163.80, PNorm: 222.51, GNorm: 10.02
+[5860] Beta: 0.000, KL: 696.78, Word: 97.27, Topo: 99.53, Assm: 97.70, PNorm: 222.58, GNorm: 12.49
+[5870] Beta: 0.000, KL: 768.32, Word: 98.67, Topo: 99.57, Assm: 97.40, PNorm: 222.67, GNorm: 16.44
+[5880] Beta: 0.000, KL: 679.88, Word: 96.89, Topo: 99.50, Assm: 96.99, PNorm: 222.77, GNorm: 18.47
+[5890] Beta: 0.000, KL: 718.52, Word: 98.29, Topo: 99.77, Assm: 97.42, PNorm: 222.87, GNorm: 7.56
+[5900] Beta: 0.000, KL: 673.56, Word: 97.19, Topo: 99.47, Assm: 96.77, PNorm: 222.95, GNorm: 12.83
+[5910] Beta: 0.000, KL: 612.46, Word: 97.56, Topo: 99.54, Assm: 98.06, PNorm: 223.06, GNorm: 6.65
+[5920] Beta: 0.000, KL: 679.20, Word: 97.81, Topo: 99.56, Assm: 97.50, PNorm: 223.14, GNorm: 7.98
+CUDA out of memory. Tried to allocate 8.89 GiB (GPU 0; 15.78 GiB total capacity; 3.28 GiB already allocated; 3.99 GiB free; 7.49 GiB cached)
+[5930] Beta: 0.000, KL: 686.21, Word: 86.52, Topo: 89.20, Assm: 87.83, PNorm: 223.24, GNorm: 14.63
+[5940] Beta: 0.000, KL: 671.57, Word: 97.31, Topo: 99.64, Assm: 97.05, PNorm: 223.35, GNorm: 9.91
+[5950] Beta: 0.000, KL: 714.76, Word: 97.71, Topo: 99.54, Assm: 97.30, PNorm: 223.45, GNorm: 15.40
+CUDA out of memory. Tried to allocate 6.52 GiB (GPU 0; 15.78 GiB total capacity; 3.69 GiB already allocated; 3.98 GiB free; 7.09 GiB cached)
+[5960] Beta: 0.000, KL: 574.35, Word: 86.63, Topo: 89.47, Assm: 87.58, PNorm: 223.54, GNorm: 11.40
+CUDA out of memory. Tried to allocate 7.90 GiB (GPU 0; 15.78 GiB total capacity; 4.35 GiB already allocated; 3.87 GiB free; 6.53 GiB cached)
+[5970] Beta: 0.000, KL: 619.86, Word: 87.45, Topo: 89.62, Assm: 86.60, PNorm: 223.62, GNorm: 16.02
+[5980] Beta: 0.000, KL: 724.78, Word: 98.04, Topo: 99.74, Assm: 95.29, PNorm: 223.71, GNorm: 18.00
+[5990] Beta: 0.000, KL: 668.47, Word: 95.81, Topo: 99.56, Assm: 95.94, PNorm: 223.79, GNorm: 31.55
+[6000] Beta: 0.000, KL: 654.63, Word: 96.06, Topo: 99.41, Assm: 97.50, PNorm: 223.91, GNorm: 16.27
+[6010] Beta: 0.000, KL: 725.31, Word: 97.06, Topo: 99.24, Assm: 97.01, PNorm: 224.03, GNorm: 25.99
+[6020] Beta: 0.000, KL: 628.42, Word: 96.22, Topo: 99.28, Assm: 96.13, PNorm: 224.15, GNorm: 17.33
+[6030] Beta: 0.000, KL: 639.80, Word: 96.92, Topo: 99.49, Assm: 97.14, PNorm: 224.30, GNorm: 25.94
+[6040] Beta: 0.000, KL: 679.44, Word: 97.87, Topo: 99.47, Assm: 96.86, PNorm: 224.40, GNorm: 8.44
+[6050] Beta: 0.000, KL: 685.43, Word: 97.92, Topo: 99.60, Assm: 96.56, PNorm: 224.51, GNorm: 8.13
+[6060] Beta: 0.000, KL: 701.34, Word: 97.85, Topo: 99.56, Assm: 97.02, PNorm: 224.62, GNorm: 15.63
+[6070] Beta: 0.000, KL: 755.69, Word: 97.70, Topo: 99.48, Assm: 96.41, PNorm: 224.71, GNorm: 13.27
+CUDA out of memory. Tried to allocate 9.30 GiB (GPU 0; 15.78 GiB total capacity; 3.72 GiB already allocated; 3.95 GiB free; 7.09 GiB cached)
+CUDA out of memory. Tried to allocate 13.80 GiB (GPU 0; 15.78 GiB total capacity; 4.73 GiB already allocated; 3.95 GiB free; 6.08 GiB cached)
+[6080] Beta: 0.000, KL: 585.52, Word: 78.60, Topo: 79.75, Assm: 78.08, PNorm: 224.76, GNorm: 4.45
+[6090] Beta: 0.000, KL: 752.23, Word: 98.54, Topo: 99.38, Assm: 97.47, PNorm: 224.84, GNorm: 15.46
+CUDA out of memory. Tried to allocate 9.96 GiB (GPU 0; 15.78 GiB total capacity; 4.87 GiB already allocated; 3.86 GiB free; 6.02 GiB cached)
+CUDA out of memory. Tried to allocate 8.76 GiB (GPU 0; 15.78 GiB total capacity; 3.30 GiB already allocated; 3.94 GiB free; 7.51 GiB cached)
+CUDA out of memory. Tried to allocate 8.62 GiB (GPU 0; 15.78 GiB total capacity; 3.39 GiB already allocated; 3.94 GiB free; 7.42 GiB cached)
+[6100] Beta: 0.000, KL: 467.02, Word: 68.29, Topo: 69.81, Assm: 68.60, PNorm: 224.89, GNorm: 16.85
+[6110] Beta: 0.000, KL: 745.82, Word: 97.72, Topo: 99.67, Assm: 98.59, PNorm: 224.97, GNorm: 11.27
+[6120] Beta: 0.000, KL: 830.75, Word: 98.09, Topo: 99.73, Assm: 98.18, PNorm: 225.06, GNorm: 12.63
+[6130] Beta: 0.000, KL: 677.16, Word: 97.16, Topo: 99.54, Assm: 96.35, PNorm: 225.13, GNorm: 32.23
+[6140] Beta: 0.000, KL: 730.25, Word: 98.24, Topo: 99.78, Assm: 98.30, PNorm: 225.23, GNorm: 43.41
+[6150] Beta: 0.000, KL: 732.41, Word: 97.80, Topo: 99.66, Assm: 97.37, PNorm: 225.30, GNorm: 22.79
+[6160] Beta: 0.000, KL: 582.48, Word: 97.28, Topo: 99.52, Assm: 97.70, PNorm: 225.38, GNorm: 26.77
+[6170] Beta: 0.000, KL: 667.91, Word: 97.92, Topo: 99.65, Assm: 97.77, PNorm: 225.49, GNorm: 22.50
+[6180] Beta: 0.000, KL: 738.00, Word: 96.63, Topo: 99.32, Assm: 97.35, PNorm: 225.55, GNorm: 8.15
+[6190] Beta: 0.000, KL: 666.66, Word: 97.47, Topo: 99.36, Assm: 95.87, PNorm: 225.69, GNorm: 17.39
+[6200] Beta: 0.000, KL: 722.31, Word: 98.34, Topo: 99.48, Assm: 97.71, PNorm: 225.81, GNorm: 17.74
+CUDA out of memory. Tried to allocate 6.23 GiB (GPU 0; 15.78 GiB total capacity; 3.56 GiB already allocated; 3.98 GiB free; 7.22 GiB cached)
+CUDA out of memory. Tried to allocate 6.78 GiB (GPU 0; 15.78 GiB total capacity; 3.79 GiB already allocated; 3.98 GiB free; 6.99 GiB cached)
+[6210] Beta: 0.000, KL: 512.08, Word: 77.34, Topo: 79.64, Assm: 78.03, PNorm: 225.89, GNorm: 18.94
+CUDA out of memory. Tried to allocate 12.12 GiB (GPU 0; 15.78 GiB total capacity; 5.14 GiB already allocated; 3.88 GiB free; 5.74 GiB cached)
+[6220] Beta: 0.000, KL: 681.30, Word: 88.15, Topo: 89.65, Assm: 87.52, PNorm: 225.97, GNorm: 21.43
+[6230] Beta: 0.000, KL: 738.07, Word: 98.86, Topo: 99.75, Assm: 96.21, PNorm: 226.04, GNorm: 5.66
+[6240] Beta: 0.000, KL: 745.30, Word: 97.55, Topo: 99.77, Assm: 96.44, PNorm: 226.10, GNorm: 9.84
+[6250] Beta: 0.000, KL: 643.31, Word: 96.98, Topo: 99.56, Assm: 98.15, PNorm: 226.19, GNorm: 12.35
+[6260] Beta: 0.000, KL: 746.89, Word: 97.52, Topo: 99.41, Assm: 98.00, PNorm: 226.29, GNorm: 7.63
+[6270] Beta: 0.000, KL: 703.33, Word: 96.63, Topo: 98.96, Assm: 95.10, PNorm: 226.39, GNorm: 32.68
+[6280] Beta: 0.000, KL: 712.37, Word: 97.06, Topo: 99.35, Assm: 96.98, PNorm: 226.47, GNorm: 28.88
+[6290] Beta: 0.000, KL: 650.94, Word: 97.30, Topo: 99.14, Assm: 97.63, PNorm: 226.61, GNorm: 13.81
+[6300] Beta: 0.000, KL: 691.85, Word: 98.02, Topo: 99.45, Assm: 95.85, PNorm: 226.74, GNorm: 16.96
+[6310] Beta: 0.000, KL: 724.67, Word: 97.97, Topo: 99.50, Assm: 96.87, PNorm: 226.86, GNorm: 16.46
+[6320] Beta: 0.000, KL: 768.90, Word: 98.25, Topo: 99.51, Assm: 96.82, PNorm: 226.95, GNorm: 7.43
+CUDA out of memory. Tried to allocate 16.33 GiB (GPU 0; 15.78 GiB total capacity; 5.30 GiB already allocated; 3.95 GiB free; 5.51 GiB cached)
+[6330] Beta: 0.000, KL: 601.08, Word: 86.58, Topo: 89.54, Assm: 87.51, PNorm: 227.04, GNorm: 9.95
+[6340] Beta: 0.000, KL: 804.92, Word: 98.28, Topo: 99.46, Assm: 97.61, PNorm: 227.11, GNorm: 36.92
+CUDA out of memory. Tried to allocate 9.44 GiB (GPU 0; 15.78 GiB total capacity; 4.93 GiB already allocated; 3.85 GiB free; 5.98 GiB cached)
+CUDA out of memory. Tried to allocate 6.07 GiB (GPU 0; 15.78 GiB total capacity; 3.82 GiB already allocated; 3.94 GiB free; 7.00 GiB cached)
+CUDA out of memory. Tried to allocate 8.40 GiB (GPU 0; 15.78 GiB total capacity; 3.25 GiB already allocated; 3.94 GiB free; 7.57 GiB cached)
+CUDA out of memory. Tried to allocate 10.42 GiB (GPU 0; 15.78 GiB total capacity; 3.77 GiB already allocated; 3.94 GiB free; 7.04 GiB cached)
+[6360] Beta: 0.000, KL: 1087.88, Word: 156.58, Topo: 159.21, Assm: 157.41, PNorm: 227.27, GNorm: 10.05
+[6370] Beta: 0.000, KL: 869.84, Word: 98.78, Topo: 99.75, Assm: 99.00, PNorm: 227.35, GNorm: 8.42
+[6380] Beta: 0.000, KL: 759.31, Word: 98.24, Topo: 99.58, Assm: 96.90, PNorm: 227.41, GNorm: 21.91
+[6390] Beta: 0.000, KL: 744.39, Word: 98.12, Topo: 99.67, Assm: 98.17, PNorm: 227.48, GNorm: 15.76
+[6400] Beta: 0.000, KL: 762.05, Word: 98.36, Topo: 99.65, Assm: 97.67, PNorm: 227.56, GNorm: 27.22
+[6410] Beta: 0.000, KL: 551.88, Word: 97.90, Topo: 99.58, Assm: 98.74, PNorm: 227.64, GNorm: 16.76
+[6420] Beta: 0.000, KL: 755.06, Word: 98.00, Topo: 99.58, Assm: 96.76, PNorm: 227.74, GNorm: 14.58
+CUDA out of memory. Tried to allocate 10.08 GiB (GPU 0; 15.78 GiB total capacity; 3.49 GiB already allocated; 4.00 GiB free; 7.27 GiB cached)
+CUDA out of memory. Tried to allocate 9.01 GiB (GPU 0; 15.78 GiB total capacity; 3.27 GiB already allocated; 4.00 GiB free; 7.49 GiB cached)
+[6430] Beta: 0.000, KL: 592.77, Word: 77.99, Topo: 79.74, Assm: 77.51, PNorm: 227.80, GNorm: 7.68
+[6440] Beta: 0.000, KL: 759.62, Word: 98.07, Topo: 99.66, Assm: 96.85, PNorm: 227.89, GNorm: 14.20
+[6450] Beta: 0.000, KL: 727.13, Word: 98.39, Topo: 99.66, Assm: 97.81, PNorm: 228.00, GNorm: 9.83
+CUDA out of memory. Tried to allocate 6.16 GiB (GPU 0; 15.78 GiB total capacity; 3.56 GiB already allocated; 3.98 GiB free; 7.22 GiB cached)
+[6460] Beta: 0.000, KL: 634.72, Word: 86.98, Topo: 89.61, Assm: 87.97, PNorm: 228.07, GNorm: 21.15
+CUDA out of memory. Tried to allocate 12.04 GiB (GPU 0; 15.78 GiB total capacity; 5.30 GiB already allocated; 3.87 GiB free; 5.59 GiB cached)
+[6480] Beta: 0.000, KL: 1415.21, Word: 186.61, Topo: 189.45, Assm: 184.42, PNorm: 228.25, GNorm: 5.54
+[6490] Beta: 0.000, KL: 774.65, Word: 98.24, Topo: 99.73, Assm: 96.45, PNorm: 228.32, GNorm: 14.33
+[6500] Beta: 0.000, KL: 642.64, Word: 97.66, Topo: 99.66, Assm: 98.36, PNorm: 228.41, GNorm: 16.10
+[6510] Beta: 0.000, KL: 756.74, Word: 97.03, Topo: 99.53, Assm: 97.53, PNorm: 228.56, GNorm: 15.34
+[6520] Beta: 0.000, KL: 748.77, Word: 97.46, Topo: 99.51, Assm: 96.24, PNorm: 228.63, GNorm: 16.61
+[6530] Beta: 0.000, KL: 735.11, Word: 97.19, Topo: 99.61, Assm: 97.94, PNorm: 228.70, GNorm: 24.62
+[6540] Beta: 0.000, KL: 655.51, Word: 97.74, Topo: 99.67, Assm: 97.77, PNorm: 228.80, GNorm: 9.26
+[6550] Beta: 0.000, KL: 768.63, Word: 98.01, Topo: 99.62, Assm: 96.80, PNorm: 228.89, GNorm: 14.04
+[6560] Beta: 0.000, KL: 727.55, Word: 97.81, Topo: 99.70, Assm: 98.16, PNorm: 229.00, GNorm: 7.05
+[6570] Beta: 0.000, KL: 781.53, Word: 98.03, Topo: 99.54, Assm: 97.37, PNorm: 229.12, GNorm: 10.49
+CUDA out of memory. Tried to allocate 14.88 GiB (GPU 0; 15.78 GiB total capacity; 4.88 GiB already allocated; 3.96 GiB free; 5.92 GiB cached)
+CUDA out of memory. Tried to allocate 13.37 GiB (GPU 0; 15.78 GiB total capacity; 4.57 GiB already allocated; 3.95 GiB free; 6.24 GiB cached)
+[6590] Beta: 0.000, KL: 1443.74, Word: 175.02, Topo: 179.25, Assm: 175.90, PNorm: 229.27, GNorm: 17.87
+CUDA out of memory. Tried to allocate 5.24 GiB (GPU 0; 15.78 GiB total capacity; 5.01 GiB already allocated; 3.86 GiB free; 5.90 GiB cached)
+CUDA out of memory. Tried to allocate 5.25 GiB (GPU 0; 15.78 GiB total capacity; 5.30 GiB already allocated; 3.83 GiB free; 5.62 GiB cached)
+[6600] Beta: 0.000, KL: 626.43, Word: 77.98, Topo: 79.47, Assm: 78.53, PNorm: 229.32, GNorm: 10.00
+CUDA out of memory. Tried to allocate 7.35 GiB (GPU 0; 15.78 GiB total capacity; 4.71 GiB already allocated; 3.44 GiB free; 6.61 GiB cached)
+CUDA out of memory. Tried to allocate 6.73 GiB (GPU 0; 15.78 GiB total capacity; 4.32 GiB already allocated; 3.45 GiB free; 6.98 GiB cached)
+[6610] Beta: 0.000, KL: 586.74, Word: 78.07, Topo: 79.51, Assm: 79.10, PNorm: 229.38, GNorm: 23.04
+[6620] Beta: 0.000, KL: 875.24, Word: 98.44, Topo: 99.62, Assm: 98.91, PNorm: 229.48, GNorm: 6.94
+[6630] Beta: 0.000, KL: 779.87, Word: 98.01, Topo: 99.48, Assm: 97.01, PNorm: 229.58, GNorm: 6.60
+[6640] Beta: 0.000, KL: 757.20, Word: 98.23, Topo: 99.54, Assm: 98.20, PNorm: 229.69, GNorm: 17.41
+[6650] Beta: 0.000, KL: 761.41, Word: 98.00, Topo: 99.83, Assm: 97.24, PNorm: 229.76, GNorm: 9.63
+[6660] Beta: 0.000, KL: 627.29, Word: 97.65, Topo: 99.45, Assm: 99.26, PNorm: 229.83, GNorm: 22.55
+[6670] Beta: 0.000, KL: 745.01, Word: 98.19, Topo: 99.70, Assm: 97.82, PNorm: 229.90, GNorm: 9.91
+CUDA out of memory. Tried to allocate 16.11 GiB (GPU 0; 15.78 GiB total capacity; 4.76 GiB already allocated; 4.00 GiB free; 5.99 GiB cached)
+[6680] Beta: 0.000, KL: 610.40, Word: 87.58, Topo: 89.44, Assm: 87.25, PNorm: 229.99, GNorm: 19.39
+[6690] Beta: 0.000, KL: 743.76, Word: 97.93, Topo: 99.64, Assm: 97.13, PNorm: 230.08, GNorm: 17.49
+[6700] Beta: 0.000, KL: 756.13, Word: 98.67, Topo: 99.60, Assm: 98.55, PNorm: 230.18, GNorm: 8.79
+[6710] Beta: 0.000, KL: 758.05, Word: 96.42, Topo: 99.43, Assm: 97.90, PNorm: 230.25, GNorm: 35.92
+CUDA out of memory. Tried to allocate 7.35 GiB (GPU 0; 15.78 GiB total capacity; 4.06 GiB already allocated; 3.96 GiB free; 6.74 GiB cached)
+[6720] Beta: 0.000, KL: 681.35, Word: 88.22, Topo: 89.62, Assm: 88.69, PNorm: 230.35, GNorm: 8.11
+CUDA out of memory. Tried to allocate 12.72 GiB (GPU 0; 15.78 GiB total capacity; 5.28 GiB already allocated; 3.86 GiB free; 5.61 GiB cached)
+[6730] Beta: 0.000, KL: 606.36, Word: 87.56, Topo: 89.72, Assm: 86.51, PNorm: 230.44, GNorm: 13.92
+[6740] Beta: 0.000, KL: 791.26, Word: 97.90, Topo: 99.72, Assm: 96.91, PNorm: 230.52, GNorm: 9.12
+[6750] Beta: 0.000, KL: 656.88, Word: 97.21, Topo: 99.64, Assm: 97.83, PNorm: 230.61, GNorm: 12.12
+[6760] Beta: 0.000, KL: 758.45, Word: 97.01, Topo: 99.60, Assm: 97.86, PNorm: 230.76, GNorm: 17.70
+[6770] Beta: 0.000, KL: 787.14, Word: 97.20, Topo: 99.42, Assm: 96.67, PNorm: 230.85, GNorm: 20.73
+[6780] Beta: 0.000, KL: 770.67, Word: 97.36, Topo: 99.64, Assm: 97.45, PNorm: 230.97, GNorm: 11.52
+[6790] Beta: 0.000, KL: 654.63, Word: 96.82, Topo: 99.71, Assm: 98.08, PNorm: 231.09, GNorm: 16.30
+[6800] Beta: 0.000, KL: 766.63, Word: 98.32, Topo: 99.70, Assm: 97.70, PNorm: 231.19, GNorm: 9.53
+[6810] Beta: 0.000, KL: 695.15, Word: 97.23, Topo: 99.70, Assm: 97.39, PNorm: 231.30, GNorm: 13.64
+[6820] Beta: 0.000, KL: 818.32, Word: 98.14, Topo: 99.75, Assm: 97.56, PNorm: 231.40, GNorm: 9.22
+[6830] Beta: 0.000, KL: 749.40, Word: 96.82, Topo: 99.63, Assm: 97.99, PNorm: 231.46, GNorm: 13.21
+CUDA out of memory. Tried to allocate 9.67 GiB (GPU 0; 15.78 GiB total capacity; 3.77 GiB already allocated; 3.94 GiB free; 7.05 GiB cached)
+CUDA out of memory. Tried to allocate 18.88 GiB (GPU 0; 15.78 GiB total capacity; 5.83 GiB already allocated; 3.93 GiB free; 5.00 GiB cached)
+[6840] Beta: 0.000, KL: 700.42, Word: 79.15, Topo: 79.70, Assm: 77.96, PNorm: 231.52, GNorm: 9.50
+CUDA out of memory. Tried to allocate 6.65 GiB (GPU 0; 15.78 GiB total capacity; 4.33 GiB already allocated; 3.89 GiB free; 6.54 GiB cached)
+[6850] Beta: 0.000, KL: 602.10, Word: 86.83, Topo: 89.33, Assm: 87.90, PNorm: 231.61, GNorm: 27.29
+CUDA out of memory. Tried to allocate 11.36 GiB (GPU 0; 15.78 GiB total capacity; 3.98 GiB already allocated; 3.93 GiB free; 6.85 GiB cached)
+[6860] Beta: 0.000, KL: 620.96, Word: 88.01, Topo: 89.53, Assm: 87.83, PNorm: 231.71, GNorm: 14.00
+[6870] Beta: 0.000, KL: 850.59, Word: 98.04, Topo: 99.65, Assm: 98.93, PNorm: 231.82, GNorm: 10.59
+[6880] Beta: 0.000, KL: 856.44, Word: 98.13, Topo: 99.60, Assm: 97.79, PNorm: 231.91, GNorm: 14.95
+[6890] Beta: 0.000, KL: 791.98, Word: 98.37, Topo: 99.71, Assm: 98.10, PNorm: 232.00, GNorm: 7.24
+[6900] Beta: 0.000, KL: 770.05, Word: 98.56, Topo: 99.80, Assm: 97.62, PNorm: 232.07, GNorm: 16.03
+[6910] Beta: 0.000, KL: 676.43, Word: 97.68, Topo: 99.74, Assm: 97.75, PNorm: 232.15, GNorm: 8.69
+[6920] Beta: 0.000, KL: 679.14, Word: 97.88, Topo: 99.73, Assm: 97.21, PNorm: 232.28, GNorm: 22.85
+[6930] Beta: 0.000, KL: 737.35, Word: 97.73, Topo: 99.43, Assm: 95.95, PNorm: 232.40, GNorm: 50.00
+[6940] Beta: 0.000, KL: 757.68, Word: 97.78, Topo: 99.26, Assm: 96.35, PNorm: 232.54, GNorm: 12.47
+[6950] Beta: 0.000, KL: 743.34, Word: 97.96, Topo: 99.55, Assm: 97.30, PNorm: 232.69, GNorm: 9.74
+[6960] Beta: 0.000, KL: 816.92, Word: 97.93, Topo: 99.43, Assm: 96.79, PNorm: 232.80, GNorm: 12.30
+CUDA out of memory. Tried to allocate 6.28 GiB (GPU 0; 15.78 GiB total capacity; 3.57 GiB already allocated; 3.97 GiB free; 7.22 GiB cached)
+CUDA out of memory. Tried to allocate 6.96 GiB (GPU 0; 15.78 GiB total capacity; 3.87 GiB already allocated; 3.96 GiB free; 6.92 GiB cached)
+[6970] Beta: 0.000, KL: 591.33, Word: 78.18, Topo: 79.60, Assm: 78.51, PNorm: 232.88, GNorm: 9.83
+CUDA out of memory. Tried to allocate 6.72 GiB (GPU 0; 15.78 GiB total capacity; 4.04 GiB already allocated; 3.86 GiB free; 6.86 GiB cached)
+[6980] Beta: 0.000, KL: 589.24, Word: 88.38, Topo: 89.58, Assm: 86.89, PNorm: 232.98, GNorm: 12.28
+[6990] Beta: 0.000, KL: 838.88, Word: 97.85, Topo: 99.59, Assm: 96.99, PNorm: 233.05, GNorm: 18.58
+[7000] Beta: 0.000, KL: 747.20, Word: 97.65, Topo: 99.38, Assm: 96.72, PNorm: 233.12, GNorm: 15.86
+[7010] Beta: 0.000, KL: 743.70, Word: 96.83, Topo: 99.35, Assm: 96.45, PNorm: 233.26, GNorm: 19.32
+[7020] Beta: 0.000, KL: 746.33, Word: 97.17, Topo: 99.44, Assm: 96.43, PNorm: 233.41, GNorm: 17.52
+[7030] Beta: 0.000, KL: 710.22, Word: 97.08, Topo: 99.55, Assm: 96.58, PNorm: 233.50, GNorm: 8.40
+[7040] Beta: 0.000, KL: 714.25, Word: 97.10, Topo: 99.62, Assm: 98.17, PNorm: 233.63, GNorm: 11.40
+[7050] Beta: 0.000, KL: 809.42, Word: 98.36, Topo: 99.56, Assm: 97.16, PNorm: 233.75, GNorm: 28.07
+[7060] Beta: 0.000, KL: 752.61, Word: 98.07, Topo: 99.48, Assm: 96.85, PNorm: 233.84, GNorm: 24.21
+[7070] Beta: 0.000, KL: 733.39, Word: 98.10, Topo: 99.62, Assm: 97.73, PNorm: 233.96, GNorm: 11.15
+[7080] Beta: 0.000, KL: 808.58, Word: 98.02, Topo: 99.28, Assm: 97.30, PNorm: 234.04, GNorm: 21.25
+CUDA out of memory. Tried to allocate 16.12 GiB (GPU 0; 15.78 GiB total capacity; 5.17 GiB already allocated; 3.94 GiB free; 5.65 GiB cached)
+CUDA out of memory. Tried to allocate 6.46 GiB (GPU 0; 15.78 GiB total capacity; 4.38 GiB already allocated; 3.94 GiB free; 6.44 GiB cached)
+[7090] Beta: 0.000, KL: 659.78, Word: 79.01, Topo: 79.57, Assm: 78.46, PNorm: 234.12, GNorm: 4.84
+CUDA out of memory. Tried to allocate 12.80 GiB (GPU 0; 15.78 GiB total capacity; 5.88 GiB already allocated; 3.82 GiB free; 5.07 GiB cached)
+[7100] Beta: 0.000, KL: 692.70, Word: 87.97, Topo: 89.19, Assm: 88.15, PNorm: 234.18, GNorm: 25.56
+CUDA out of memory. Tried to allocate 8.40 GiB (GPU 0; 15.78 GiB total capacity; 3.20 GiB already allocated; 3.93 GiB free; 7.63 GiB cached)
+[7110] Beta: 0.000, KL: 636.89, Word: 87.98, Topo: 89.41, Assm: 87.81, PNorm: 234.24, GNorm: 9.57
+[7120] Beta: 0.000, KL: 780.43, Word: 98.45, Topo: 99.56, Assm: 98.33, PNorm: 234.34, GNorm: 10.00
+[7130] Beta: 0.000, KL: 862.93, Word: 98.40, Topo: 99.36, Assm: 97.06, PNorm: 234.44, GNorm: 15.03
+[7140] Beta: 0.000, KL: 733.83, Word: 97.58, Topo: 99.53, Assm: 97.68, PNorm: 234.55, GNorm: 11.64
+[7150] Beta: 0.000, KL: 760.44, Word: 98.54, Topo: 99.88, Assm: 98.10, PNorm: 234.64, GNorm: 10.09
+[7160] Beta: 0.000, KL: 751.54, Word: 97.76, Topo: 99.57, Assm: 97.17, PNorm: 234.70, GNorm: 13.67
+[7170] Beta: 0.000, KL: 651.81, Word: 97.97, Topo: 99.65, Assm: 97.59, PNorm: 234.82, GNorm: 8.87
+[7180] Beta: 0.000, KL: 719.60, Word: 98.46, Topo: 99.67, Assm: 97.60, PNorm: 234.92, GNorm: 13.35
+CUDA out of memory. Tried to allocate 8.48 GiB (GPU 0; 15.78 GiB total capacity; 3.11 GiB already allocated; 3.98 GiB free; 7.67 GiB cached)
+CUDA out of memory. Tried to allocate 7.38 GiB (GPU 0; 15.78 GiB total capacity; 4.36 GiB already allocated; 3.49 GiB free; 6.90 GiB cached)
+[7190] Beta: 0.000, KL: 635.16, Word: 78.44, Topo: 79.67, Assm: 78.12, PNorm: 234.99, GNorm: 10.54
+[7200] Beta: 0.000, KL: 707.53, Word: 98.21, Topo: 99.63, Assm: 96.92, PNorm: 235.07, GNorm: 8.60
+[7210] Beta: 0.000, KL: 795.00, Word: 98.04, Topo: 99.82, Assm: 98.01, PNorm: 235.14, GNorm: 11.69
+[7220] Beta: 0.000, KL: 692.05, Word: 96.19, Topo: 99.49, Assm: 98.14, PNorm: 235.21, GNorm: 21.74
+CUDA out of memory. Tried to allocate 7.31 GiB (GPU 0; 15.78 GiB total capacity; 5.30 GiB already allocated; 2.91 GiB free; 6.56 GiB cached)
+[7230] Beta: 0.000, KL: 675.13, Word: 88.32, Topo: 89.63, Assm: 88.23, PNorm: 235.30, GNorm: 16.81
+[7240] Beta: 0.000, KL: 805.39, Word: 98.12, Topo: 99.68, Assm: 97.30, PNorm: 235.41, GNorm: 20.88
+[7250] Beta: 0.000, KL: 754.30, Word: 96.40, Topo: 99.70, Assm: 97.36, PNorm: 235.49, GNorm: 27.21
+[7260] Beta: 0.000, KL: 710.89, Word: 96.60, Topo: 99.57, Assm: 97.76, PNorm: 235.61, GNorm: 17.20
+[7270] Beta: 0.000, KL: 752.19, Word: 96.94, Topo: 99.69, Assm: 97.20, PNorm: 235.76, GNorm: 29.04
+[7280] Beta: 0.000, KL: 697.06, Word: 96.54, Topo: 99.52, Assm: 97.78, PNorm: 235.88, GNorm: 19.24
+[7290] Beta: 0.000, KL: 733.90, Word: 97.09, Topo: 99.68, Assm: 98.21, PNorm: 236.01, GNorm: 19.89
+[7300] Beta: 0.000, KL: 812.32, Word: 97.87, Topo: 99.43, Assm: 98.19, PNorm: 236.15, GNorm: 11.39
+[7310] Beta: 0.000, KL: 754.74, Word: 98.07, Topo: 99.60, Assm: 97.26, PNorm: 236.26, GNorm: 15.44
+[7320] Beta: 0.000, KL: 747.78, Word: 97.83, Topo: 99.66, Assm: 97.96, PNorm: 236.39, GNorm: 12.85
+[7330] Beta: 0.000, KL: 793.00, Word: 97.95, Topo: 99.02, Assm: 96.57, PNorm: 236.49, GNorm: 13.28
+CUDA out of memory. Tried to allocate 9.28 GiB (GPU 0; 15.78 GiB total capacity; 3.75 GiB already allocated; 3.45 GiB free; 7.57 GiB cached)
+CUDA out of memory. Tried to allocate 13.34 GiB (GPU 0; 15.78 GiB total capacity; 4.57 GiB already allocated; 3.45 GiB free; 6.74 GiB cached)
+[7340] Beta: 0.000, KL: 614.12, Word: 78.25, Topo: 79.42, Assm: 78.31, PNorm: 236.57, GNorm: 8.96
+[7350] Beta: 0.000, KL: 795.31, Word: 98.13, Topo: 99.00, Assm: 98.29, PNorm: 236.67, GNorm: 10.70
+CUDA out of memory. Tried to allocate 6.71 GiB (GPU 0; 15.78 GiB total capacity; 4.34 GiB already allocated; 3.44 GiB free; 6.98 GiB cached)
+[7360] Beta: 0.000, KL: 583.47, Word: 87.52, Topo: 89.56, Assm: 87.65, PNorm: 236.76, GNorm: 13.74
+[7370] Beta: 0.000, KL: 733.11, Word: 98.02, Topo: 99.53, Assm: 98.77, PNorm: 236.85, GNorm: 9.26
+[7380] Beta: 0.000, KL: 876.97, Word: 98.56, Topo: 99.60, Assm: 98.17, PNorm: 236.95, GNorm: 10.52
+[7390] Beta: 0.000, KL: 722.34, Word: 97.91, Topo: 99.40, Assm: 97.49, PNorm: 237.07, GNorm: 12.89
+[7400] Beta: 0.000, KL: 790.99, Word: 98.67, Topo: 99.66, Assm: 98.75, PNorm: 237.17, GNorm: 9.63
+[7410] Beta: 0.000, KL: 824.35, Word: 98.28, Topo: 99.71, Assm: 97.80, PNorm: 237.24, GNorm: 22.39
+[7420] Beta: 0.000, KL: 642.32, Word: 97.79, Topo: 99.61, Assm: 97.66, PNorm: 237.33, GNorm: 23.48
+[7430] Beta: 0.000, KL: 743.09, Word: 98.16, Topo: 99.88, Assm: 98.41, PNorm: 237.45, GNorm: 18.59
+CUDA out of memory. Tried to allocate 9.23 GiB (GPU 0; 15.78 GiB total capacity; 3.23 GiB already allocated; 3.99 GiB free; 7.54 GiB cached)
+CUDA out of memory. Tried to allocate 7.09 GiB (GPU 0; 15.78 GiB total capacity; 4.40 GiB already allocated; 3.98 GiB free; 6.38 GiB cached)
+[7440] Beta: 0.000, KL: 669.40, Word: 78.73, Topo: 79.79, Assm: 78.82, PNorm: 237.51, GNorm: 4.71
+[7450] Beta: 0.000, KL: 762.31, Word: 98.01, Topo: 99.68, Assm: 97.23, PNorm: 237.60, GNorm: 14.14
+[7460] Beta: 0.000, KL: 801.63, Word: 98.63, Topo: 99.73, Assm: 97.89, PNorm: 237.68, GNorm: 16.55
+CUDA out of memory. Tried to allocate 7.41 GiB (GPU 0; 15.78 GiB total capacity; 4.09 GiB already allocated; 3.96 GiB free; 6.71 GiB cached)
+CUDA out of memory. Tried to allocate 6.22 GiB (GPU 0; 15.78 GiB total capacity; 3.55 GiB already allocated; 3.96 GiB free; 7.24 GiB cached)
+[7470] Beta: 0.000, KL: 565.72, Word: 78.03, Topo: 79.71, Assm: 79.00, PNorm: 237.75, GNorm: 16.74
+CUDA out of memory. Tried to allocate 12.06 GiB (GPU 0; 15.78 GiB total capacity; 5.04 GiB already allocated; 3.87 GiB free; 5.85 GiB cached)
+CUDA out of memory. Tried to allocate 7.38 GiB (GPU 0; 15.78 GiB total capacity; 4.05 GiB already allocated; 3.87 GiB free; 6.84 GiB cached)
+[7480] Beta: 0.000, KL: 666.95, Word: 78.78, Topo: 79.63, Assm: 78.17, PNorm: 237.82, GNorm: 25.39
+[7490] Beta: 0.000, KL: 816.16, Word: 98.72, Topo: 99.69, Assm: 97.13, PNorm: 237.90, GNorm: 5.00
+[7500] Beta: 0.000, KL: 758.68, Word: 97.61, Topo: 99.71, Assm: 96.88, PNorm: 237.97, GNorm: 16.80
+[7510] Beta: 0.000, KL: 692.59, Word: 96.57, Topo: 99.55, Assm: 98.16, PNorm: 238.07, GNorm: 15.99
+[7520] Beta: 0.000, KL: 792.83, Word: 96.73, Topo: 99.52, Assm: 98.23, PNorm: 238.19, GNorm: 9.30
+[7530] Beta: 0.000, KL: 741.16, Word: 97.14, Topo: 99.58, Assm: 96.27, PNorm: 238.32, GNorm: 31.53
+[7540] Beta: 0.000, KL: 776.20, Word: 97.00, Topo: 99.68, Assm: 98.55, PNorm: 238.40, GNorm: 30.80
+[7550] Beta: 0.000, KL: 741.98, Word: 96.91, Topo: 99.68, Assm: 97.71, PNorm: 238.52, GNorm: 16.95
+[7560] Beta: 0.000, KL: 801.58, Word: 97.91, Topo: 99.48, Assm: 97.63, PNorm: 238.60, GNorm: 17.80
+[7570] Beta: 0.000, KL: 788.58, Word: 97.77, Topo: 99.60, Assm: 98.42, PNorm: 238.75, GNorm: 15.33
+[7580] Beta: 0.000, KL: 842.59, Word: 98.13, Topo: 99.60, Assm: 97.24, PNorm: 238.85, GNorm: 9.31
+CUDA out of memory. Tried to allocate 12.36 GiB (GPU 0; 15.78 GiB total capacity; 4.38 GiB already allocated; 3.93 GiB free; 6.44 GiB cached)
+CUDA out of memory. Tried to allocate 11.30 GiB (GPU 0; 15.78 GiB total capacity; 4.26 GiB already allocated; 3.92 GiB free; 6.58 GiB cached)
+[7590] Beta: 0.000, KL: 580.61, Word: 77.48, Topo: 78.66, Assm: 77.91, PNorm: 238.97, GNorm: 13.96
+[7600] Beta: 0.000, KL: 789.37, Word: 97.75, Topo: 99.05, Assm: 98.36, PNorm: 239.05, GNorm: 25.09
+CUDA out of memory. Tried to allocate 7.34 GiB (GPU 0; 15.78 GiB total capacity; 4.58 GiB already allocated; 3.43 GiB free; 6.74 GiB cached)
+CUDA out of memory. Tried to allocate 7.80 GiB (GPU 0; 15.78 GiB total capacity; 3.19 GiB already allocated; 3.92 GiB free; 7.65 GiB cached)
+[7620] Beta: 0.000, KL: 1288.73, Word: 175.29, Topo: 178.33, Assm: 177.97, PNorm: 239.33, GNorm: 10.30
+[7630] Beta: 0.000, KL: 870.95, Word: 98.48, Topo: 99.52, Assm: 98.94, PNorm: 239.45, GNorm: 9.09
+[7640] Beta: 0.000, KL: 796.39, Word: 97.91, Topo: 99.49, Assm: 97.34, PNorm: 239.56, GNorm: 18.91
+[7650] Beta: 0.000, KL: 785.50, Word: 98.28, Topo: 99.59, Assm: 98.25, PNorm: 239.68, GNorm: 16.26
+[7660] Beta: 0.000, KL: 779.14, Word: 97.20, Topo: 99.40, Assm: 97.89, PNorm: 239.75, GNorm: 29.84
+[7670] Beta: 0.000, KL: 580.17, Word: 97.45, Topo: 99.06, Assm: 98.61, PNorm: 239.96, GNorm: 16.64
+[7680] Beta: 0.000, KL: 793.16, Word: 97.13, Topo: 99.48, Assm: 97.51, PNorm: 240.15, GNorm: 13.43
+CUDA out of memory. Tried to allocate 6.97 GiB (GPU 0; 15.78 GiB total capacity; 4.07 GiB already allocated; 3.97 GiB free; 6.71 GiB cached)
+[7690] Beta: 0.000, KL: 653.09, Word: 87.03, Topo: 89.24, Assm: 87.09, PNorm: 240.26, GNorm: 9.02
+[7700] Beta: 0.000, KL: 741.89, Word: 97.87, Topo: 99.36, Assm: 98.08, PNorm: 240.42, GNorm: 16.81
+[7710] Beta: 0.000, KL: 755.95, Word: 98.34, Topo: 99.52, Assm: 97.86, PNorm: 240.55, GNorm: 12.27
+CUDA out of memory. Tried to allocate 6.75 GiB (GPU 0; 15.78 GiB total capacity; 3.78 GiB already allocated; 3.96 GiB free; 7.01 GiB cached)
+[7720] Beta: 0.000, KL: 686.77, Word: 86.77, Topo: 89.44, Assm: 88.79, PNorm: 240.65, GNorm: 23.78
+CUDA out of memory. Tried to allocate 7.38 GiB (GPU 0; 15.78 GiB total capacity; 4.27 GiB already allocated; 3.85 GiB free; 6.63 GiB cached)
+[7740] Beta: 0.000, KL: 1410.25, Word: 185.66, Topo: 189.12, Assm: 184.45, PNorm: 240.84, GNorm: 11.72
+[7750] Beta: 0.000, KL: 799.19, Word: 97.82, Topo: 99.80, Assm: 98.03, PNorm: 240.95, GNorm: 17.82
+[7760] Beta: 0.000, KL: 692.31, Word: 97.09, Topo: 99.61, Assm: 97.96, PNorm: 241.03, GNorm: 20.30
+[7770] Beta: 0.000, KL: 770.93, Word: 96.22, Topo: 99.42, Assm: 98.00, PNorm: 241.15, GNorm: 17.81
+[7780] Beta: 0.000, KL: 761.52, Word: 97.48, Topo: 99.47, Assm: 96.25, PNorm: 241.25, GNorm: 15.93
+[7790] Beta: 0.000, KL: 751.62, Word: 97.20, Topo: 99.53, Assm: 97.69, PNorm: 241.36, GNorm: 21.55
+[7800] Beta: 0.000, KL: 701.82, Word: 97.70, Topo: 99.64, Assm: 98.80, PNorm: 241.45, GNorm: 14.41
+[7810] Beta: 0.000, KL: 788.15, Word: 98.40, Topo: 99.51, Assm: 97.24, PNorm: 241.54, GNorm: 14.66
+[7820] Beta: 0.000, KL: 757.83, Word: 98.12, Topo: 99.61, Assm: 98.24, PNorm: 241.66, GNorm: 6.53
+[7830] Beta: 0.000, KL: 821.40, Word: 97.93, Topo: 99.77, Assm: 97.91, PNorm: 241.76, GNorm: 8.32
+CUDA out of memory. Tried to allocate 16.24 GiB (GPU 0; 15.78 GiB total capacity; 5.15 GiB already allocated; 3.94 GiB free; 5.67 GiB cached)
+[7850] Beta: 0.000, KL: 1553.35, Word: 186.62, Topo: 188.32, Assm: 186.71, PNorm: 241.90, GNorm: 16.81
+CUDA out of memory. Tried to allocate 7.77 GiB (GPU 0; 15.78 GiB total capacity; 4.49 GiB already allocated; 3.84 GiB free; 6.43 GiB cached)
+[7860] Beta: 0.000, KL: 680.65, Word: 87.80, Topo: 89.45, Assm: 88.53, PNorm: 241.96, GNorm: 7.94
+CUDA out of memory. Tried to allocate 8.72 GiB (GPU 0; 15.78 GiB total capacity; 3.29 GiB already allocated; 3.93 GiB free; 7.54 GiB cached)
+CUDA out of memory. Tried to allocate 10.07 GiB (GPU 0; 15.78 GiB total capacity; 3.70 GiB already allocated; 3.93 GiB free; 7.13 GiB cached)
+[7870] Beta: 0.000, KL: 579.60, Word: 78.03, Topo: 79.49, Assm: 79.32, PNorm: 242.02, GNorm: 45.61
+[7880] Beta: 0.000, KL: 871.20, Word: 98.36, Topo: 99.70, Assm: 99.17, PNorm: 242.10, GNorm: 10.11
+[7890] Beta: 0.000, KL: 835.65, Word: 97.77, Topo: 99.68, Assm: 97.71, PNorm: 242.17, GNorm: 7.56
+[7900] Beta: 0.000, KL: 842.33, Word: 98.40, Topo: 99.55, Assm: 98.60, PNorm: 242.29, GNorm: 12.95
+[7910] Beta: 0.000, KL: 804.50, Word: 98.29, Topo: 99.73, Assm: 97.06, PNorm: 242.36, GNorm: 9.88
+[7920] Beta: 0.000, KL: 689.19, Word: 98.25, Topo: 99.50, Assm: 97.93, PNorm: 242.44, GNorm: 22.32
+[7930] Beta: 0.000, KL: 802.39, Word: 97.91, Topo: 99.57, Assm: 97.46, PNorm: 242.55, GNorm: 23.06
+CUDA out of memory. Tried to allocate 10.09 GiB (GPU 0; 15.78 GiB total capacity; 3.51 GiB already allocated; 3.98 GiB free; 7.27 GiB cached)
+[7940] Beta: 0.000, KL: 677.71, Word: 86.70, Topo: 89.29, Assm: 87.50, PNorm: 242.65, GNorm: 23.97
+[7950] Beta: 0.000, KL: 766.33, Word: 97.76, Topo: 99.52, Assm: 97.15, PNorm: 242.77, GNorm: 24.52
+[7960] Beta: 0.000, KL: 767.01, Word: 98.29, Topo: 99.72, Assm: 98.81, PNorm: 242.89, GNorm: 4.21
+CUDA out of memory. Tried to allocate 6.40 GiB (GPU 0; 15.78 GiB total capacity; 3.67 GiB already allocated; 3.96 GiB free; 7.13 GiB cached)
+CUDA out of memory. Tried to allocate 6.30 GiB (GPU 0; 15.78 GiB total capacity; 3.58 GiB already allocated; 3.97 GiB free; 7.21 GiB cached)
+[7980] Beta: 0.000, KL: 1428.78, Word: 176.39, Topo: 179.61, Assm: 176.60, PNorm: 243.04, GNorm: 7.01
+CUDA out of memory. Tried to allocate 9.48 GiB (GPU 0; 15.78 GiB total capacity; 4.79 GiB already allocated; 3.85 GiB free; 6.12 GiB cached)
+[7990] Beta: 0.000, KL: 622.78, Word: 88.61, Topo: 89.63, Assm: 87.23, PNorm: 243.12, GNorm: 11.84
+[8000] Beta: 0.000, KL: 780.79, Word: 98.30, Topo: 99.76, Assm: 97.67, PNorm: 243.20, GNorm: 4.63
+[8010] Beta: 0.000, KL: 715.19, Word: 97.65, Topo: 99.39, Assm: 98.07, PNorm: 243.25, GNorm: 16.50
+[8020] Beta: 0.000, KL: 784.89, Word: 97.10, Topo: 99.43, Assm: 97.56, PNorm: 243.39, GNorm: 12.76
+[8030] Beta: 0.000, KL: 781.30, Word: 97.93, Topo: 99.43, Assm: 96.57, PNorm: 243.51, GNorm: 22.26
+[8040] Beta: 0.000, KL: 764.92, Word: 97.95, Topo: 99.63, Assm: 98.46, PNorm: 243.60, GNorm: 8.13
+[8050] Beta: 0.000, KL: 690.23, Word: 97.76, Topo: 99.76, Assm: 98.14, PNorm: 243.68, GNorm: 17.08
+[8060] Beta: 0.000, KL: 871.45, Word: 98.94, Topo: 99.83, Assm: 97.66, PNorm: 243.78, GNorm: 7.77
+[8070] Beta: 0.000, KL: 735.10, Word: 98.45, Topo: 99.77, Assm: 96.98, PNorm: 243.87, GNorm: 10.72
+[8080] Beta: 0.000, KL: 849.82, Word: 98.76, Topo: 99.57, Assm: 96.36, PNorm: 243.97, GNorm: 7.61
+[8090] Beta: 0.000, KL: 791.77, Word: 97.95, Topo: 99.23, Assm: 97.75, PNorm: 244.03, GNorm: 15.83
+CUDA out of memory. Tried to allocate 13.50 GiB (GPU 0; 15.78 GiB total capacity; 4.82 GiB already allocated; 3.92 GiB free; 6.02 GiB cached)
+CUDA out of memory. Tried to allocate 17.32 GiB (GPU 0; 15.78 GiB total capacity; 5.34 GiB already allocated; 3.94 GiB free; 5.47 GiB cached)
+[8100] Beta: 0.000, KL: 728.20, Word: 79.33, Topo: 79.74, Assm: 78.19, PNorm: 244.07, GNorm: 11.21
+CUDA out of memory. Tried to allocate 7.69 GiB (GPU 0; 15.78 GiB total capacity; 4.15 GiB already allocated; 3.87 GiB free; 6.74 GiB cached)
+[8110] Beta: 0.000, KL: 647.80, Word: 87.77, Topo: 89.53, Assm: 89.02, PNorm: 244.12, GNorm: 17.87
+CUDA out of memory. Tried to allocate 9.68 GiB (GPU 0; 15.78 GiB total capacity; 3.58 GiB already allocated; 3.93 GiB free; 7.24 GiB cached)
+[8120] Beta: 0.000, KL: 694.92, Word: 88.27, Topo: 89.77, Assm: 88.23, PNorm: 244.21, GNorm: 12.52
+[8130] Beta: 0.000, KL: 860.49, Word: 98.09, Topo: 99.70, Assm: 98.71, PNorm: 244.29, GNorm: 12.21
+[8140] Beta: 0.000, KL: 841.68, Word: 98.56, Topo: 99.62, Assm: 97.72, PNorm: 244.35, GNorm: 15.08
+[8150] Beta: 0.000, KL: 791.55, Word: 98.31, Topo: 99.73, Assm: 98.44, PNorm: 244.42, GNorm: 11.62
+[8160] Beta: 0.000, KL: 725.67, Word: 97.76, Topo: 99.84, Assm: 97.94, PNorm: 244.48, GNorm: 16.41
+[8170] Beta: 0.000, KL: 715.56, Word: 98.40, Topo: 99.71, Assm: 98.49, PNorm: 244.53, GNorm: 10.30
+[8180] Beta: 0.000, KL: 733.10, Word: 98.09, Topo: 99.66, Assm: 98.10, PNorm: 244.62, GNorm: 10.75
+CUDA out of memory. Tried to allocate 15.29 GiB (GPU 0; 15.78 GiB total capacity; 4.69 GiB already allocated; 3.98 GiB free; 6.09 GiB cached)
+[8200] Beta: 0.000, KL: 1506.34, Word: 186.92, Topo: 189.42, Assm: 187.02, PNorm: 244.74, GNorm: 8.96
+[8210] Beta: 0.000, KL: 783.97, Word: 98.65, Topo: 99.76, Assm: 98.45, PNorm: 244.78, GNorm: 7.01
+[8220] Beta: 0.000, KL: 838.22, Word: 98.47, Topo: 99.80, Assm: 98.65, PNorm: 244.82, GNorm: 11.58
+CUDA out of memory. Tried to allocate 6.24 GiB (GPU 0; 15.78 GiB total capacity; 3.57 GiB already allocated; 3.96 GiB free; 7.23 GiB cached)
+[8230] Beta: 0.000, KL: 701.58, Word: 87.93, Topo: 89.69, Assm: 88.65, PNorm: 244.87, GNorm: 14.06
+CUDA out of memory. Tried to allocate 16.91 GiB (GPU 0; 15.78 GiB total capacity; 6.07 GiB already allocated; 3.88 GiB free; 4.81 GiB cached)
+[8240] Beta: 0.000, KL: 632.85, Word: 89.16, Topo: 89.81, Assm: 87.30, PNorm: 244.92, GNorm: 8.16
+[8250] Beta: 0.000, KL: 869.39, Word: 98.71, Topo: 99.70, Assm: 98.47, PNorm: 244.97, GNorm: 16.78
+[8260] Beta: 0.000, KL: 811.47, Word: 98.32, Topo: 99.44, Assm: 97.73, PNorm: 245.07, GNorm: 12.75
+[8270] Beta: 0.000, KL: 819.84, Word: 97.99, Topo: 99.41, Assm: 97.86, PNorm: 245.14, GNorm: 14.64
+[8280] Beta: 0.000, KL: 772.66, Word: 98.34, Topo: 99.64, Assm: 97.37, PNorm: 245.23, GNorm: 21.32
+[8290] Beta: 0.000, KL: 759.87, Word: 97.61, Topo: 99.43, Assm: 98.68, PNorm: 245.31, GNorm: 10.55
+[8300] Beta: 0.000, KL: 805.37, Word: 97.92, Topo: 99.76, Assm: 99.36, PNorm: 245.39, GNorm: 18.75
+[8310] Beta: 0.000, KL: 875.30, Word: 98.93, Topo: 99.76, Assm: 98.64, PNorm: 245.47, GNorm: 11.42
