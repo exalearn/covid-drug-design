@@ -113,8 +113,6 @@ class GraphNetwork(layers.Layer):
 
         # Get the proper reduce function
         self.reduce_function = reduce_function.lower()
-        assert not (attention_mlp_sizes is not None and self.reduce_function != "attention"),\
-            "You cannot both specify attention layers sizes and not use attention"
         if attention_mlp_sizes is None:
             attention_mlp_sizes = []
         self.attention_mlp_sizes = attention_mlp_sizes
