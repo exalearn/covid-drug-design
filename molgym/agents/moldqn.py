@@ -98,8 +98,8 @@ class DQNFinalState:
                                    name='batch_action')
         reward_input = Input(batch_shape=(self.batch_size, 1), name='rewards')
         done_input = Input(batch_shape=(self.batch_size, 1), name='done')
-        new_actions = [Input(batch_shape=(None, fingerprint_size), name=f'next_actions_{i}')
-                       for i in range(self.batch_size)]
+        next_actions = Input(batch_shape=(None, fingerprint_size), name=f'next_actions')
+        next_actions_id = Input(batch_shape=(None,), name='next_action_batch_id', dtype=tf.int32)
 
         # Squeeze the train action and reward input
         squeeze = Lambda(K.squeeze, arguments={'axis': 1}, name='squeezer')
@@ -130,9 +130,9 @@ class DQNFinalState:
         #   periodically updated with the weights from `q_t`, which is being updated
         q_tp1 = make_q_network((None, fingerprint_size), name='q_tp1')
         q_tp1.trainable = False
-        max_layer = Lambda(K.max, arguments={'axis': 0}, name='max_layer')
-        q_values = [max_layer(q_tp1(action)) for action in new_actions]
-        v_tp1 = Concatenate(name='v_tp1')(q_values)
+        next_actions_q = q_tp1(next_actions)
+        max_layer = Lambda(lambda x: tf.math.segment_max(*x), name='v_tp1')
+        v_tp1 = max_layer([next_actions_q, next_actions_id])
 
         # Part 2: Define the target function, the measured reward of a state
         #   plus the estimated value of the next state (or zero if this state is terminal)
@@ -144,11 +144,9 @@ class DQNFinalState:
         q_t_train = Lambda(K.reshape, arguments={'shape': (self.batch_size,)},
                            name='squeeze_q')(q_t_train)
         error = Subtract(name='error')([q_t_train, target])
-        error = Lambda(K.reshape, arguments={'shape': (self.batch_size, 1)},
-                       name='wrap_error')(error)
 
         self.train_network = Model(
-            inputs=[train_action_input, done_input, reward_input] + new_actions,
+            inputs=[train_action_input, done_input, reward_input, next_actions, next_actions_id],
             outputs=error)
 
         # Add the optimizer
@@ -208,10 +206,16 @@ class DQNFinalState:
         # Get a minibatch
         actions, rewards, next_actions, done = zip(*random.sample(self.memory, self.batch_size))
 
+        # Stack the "next actions" into a single array, adding dummies where needed
+        next_actions = [na if np.size(na) > 0 else np.zeros((1, self.preprocessor.length))
+                        for na in next_actions]
+        next_action_size = [x.shape[0] for x in next_actions]
+
         # Convert inputs to numpy arrays
         actions = tf.convert_to_tensor(actions, dtype=K.floatx())
         rewards = tf.convert_to_tensor(rewards, dtype=K.floatx())
-        next_actions = [tf.convert_to_tensor(a, dtype=K.floatx()) for a in next_actions]
+        next_actions = tf.convert_to_tensor(np.vstack(next_actions), dtype=K.floatx())
+        next_actions_ids = tf.convert_to_tensor(np.repeat(range(self.batch_size), next_action_size))
         done = tf.convert_to_tensor(done, dtype=K.floatx())
 
         # Give bogus moves to those that are done and lack next moves
@@ -224,7 +228,7 @@ class DQNFinalState:
 
         # Compute the error signal between the data
         with tf.GradientTape() as tape:
-            error = self.train_network.predict_on_batch([actions, done, rewards] + list(next_actions))
+            error = self.train_network.predict_on_batch([actions, done, rewards, next_actions, next_actions_ids])
             loss = tf.reduce_mean(tf.sqrt(1 + tf.math.square(error)) - 1)  # Huber Loss
         gradients = tape.gradient(loss, self.train_network.trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, self.train_network.trainable_variables))
