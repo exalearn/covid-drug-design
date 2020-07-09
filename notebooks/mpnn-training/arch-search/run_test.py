@@ -78,11 +78,19 @@ if __name__ == "__main__":
     model.get_layer('scale').set_weights([np.array([[ic50s.std()]]), np.array([ic50s.mean()])])
 
     # Train the model
-    model.compile(Adam(InverseTimeDecay(1e-3, 64, 0.5)), 'mean_squared_error', metrics=['mean_absolute_error'])
+    final_learn_rate = 1e-6
+    init_learn_rate = 1e-3
+    decay_rate = (final_learn_rate / init_learn_rate) ** (1. / (1024 - 1))
+
+    def lr_schedule(epoch, lr):
+        return lr * decay_rate
+    model.compile(Adam(init_learn_rate), 'mean_squared_error', metrics=['mean_absolute_error'])
     history = model.fit(
-        val_loader, validation_data=val_loader, epochs=1024, verbose=True,
+        train_loader, validation_data=val_loader, epochs=1024, verbose=True,
         shuffle=False, callbacks=[
+            LRLogger(),
             EpochTimeLogger(),
+            cb.LearningRateScheduler(lr_schedule),
             cb.ModelCheckpoint(os.path.join(test_dir, 'best_model.h5'), save_best_only=True),
             cb.EarlyStopping(patience=128, restore_best_weights=True),
             cb.CSVLogger(os.path.join(test_dir, 'train_log.csv')),
