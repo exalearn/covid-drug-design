@@ -4,8 +4,10 @@ import timeit
 import logging
 import platform
 from math import inf
-from typing import Dict
+from random import choice
+from typing import Dict, Optional, List
 
+import networkx as nx
 from tqdm import tqdm
 from datetime import datetime
 from csv import DictWriter
@@ -46,7 +48,9 @@ def get_platform_info():
     }
 
 
-def run_experiment(episodes, n_steps, update_q_every, log_file, rewards: Dict[str, RewardFunction]):
+def run_experiment(episodes: int, n_steps: int, update_q_every: int,
+                   log_file: DictWriter, rewards: Dict[str, RewardFunction],
+                   init_mols: Optional[List[nx.Graph]]):
     """Perform the RL experiment
 
     Args:
@@ -54,11 +58,14 @@ def run_experiment(episodes, n_steps, update_q_every, log_file, rewards: Dict[st
         n_steps (int): Maximum number of steps per episode
         update_q_every (int): After how many updates to update the Q function
         log_file (DictWriter): Tool to write the output function
+        rewards: List of reward functions
+        init_mols ([str]): List of initial molecules
     """
     best_reward = -1 * inf
 
     for e in tqdm(range(episodes), desc='RL Episodes', leave=True, disable=False):
-        current_state = env.reset()
+        init_mol = None if init_mols is None else choice(init_mols)
+        current_state = env.reset(init_mol)
         for s in tqdm(range(n_steps), desc='\t RL Steps', disable=True):
             # Get action based on current state
             action, q, was_random = agent.action()
@@ -127,7 +134,10 @@ if __name__ == "__main__":
                             default=2048, type=int)
     arg_parser.add_argument('--batch-size', help='Batch size when training the NN', default=32, type=int)
     arg_parser.add_argument('--no-backtrack', action='store_true', help='Disallow bond removal')
-    arg_parser.add_argument('--initial-molecule', type=str, default=None, help='Starting molecule')
+    arg_parser.add_argument('--memory-size', help='Number of molecules to hold in memory', type=int, default=2000)
+    init_group = arg_parser.add_mutually_exclusive_group(required=False)
+    init_group.add_argument('--initial-molecule', type=str, default=None, help='Starting molecule')
+    init_group.add_argument('--initial-molecule-file', type=str, default=None, help='Path to molecules to use as seeds')
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -180,9 +190,16 @@ if __name__ == "__main__":
     env = Molecule(action_space, reward=reward, init_mol=init_mol)
     logger.debug('using environment: %s' % env)
 
+    # Load in initial molecules, if defined
+    init_mols = None
+    if args.initial_molecule_file is not None:
+        with open(args.initial_molecule_file) as fp:
+            init_mols = [convert_smiles_to_nx(x) for x in json.load(fp)]
+        logger.info(f'Read in {len(init_mols)} seed molecules')
+
     # Setup agent
     agent = DQNFinalState(env, gamma=args.gamma, preprocessor=MorganFingerprints(args.fingerprint_size),
-                          batch_size=args.batch_size, epsilon=args.epsilon,
+                          batch_size=args.batch_size, epsilon=args.epsilon, memory_size=args.memory_size,
                           q_network_dense=args.hidden_layers, epsilon_decay=args.epsilon_decay)
 
     # Make a test directory
@@ -201,7 +218,7 @@ if __name__ == "__main__":
         log_file.writeheader()
 
         start = timeit.default_timer()
-        run_experiment(args.episodes, args.max_steps, args.q_update_freq, log_file, rewards)
+        run_experiment(args.episodes, args.max_steps, args.q_update_freq, log_file, rewards, init_mols)
         end = timeit.default_timer()
 
         # Save the performance information
