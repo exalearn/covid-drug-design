@@ -65,9 +65,17 @@ class Molecule(gym.Env):
     def get_path(self):
         return list(self._path)
 
-    def reset(self):
-        """Resets the MDP to its initial state."""
-        self._state = self.init_mol
+    def reset(self, state: nx.Graph = None):
+        """Resets the MDP to its initial state.
+
+        Args:
+            state:
+        """
+        if state is None:
+            self._state = self.init_mol
+        else:
+            self._state = state
+
         self.action_space.update_actions(self._state, self.observation_space)
         if self.record_path:
             self._path = [self._state]

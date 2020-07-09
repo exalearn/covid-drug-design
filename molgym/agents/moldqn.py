@@ -34,7 +34,7 @@ class DQNFinalState:
 
     def __init__(self, env: Molecule, preprocessor: MorganFingerprints, gamma: float = 0.9,
                  batch_size: int = 32, epsilon: float = 1.0, q_network_dense: Iterable[int] = (24, 48, 24),
-                 epsilon_decay: float = 0.995):
+                 epsilon_decay: float = 0.995, memory_size: int = 2000):
         """
         Args:
             env (Molecule): Molecule environment
@@ -44,10 +44,11 @@ class DQNFinalState:
             preprocessor (MorganFingerprints): Tool to compute Morgan fingerprints for each molecule
             q_network_dense ([int]): Number of units in each hidden layer for the Q networks
             epsilon_decay (float): Fraction to decay epsilon after each epoch
+            memory_size (int): Number of records to hold in memory
         """
         self.env = env
         self.preprocessor = preprocessor
-        self.memory = deque(maxlen=2000)
+        self.memory = deque(maxlen=memory_size)
 
         # Hyper-parameters
         self.gamma = gamma  # discount rate
