@@ -3,6 +3,7 @@ import json
 import timeit
 import logging
 import platform
+from time import perf_counter
 from math import inf
 from random import choice
 from typing import Dict, Optional, List
@@ -63,6 +64,7 @@ def run_experiment(episodes: int, n_steps: int, update_q_every: int,
     """
     best_reward = -1 * inf
 
+    start_time = perf_counter()
     for e in tqdm(range(episodes), desc='RL Episodes', leave=True, disable=False):
         init_mol = None if init_mols is None else choice(init_mols)
         current_state = env.reset(init_mol)
@@ -92,7 +94,7 @@ def run_experiment(episodes: int, n_steps: int, update_q_every: int,
             log_file.writerow({
                 'episode': e, 'step': s, 'smiles': convert_nx_to_smiles(env.state),
                 'loss': loss, 'reward': reward, 'epsilon': agent.epsilon, 'q': q,
-                'random': was_random,
+                'random': was_random, 'time': perf_counter() - start_time,
                 **state_rewards
             })
 
@@ -213,7 +215,7 @@ if __name__ == "__main__":
 
     # Run experiment
     with open(os.path.join(test_dir, 'molecules.csv'), 'w', newline='') as log_fp:
-        log_file = DictWriter(log_fp, fieldnames=['episode', 'step', 'epsilon',
+        log_file = DictWriter(log_fp, fieldnames=['episode', 'step', 'time', 'epsilon',
                                                   'smiles', 'reward', 'q', 'random', 'loss'] + list(rewards.keys()))
         log_file.writeheader()
 
