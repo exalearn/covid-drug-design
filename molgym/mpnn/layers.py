@@ -135,8 +135,10 @@ class GraphNetwork(layers.Layer):
         if self.atomic_contribution:
             # Represent the atom state as the state of the molecule
             mol_state = atom_state
+            self.representation = atom_state
         else:
             mol_state = self._readout(atom_state, node_graph_indices)
+            self.representation = mol_state
 
         # Apply the MLP layers
         for layer in self.output_layers:
