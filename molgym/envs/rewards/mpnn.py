@@ -8,6 +8,7 @@ from tensorflow.keras.models import Model
 
 from molgym.envs.rewards import RewardFunction
 from molgym.mpnn.data import convert_nx_to_dict
+from molgym.mpnn.layers import custom_objects
 
 
 class MPNNReward(RewardFunction):
@@ -29,6 +30,24 @@ class MPNNReward(RewardFunction):
         self.big_value = abs(big_value)
         if self.maximize:
             self.big_value *= -1
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        
+        # Convert the model to a JSON description and weights
+        state['model_weights'] = self.model.get_weights()
+        state['model'] = self.model.to_json()
+
+        return state
+
+    def __setstate__(self, state):
+        state = state.copy()
+
+        # Convert the MPNN model back to a Keras object
+        state['model'] = tf.keras.models.model_from_json(state['model'], custom_objects=custom_objects)
+        state['model'].set_weights(state.pop('model_weights'))
+
+        self.__dict__.update(state)
 
     def _call(self, graph: nx.Graph) -> float:
         # Convert the graph to dict format, and add in "node_graph_indices"
