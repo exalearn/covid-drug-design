@@ -95,6 +95,9 @@ class GraphNetwork(layers.Layer):
              num_messages (int): Number of message passing steps to perform
              output_layer_sizes ([int]): Number of nodes in MLP that reduces dimensionality of atomic/molecular features
              attention_mlp_sizes ([int]): Number of nodes in MLP to map atomic features to attention weights
+             n_outputs (int): Number of outputs for the network
+             reduce_function (str): Which ``segment_*`` function to use to reduce atomic reprensentations.
+                Can also be "attention"
              dropout (float): Dropout rate
         """
         super(GraphNetwork, self).__init__(**kwargs)
