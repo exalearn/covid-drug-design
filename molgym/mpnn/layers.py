@@ -85,7 +85,7 @@ class GraphNetwork(layers.Layer):
 
     def __init__(self, atom_classes, bond_classes, atom_dimension, num_messages, 
                  output_layer_sizes=None, atomic_contribution: bool = False,
-                 attention_mlp_sizes: List[int] = None,
+                 attention_mlp_sizes: List[int] = None, n_outputs: int = 1,
                  reduce_function: str = 'sum', **kwargs):
         """
         Args:
@@ -102,6 +102,7 @@ class GraphNetwork(layers.Layer):
         self.bond_embedding = layers.Embedding(bond_classes, atom_dimension, name='bond_embedding')
         self.message_layers = [MessageBlock(atom_dimension) for _ in range(num_messages)]
         self.atomic_contribution = atomic_contribution
+        self.n_outputs = n_outputs
         
         # Make the output MLP
         if output_layer_sizes is None:
@@ -109,7 +110,7 @@ class GraphNetwork(layers.Layer):
         self.output_layers = [layers.Dense(s, activation='relu', name=f'dense_{i}')
                               for i, s in enumerate(output_layer_sizes)]
         self.output_layer_sizes = output_layer_sizes
-        self.last_layer = layers.Dense(1, name='output')
+        self.last_layer = layers.Dense(n_outputs, name='output')
 
         # Get the proper reduce function
         self.reduce_function = reduce_function.lower()
@@ -135,10 +136,8 @@ class GraphNetwork(layers.Layer):
         if self.atomic_contribution:
             # Represent the atom state as the state of the molecule
             mol_state = atom_state
-            self.representation = atom_state
         else:
             mol_state = self._readout(atom_state, node_graph_indices)
-            self.representation = mol_state
 
         # Apply the MLP layers
         for layer in self.output_layers:
@@ -225,6 +224,7 @@ class GraphNetwork(layers.Layer):
             'output_layer_sizes': self.output_layer_sizes,
             'num_messages': len(self.message_layers),
             'reduce_function': self.reduce_function,
+            'n_outputs': self.n_outputs,
             'atomic_contribution': self.atomic_contribution,
             'attention_mlp_sizes': self.attention_mlp_sizes
         })
