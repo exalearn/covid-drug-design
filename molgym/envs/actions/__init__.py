@@ -1,5 +1,5 @@
 """Different choices for actions to use in molecular design"""
-from typing import List
+from typing import List, Optional
 
 import networkx as nx
 import numpy as np
@@ -20,7 +20,8 @@ class MoleculeActions(Space):
      `Zhou et al. <http://www.nature.com/articles/s41598-019-47148-x>`_."""
 
     def __init__(self, atom_types, allow_removal=True, allow_no_modification=False,
-                 allow_bonds_between_rings=True, allowed_ring_sizes=None):
+                 allow_bonds_between_rings=True, allowed_ring_sizes=None,
+                 max_molecule_size: Optional[int] = None):
         """
         Args:
             atom_types: The set of elements the molecule may contain.
@@ -36,6 +37,7 @@ class MoleculeActions(Space):
             allowed_ring_sizes: Set of integers or None. The size of the ring which
                 is allowed to form. If None, all sizes will be allowed. If a set is
                 provided, only sizes in the set is allowed.
+            max_molecule_size: int, Maximum number of heavy atoms
         """
 
         super().__init__((None, None), np.str)
@@ -49,9 +51,10 @@ class MoleculeActions(Space):
         self._state = None
         self._valid_actions = []
         self._max_bonds = 4
+        self.max_molecule_size = max_molecule_size
         atom_types = list(self.atom_types)
         self._max_new_bonds = dict(
-            list(zip(atom_types, rdkit.atom_valences(atom_types)))
+            zip(atom_types, rdkit.atom_valences(atom_types))
         )
 
         # Placeholders for action space
@@ -95,7 +98,9 @@ class MoleculeActions(Space):
             allow_removal=self.allow_removal,
             allow_no_modification=self.allow_no_modification,
             allowed_ring_sizes=self.allowed_ring_sizes,
-            allow_bonds_between_rings=self.allow_bonds_between_rings)
+            allow_bonds_between_rings=self.allow_bonds_between_rings,
+            max_molecule_size=self.max_molecule_size
+        )
 
         # Get only those actions which are in the desired space
         self._valid_actions = [convert_smiles_to_nx(x) for x in valid_actions if x in allowed_space]

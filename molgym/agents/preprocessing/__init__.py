@@ -3,7 +3,7 @@ from typing import List, Any
 
 import numpy as np
 import networkx as nx
-from rdkit import Chem, DataStructs
+from rdkit import DataStructs
 from rdkit.Chem import AllChem
 
 from molgym.utils.conversions import convert_nx_to_rdkit

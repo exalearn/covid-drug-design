@@ -29,6 +29,7 @@ from __future__ import print_function
 import collections
 import copy
 import itertools
+from typing import Optional
 
 from rdkit import Chem
 from six.moves import range
@@ -48,7 +49,8 @@ class Result(
 
 
 def get_valid_actions(state, atom_types, allow_removal, allow_no_modification,
-                      allowed_ring_sizes, allow_bonds_between_rings):
+                      allowed_ring_sizes, allow_bonds_between_rings,
+                      max_molecule_size: Optional[int] = None):
     """Computes the set of valid actions for a given state.
 
     Args:
@@ -61,6 +63,8 @@ def get_valid_actions(state, atom_types, allow_removal, allow_no_modification,
         actions that would create rings with disallowed sizes.
       allow_bonds_between_rings: Boolean whether to allow actions that add bonds
         between atoms that are both in rings.
+      max_molecule_size: int, Maximum allowed size of a molecule. Measured as the total
+         number of non-H atoms
 
     Returns:
       Set of string SMILES containing the valid actions (technically, the set of
@@ -86,13 +90,20 @@ def get_valid_actions(state, atom_types, allow_removal, allow_no_modification,
         atoms_with_free_valence[i] = [
             atom.GetIdx() for atom in mol.GetAtoms() if atom.GetNumImplicitHs() >= i
         ]
+
+    # Populate the list of molecules
     valid_actions = set()
-    valid_actions.update(
-        _atom_addition(
-            mol,
-            atom_types=atom_types,
-            atom_valences=atom_valences,
-            atoms_with_free_valence=atoms_with_free_valence))
+
+    # Add atoms if it would not exceed the maximum size
+    if max_molecule_size is None or mol.GetNumHeavyAtoms() < max_molecule_size:
+        valid_actions.update(
+            _atom_addition(
+                mol,
+                atom_types=atom_types,
+                atom_valences=atom_valences,
+                atoms_with_free_valence=atoms_with_free_valence))
+
+    # Always possible to add new bonds
     valid_actions.update(
         _bond_addition(
             mol,

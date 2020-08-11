@@ -1,4 +1,4 @@
-"""Difference choices for search spaces"""
+"""Choices for search spaces"""
 
 from gym import Space
 
