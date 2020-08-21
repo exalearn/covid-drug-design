@@ -229,3 +229,30 @@ def make_data_loader(file_path, batch_size=32, shuffle_buffer=None,
     r = r.map(combine_graphs, n_threads)
     train_tuple = partial(make_training_tuple, target_name=output_property)
     return r.map(train_tuple)
+
+
+def create_batches_from_objects(graphs: List[dict], batch_size: int = 32) -> List[dict]:
+    """Create batches from a collection of graphs in dictionary format
+
+    Args:
+        graphs: List of graphs to make into batches
+        batch_size: Number of graphs per batch
+    Returns:
+        Batches of graphs where the values are TF Tensors
+    """
+
+    # Combine graphs into chunks that will be made into batches
+    chunks = []
+    for start in range(0, len(graphs), batch_size):
+        chunks.append(graphs[start:start+batch_size])
+
+    # Combine graphs into chunks
+    batches = []
+    keys = chunks[0][0].keys()
+    for chunk in chunks:
+        batch_dict = {}
+        for k in keys:
+            batch_dict[k] = np.concatenate([np.atleast_1d(b[k]) for b in chunk], axis=0)
+        batches.append(combine_graphs(batch_dict))
+
+    return batches
