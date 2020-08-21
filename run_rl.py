@@ -20,6 +20,7 @@ from molgym.agents.preprocessing import MorganFingerprints
 from molgym.envs.actions import MoleculeActions
 from molgym.envs.rewards import RewardFunction
 from molgym.envs.rewards.multiobjective import AdditiveReward
+from molgym.envs.rewards.oneshot import OneShotScore
 from molgym.envs.simple import Molecule
 from molgym.envs.rewards.rdkit import LogP, QEDReward, SAScore, CycleLength
 from molgym.envs.rewards.mpnn import MPNNReward
@@ -127,7 +128,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--q-update-freq', help='After how many episodes to update Q network',
                             default=10, type=int)
     arg_parser.add_argument('--reward', help='Which reward function to use.',
-                            choices=['ic50', 'logP', 'MO', 'QED'], default='ic50')
+                            choices=['ic50', 'logP', 'MO', 'QED', 'oneshot'], default='ic50')
     arg_parser.add_argument('--hidden-layers', nargs='+', help='Number of units in the hidden layers of the Q network',
                             default=(1024, 512, 128, 32), type=int)
     arg_parser.add_argument('--gamma', help='Decay weight for future rewards in Bellman Equation',
@@ -150,21 +151,33 @@ if __name__ == "__main__":
     mpnn_dir = os.path.join('notebooks', 'mpnn-training')
     with open(os.path.join(mpnn_dir, 'atom_types.json')) as fp:
         atom_types = json.load(fp)
+    with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
+        bond_types = json.load(fp)
     pt = GetPeriodicTable()
     elements = [pt.GetElementSymbol(i) for i in atom_types]
     elements = [e for e in elements if MolFromSmiles(e) is not None]
     logger.info(f'Using {len(elements)} elements: {elements}')
 
+    # Prepare the one-shot model. We the molecules to compare against and the comparison model
+    with open(os.path.join('seed-molecules', 'top_100_pIC50.json')) as fp:
+        comparison_mols = [convert_smiles_to_nx(s) for s in json.load(fp)]
+    oneshot_dir = 'similarity'
+    oneshot_model = load_model(os.path.join(oneshot_dir, 'oneshot_model.h5'), custom_objects=custom_objects)
+    with open(os.path.join(oneshot_dir, 'atom_types.json')) as fp:
+        os_atom_types = json.load(fp)
+    with open(os.path.join(oneshot_dir, 'bond_types.json')) as fp:
+        os_bond_types = json.load(fp)
+
     # Making all of the reward functions
     model = load_model(os.path.join(mpnn_dir, 'best_model.h5'), custom_objects=custom_objects)
-    with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
-        bond_types = json.load(fp)
+
     rewards = {
         'logP': LogP(maximize=True),
         'ic50': MPNNReward(model, atom_types, bond_types, maximize=True),
         'QED': QEDReward(maximize=True),
         'SA': SAScore(maximize=False),
-        'cycles': CycleLength(maximize=False)
+        'cycles': CycleLength(maximize=False),
+        'oneshot': OneShotScore(oneshot_model, os_atom_types, os_bond_types, comparison_mols, maximize=True)
     }
 
     # Load in the ranges for reward functions, used in making multi-objective searches
@@ -180,6 +193,8 @@ if __name__ == "__main__":
         reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['QED', 'SA', 'cycles']])
     elif args.reward == "MO":
         reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['ic50', 'QED', 'SA', 'cycles']])
+    elif args.reward == "oneshot":
+        reward = rewards['oneshot']
     else:
         raise ValueError(f'Reward function not defined: {args.reward}')
     run_params['maximize'] = reward.maximize
