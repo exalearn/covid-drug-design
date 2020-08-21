@@ -6,6 +6,8 @@ import tensorflow as tf
 import networkx as nx
 import numpy as np
 
+from molgym.utils.conversions import convert_nx_to_smiles
+
 
 def _numpy_to_tf_feature(value):
     """Converts a Numpy array to a Tensoflow Feature
@@ -105,7 +107,9 @@ def convert_nx_to_dict(graph: nx.Graph, atom_types: List[int], bond_types: List[
 
         # Tensorflow's "segment_sum" will cause problems if the last atom
         #  is not bonded because it returns an array
-        assert connectivity.max() == len(atom_type) - 1, "Problem with unconnected atoms for {}"
+        if connectivity.max() != len(atom_type) - 1:
+            smiles = convert_nx_to_smiles(graph)
+            raise ValueError(f"Problem with unconnected atoms for {smiles}")
     else:
         connectivity = np.zeros((0, 2))
 
