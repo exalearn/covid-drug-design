@@ -21,6 +21,7 @@ from molgym.envs.actions import MoleculeActions
 from molgym.envs.rewards import RewardFunction
 from molgym.envs.rewards.multiobjective import AdditiveReward
 from molgym.envs.rewards.oneshot import OneShotScore
+from molgym.envs.rewards.tuned import LogisticCombination
 from molgym.envs.simple import Molecule
 from molgym.envs.rewards.rdkit import LogP, QEDReward, SAScore, CycleLength
 from molgym.envs.rewards.mpnn import MPNNReward
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--q-update-freq', help='After how many episodes to update Q network',
                             default=10, type=int)
     arg_parser.add_argument('--reward', help='Which reward function to use.',
-                            choices=['ic50', 'logP', 'MO', 'QED', 'oneshot'], default='ic50')
+                            choices=['ic50', 'logP', 'MO', 'QED', 'oneshot', 'tuned'], default='ic50')
     arg_parser.add_argument('--hidden-layers', nargs='+', help='Number of units in the hidden layers of the Q network',
                             default=(1024, 512, 128, 32), type=int)
     arg_parser.add_argument('--gamma', help='Decay weight for future rewards in Bellman Equation',
@@ -195,6 +196,8 @@ if __name__ == "__main__":
         reward = AdditiveReward([{'reward': rewards[r], **ranges[r]} for r in ['ic50', 'QED', 'SA', 'cycles']])
     elif args.reward == "oneshot":
         reward = rewards['oneshot']
+    elif args.reward == "tuned":
+        reward = LogisticCombination(rewards['ic50'], rewards['oneshot'])
     else:
         raise ValueError(f'Reward function not defined: {args.reward}')
     run_params['maximize'] = reward.maximize

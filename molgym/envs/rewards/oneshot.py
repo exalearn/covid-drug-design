@@ -21,7 +21,7 @@ class OneShotScore(MPNNReward):
             bond_types: List of known bond types
             target_molecules: Set of molecules to compare
         """
-        super().__init__(model, atom_types, bond_types, maximize)
+        super().__init__(model, atom_types, bond_types, maximize, big_value=0 if maximize else 1)
 
         # Convert the target molecules into batches
         target_dicts = [convert_nx_to_dict(g, self.atom_types, self.bond_types) for g in target_molecules]
