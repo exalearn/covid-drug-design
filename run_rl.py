@@ -199,6 +199,13 @@ if __name__ == "__main__":
             init_mols = [convert_smiles_to_nx(x) for x in json.load(fp)]
         logger.info(f'Read in {len(init_mols)} seed molecules')
 
+        # Make sure the molecules only contain elements from the list
+        def screen(g):
+            atomic_nums = nx.get_node_attributes(g, 'atomic_num').values()
+            return all(pt.GetElementSymbol(z) in elements for z in atomic_nums if z > 1)
+        init_mols = [g for g in init_mols if screen(g)]
+        logger.info(f'{len(init_mols)} contain only elements from action space')
+
     # Setup agent
     agent = DQNFinalState(env, gamma=args.gamma, preprocessor=MorganFingerprints(args.fingerprint_size),
                           batch_size=args.batch_size, epsilon=args.epsilon, memory_size=args.memory_size,
