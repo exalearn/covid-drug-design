@@ -139,6 +139,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--batch-size', help='Batch size when training the NN', default=32, type=int)
     arg_parser.add_argument('--no-backtrack', action='store_true', help='Disallow bond removal')
     arg_parser.add_argument('--memory-size', help='Number of molecules to hold in memory', type=int, default=2000)
+    arg_parser.add_argument('--elements', nargs="*", help='List of allowed elements', type=str)
     init_group = arg_parser.add_mutually_exclusive_group(required=False)
     init_group.add_argument('--initial-molecule', type=str, default=None, help='Starting molecule')
     init_group.add_argument('--initial-molecule-file', type=str, default=None, help='Path to molecules to use as seeds')
@@ -155,7 +156,10 @@ if __name__ == "__main__":
     with open(os.path.join(mpnn_dir, 'bond_types.json')) as fp:
         bond_types = json.load(fp)
     pt = GetPeriodicTable()
-    elements = [pt.GetElementSymbol(i) for i in atom_types]
+    if len(args.elements) == 0:
+        elements = [pt.GetElementSymbol(i) for i in atom_types]
+    else:
+        elements = args.elements
     elements = [e for e in elements if MolFromSmiles(e) is not None]
     logger.info(f'Using {len(elements)} elements: {elements}')
 
